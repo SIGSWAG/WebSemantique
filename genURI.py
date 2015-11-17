@@ -1,3 +1,4 @@
+from bing_search_api import BingSearchAPI
 import xml.etree.ElementTree
 import requests, sys, json
 
@@ -5,6 +6,9 @@ googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 searchEngineKey = "016723847753961302155:y6-cneh1knc"
 googleSearchURL = "https://www.googleapis.com/customsearch/v1"
 googleSearchExampleFile = "exampleResponse.json"
+
+bingSearchAPIKey = "mX9yeDnqzockohCH18xBGKH1P/78ESUIpR08YB0zSAo"
+bingSearchURL = "https://api.datamarket.azure.com/Bing/Search/Web"
 
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
 spotlightExampleFile = "spotlightResponseExample.xml"
@@ -17,7 +21,7 @@ PART 1 : Send a query and retrieve list of URLs
 
 def getURLSfromQuery(query):
 
-  #jsonContent = getSearchFromWeb(query, true)
+  #jsonContent = getSearchFromGoogleCSE(query, True)
   jsonContent = getSearchFromFile()
 
   jsonObject = json.loads(jsonContent)
@@ -35,7 +39,7 @@ def getSearchFromFile():
 
   return jsonContent
 
-def getSearchFromWeb(query, writeToFile):
+def getSearchFromGoogleCSE(query, writeToFile):
   payload = {
     "query": query,
     "key": googleAPIKey,
@@ -50,8 +54,19 @@ def getSearchFromWeb(query, writeToFile):
 
   return jsonContent
 
+def getSearchFromBing(query, writeToFile):
+  api = BingSearchAPI(bingSearchAPIKey)
+  params = {'$format': 'json'}
+  jsonContent =  api.search_web(query, payload = params)
+
+  if(writeToFile):
+    writeContentToFile(googleSearchExampleFile, jsonContent)
+
+  return jsonContent
+
+
 def writeContentToFile(fileName, content):
-  with open(googleSearchExampleFile, "a") as jsonFile:
+  with open(fileName, "w") as jsonFile:
     jsonFile.write(content)
 
 '''
@@ -76,7 +91,9 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
   return annotatedTexts
 
 def getURIsFromText(text, spotlightConfidence, spotlightSupport):
-  content = getAnnotatedTextFromFile()
+  
+  content = getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, None)
+  #content = getAnnotatedTextFromFile()
 
   # Extract URI
   uris = getDBPediaRessources(content)
@@ -90,7 +107,7 @@ def getAnnotatedTextFromFile():
   return content
 
 
-def getAnnotatedTextFromWeb(text, spotlightConfidence, spotlightSupport):
+def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, writeToFile):
   payload = {
     "text": text,
     "confidence": spotlightConfidence,
@@ -145,8 +162,8 @@ def main():
 
   # Retrieve, for each URL, an associated text
   texts = {
-      urls[0]: "Inception"
-    }
+      urls[0]: "Paroled labor racketeer Dapper Dino is sought after by a politically ambitious prosecutor schemes to put him back in jail and a deceitful partner sizes him up for concrete shoes."
+  }
 
   # Retrieve, for each text, the list of corresponding URIs
   annotatedTexts = getURIsFromTexts(texts, spotlightConfidence, spotlightSupport)
