@@ -1,0 +1,21 @@
+{
+    "digraph" : {
+        "name": "G",
+        "nodes":{
+             "node1" : {
+                "label":"MyLabel1",
+                "otherPropertie":"otherValue"
+             },
+             "node2": {
+                "label":"MyLabel2"
+             },
+             "node3": {
+                 "label":"MyLabel2"
+             }
+        },
+        "edges": {
+            "node1":"node2",
+            "node2":"node3",
+        }
+    }
+}

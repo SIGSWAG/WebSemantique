@@ -1,0 +1,12 @@
+{
+    [
+      {
+        "url": "http://example.com",
+        "uri": ["uri1", "uri2"]
+      },
+      {
+        "url": "http://sample.com",
+        "uri": ["uri1", "uri2", "uri3"]
+      },
+    ]
+}
