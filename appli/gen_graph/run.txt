@@ -1,1 +1,1 @@
-/usr/bin/python3 genGraph.py
+python3 genGraph.py

@@ -1,1 +1,1 @@
-/usr/bin/python3 sparql.py
+python3 sparql.py

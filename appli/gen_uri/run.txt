@@ -1,1 +1,1 @@
-/usr/bin/python3 genUri.py
+python3 genUri.py
