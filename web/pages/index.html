@@ -8,28 +8,20 @@
 	<link href="../assets/material/css/roboto.min.css" rel="stylesheet">
 	<link href="../assets/material/css/material.min.css" rel="stylesheet">
 	<link href="../assets/material/css/ripples.min.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="../assets/css/game.css">
+	<link rel="stylesheet" type="text/css" href="../assets/css/main.css">
 </head>
 
 <body>
-
-	<h1>You can add your site here.</h1>
-
-	<h2>To ensure that material-design theme is working, check out the buttons below.</h2>
-
-	<h3 class="text-muted">If you can see the ripple effect on clicking them, then you are good to go!</h3>
-
-
-	<p class="bs-component">
-		<a href="javascript:void(0)" class="btn btn-default">Default</a>
-		<a href="javascript:void(0)" class="btn btn-primary">Primary</a>
-		<a href="javascript:void(0)" class="btn btn-success">Success</a>
-		<a href="javascript:void(0)" class="btn btn-info">Info</a>
-		<a href="javascript:void(0)" class="btn btn-warning">Warning</a>
-		<a href="javascript:void(0)" class="btn btn-danger">Danger</a>
-		<a href="javascript:void(0)" class="btn btn-link">Link</a>
-	</p>
-
+	<div class="container-fluid">
+		<form id="search">
+			<h1 id="title" class="text-center">Find the movie you're looking for !</h1>
+			<input id="searchText" name="searchText" class="form-control text-center" placeholder="label" type="text">
+	  		<button id="send" class="btn btn-primary btn-flat"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Ok</button>
+	  	</form>
+	  	<div id="results">
+	  		
+	  	</div>
+	</div>
 
 	<script src="../assets/js/jquery-2.1.4.min.js"></script>
 	<script src="../assets/bootstrap/js/bootstrap.min.js"></script>
@@ -42,7 +34,7 @@
           $.material.init();
      });
 	</script>
-	<script type="text/javascript" src="../assets/js/game.js" ></script>
+	<script type="text/javascript" src="../assets/js/main.js" ></script>
 
 </body>
 
