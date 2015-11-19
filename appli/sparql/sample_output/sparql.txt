@@ -1,0 +1,53 @@
+{ "head" : { "link" : [  ],
+      "vars" : [ "s",
+          "p",
+          "o"
+        ]
+    },
+  "results" : { "bindings" : [ { "o" : { "type" : "uri",
+                "value" : "http://www.w3.org/2002/07/owl#Thing"
+              },
+            "p" : { "type" : "uri",
+                "value" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+            "s" : { "type" : "uri",
+                "value" : "http://dbpedia.org/resource/Michelle_Obama"
+              }
+          },
+          { "o" : { "datatype" : "http://www.w3.org/2001/XMLSchema#date",
+                "type" : "typed-literal",
+                "value" : "1964-01-17"
+              },
+            "p" : { "type" : "uri",
+                "value" : "http://dbpedia.org/property/birthDate"
+              },
+            "s" : { "type" : "uri",
+                "value" : "http://dbpedia.org/resource/Michelle_Obama"
+              }
+          },
+          { "o" : { "type" : "literal",
+                "value" : "Michelle LaVaughn Robinson",
+                "xml:lang" : "en"
+              },
+            "p" : { "type" : "uri",
+                "value" : "http://dbpedia.org/property/birthName"
+              },
+            "s" : { "type" : "uri",
+                "value" : "http://dbpedia.org/resource/Michelle_Obama"
+              }
+          },
+          { "o" : { "type" : "uri",
+                "value" : "http://wifo5-03.informatik.uni-mannheim.de/flickrwrappr/photos/Michelle_Obama"
+              },
+            "p" : { "type" : "uri",
+                "value" : "http://dbpedia.org/property/hasPhotoCollection"
+              },
+            "s" : { "type" : "uri",
+                "value" : "http://dbpedia.org/resource/Michelle_Obama"
+              }
+          }
+        ],
+      "distinct" : false,
+      "ordered" : true
+    }
+}
