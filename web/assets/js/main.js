@@ -3,10 +3,11 @@ $(function(){
 		e.preventDefault();
 		$this = $(this);
 
-		var path = "./ajax/";
+		var path = "./cgi-bin/main.cgi";
 		var params = {};
 
-		params.searchText = $("#searchText").val();
+		params.mots_clefs = $("#searchText").val();
+		params.seuil_jordan = 0.1;
 
 		$.ajax({
 			method: "GET",
