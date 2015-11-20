@@ -1,165 +1,208 @@
-[{
-    "link":"http://google.fr",
-
-  "results": [
-      {
-        "s": {
-          "type": "uri",
-          "value": "http://dbpedia.org/resource/Michelle_Obama"
-        },
-        "p": {
-          "type": "uri",
-          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        "o": {
-          "type": "uri",
-          "value": "http://www.w3.org/2002/07/owl#Thing"
-        }
-      },
-      {
-        "s": {
-          "type": "uri",
-          "value": "http://dbpedia.org/resource/Michelle_Obama"
-        },
-        "p": {
-          "type": "uri",
-          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        "o": {
-          "type": "uri",
-          "value": "http://xmlns.com/foaf/0.1/Person"
-        }
-      }
-]
-
-},
-
-{
-    "link":"http://gradur.fr",
-
-  "results": [
-      {
-        "s": {
-          "type": "uri",
-          "value": "http://dbpedia.org/resource/Michelle_Obama"
-        },
-        "p": {
-          "type": "uri",
-          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        "o": {
-          "type": "uri",
-          "value": "http://www.w3.org/2002/07/owl#Thing"
-        }
-      },
-      {
-        "s": {
-          "type": "uri",
-          "value": "http://dbpedia.org/resource/Michelle_Obama"
-        },
-        "p": {
-          "type": "uri",
-          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        "o": {
-          "type": "uri",
-          "value": "http://xmlns.com/foaf/0.1/Person"
-        }
-      }
-]
-
-},
-
-
-{
-    "link":"http://matrice.fr",
-
-  "results": [
-      {
-        "s": {
-          "type": "uri",
-          "value": "http://dbpedia.org/resource/Michelle_Obama"
-        },
-        "p": {
-          "type": "uri",
-          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        "o": {
-          "type": "uri",
-          "value": "http://www.w3.org/2002/07/owl#Thing"
-        }
-      },
-      {
-        "s": {
-          "type": "uri",
-          "value": "http://dbpedia.org/resource/Michelle_Obama"
-        },
-        "p": {
-          "type": "uri",
-          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        "o": {
-          "type": "uri",
-          "value": "http://xmlns.com/foaf/0.1/Person"
-        }
-      }
-]
-
-},
-
-
-{
-    "link":"http://bonjourmadame.fr",
-
-  "results": [
-      {
-        "s": {
-          "type": "uri",
-          "value": "http://dbpedia.org/resource/Michelle_Obama"
-        },
-        "p": {
-          "type": "uri",
-          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        "o": {
-          "type": "uri",
-          "value": "http://www.w3.org/2002/07/owl#Thing"
-        }
-      },
-      {
-        "s": {
-          "type": "uri",
-          "value": "http://dbpedia.org/resource/Michelle_Obama"
-        },
-        "p": {
-          "type": "uri",
-          "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        "o": {
-          "type": "uri",
-          "value": "http://xmlns.com/foaf/0.1/Person"
-        }
-      }
-]
-
-},
-
-
-{
-    "link":"http://roti.fr",
-
-  "results": [
-     
-]
-
-},
-
-{
-    "link":"http://hugodelval.com",
-
-  "results": [
-
-]
-
-}
+[
+	{
+		"link":"http:zbbooob",
+		"results":{
+			"graphePage": [
+				{
+					"s": {
+					  "type": "uri",
+					  "value": "http://dbpedia.org/resource/Michelle_Obama"
+					},
+					"p": {
+					  "type": "uri",
+					  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+					},
+					"o": {
+					  "type": "uri",
+					  "value": "http://xmlns.com/foaf/0.1/Person"
+					}
+				},
+				{
+					"s": {
+					  "type": "uri",
+					  "value": "http://dbpedia.org/resource/Michelle_Obama"
+					},
+					"p": {
+					  "type": "uri",
+					  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+					},
+					"o": {
+					  "type": "uri",
+					  "value": "http://xmlns.com/foaf/0.1/Person"
+					}
+				}
+			],
+			"films": [
+				{
+					"link":"uridufilm.fr",
+					"graphe": [
+						{
+							"s": {
+							  "type": "uri",
+							  "value": "http://dbpedia.org/resource/Michelle_Obama"
+							},
+							"p": {
+							  "type": "uri",
+							  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+							},
+							"o": {
+							  "type": "uri",
+							  "value": "http://xmlns.com/foaf/0.1/Person"
+							}
+						},
+						{
+							"s": {
+							  "type": "uri",
+							  "value": "http://dbpedia.org/resource/Michelle_Obama"
+							},
+							"p": {
+							  "type": "uri",
+							  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+							},
+							"o": {
+							  "type": "uri",
+							  "value": "http://xmlns.com/foaf/0.1/Person"
+							}
+						}
+					]
+				},
+				{
+					"link":"uridufilm2.fr",
+					"graphe": [
+						{
+							"s": {
+							  "type": "uri",
+							  "value": "http://dbpedia.org/resource/Michelle_Obama"
+							},
+							"p": {
+							  "type": "uri",
+							  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+							},
+							"o": {
+							  "type": "uri",
+							  "value": "http://xmlns.com/foaf/0.1/Person"
+							}
+						},
+						{
+							"s": {
+							  "type": "uri",
+							  "value": "http://dbpedia.org/resource/Michelle_Obama"
+							},
+							"p": {
+							  "type": "uri",
+							  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+							},
+							"o": {
+							  "type": "uri",
+							  "value": "http://xmlns.com/foaf/0.1/Person"
+							}
+						}
+					]
+				}
+			]
+		}
+	},
+		{
+		"link":"http:zbbooob2",
+		"results":{
+			"graphePage": [
+				{
+					"s": {
+					  "type": "uri",
+					  "value": "http://dbpedia.org/resource/Michelle_Obama"
+					},
+					"p": {
+					  "type": "uri",
+					  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+					},
+					"o": {
+					  "type": "uri",
+					  "value": "http://xmlns.com/foaf/0.1/Person"
+					}
+				},
+				{
+					"s": {
+					  "type": "uri",
+					  "value": "http://dbpedia.org/resource/Michelle_Obama"
+					},
+					"p": {
+					  "type": "uri",
+					  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+					},
+					"o": {
+					  "type": "uri",
+					  "value": "http://xmlns.com/foaf/0.1/Person"
+					}
+				}
+			],
+			"films": [
+				{
+					"link":"uridufilm.fr",
+					"graphe": [
+						{
+							"s": {
+							  "type": "uri",
+							  "value": "http://dbpedia.org/resource/Michelle_Obama"
+							},
+							"p": {
+							  "type": "uri",
+							  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+							},
+							"o": {
+							  "type": "uri",
+							  "value": "http://xmlns.com/foaf/0.1/Person"
+							}
+						},
+						{
+							"s": {
+							  "type": "uri",
+							  "value": "http://dbpedia.org/resource/Michelle_Obama"
+							},
+							"p": {
+							  "type": "uri",
+							  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+							},
+							"o": {
+							  "type": "uri",
+							  "value": "http://xmlns.com/foaf/0.1/Person"
+							}
+						}
+					]
+				},
+				{
+					"link":"uridufilm2.fr",
+					"graphe": [
+						{
+							"s": {
+							  "type": "uri",
+							  "value": "http://dbpedia.org/resource/Michelle_Obama"
+							},
+							"p": {
+							  "type": "uri",
+							  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+							},
+							"o": {
+							  "type": "uri",
+							  "value": "http://xmlns.com/foaf/0.1/Person"
+							}
+						},
+						{
+							"s": {
+							  "type": "uri",
+							  "value": "http://dbpedia.org/resource/Michelle_Obama"
+							},
+							"p": {
+							  "type": "uri",
+							  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+							},
+							"o": {
+							  "type": "uri",
+							  "value": "http://xmlns.com/foaf/0.1/Person"
+							}
+						}
+					]
+				}
+			]
+		}
+	}
 ]
