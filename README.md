@@ -15,12 +15,12 @@ Dans le dossier sample_output, vous **devez mettre un exemple de JSON** que vous
 
 		python3 -m http.server --cgi
 
-Attention le fichier web/cgi-bin/main.cgi doit avoir les droits d'execution.
+Attention le fichier web/cgi-bin/server.py doit avoir les droits d'execution.
 
 ### JSON
 Pour récupérer le JSON en web (et donc appeler le chef d'orchestre):
 
-	http://localhost:8000/cgi-bin/main.cgi?seuil_jordan=0.1&mots_clefs=test
+	http://localhost:8000/cgi-bin/server.py?seuil_jordan=0.1&mots_clefs=test
 
 Pour récupérer le JSON en ligne de commande :
 
