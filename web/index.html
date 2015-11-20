@@ -9,6 +9,7 @@
 	<link href="assets/material/css/material.min.css" rel="stylesheet">
 	<link href="assets/material/css/ripples.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/graph.css">
 </head>
 
 <body>
@@ -19,8 +20,11 @@
 	  		<button id="send" class="btn btn-primary btn-flat"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Ok</button>
 	  	</form>
 	  	<div id="results">
-	  		
+
 	  	</div>
+		<div id="graph">
+
+		</div>
 	</div>
 
 	<script src="assets/js/jquery-2.1.4.min.js"></script>
@@ -34,7 +38,12 @@
           $.material.init();
      });
 	</script>
+
 	<script type="text/javascript" src="assets/js/main.js" ></script>
+
+	<!-- Graph generation -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.9/d3.js"></script>
+	<script type="text/javascript" src="assets/js/graph.js" ></script>
 
 </body>
 

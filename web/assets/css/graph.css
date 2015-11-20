@@ -1,0 +1,11 @@
+.graph .node {
+    cursor: all-scroll;
+}
+.graph .node circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+.graph .link {
+    stroke: #999;
+    stroke-opacity: .6;
+}
