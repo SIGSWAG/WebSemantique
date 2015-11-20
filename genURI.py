@@ -1,4 +1,5 @@
 from bing_search_api import BingSearchAPI
+from alchemyapi import AlchemyAPI
 import xml.etree.ElementTree
 import requests, sys, json
 
@@ -75,6 +76,19 @@ PART 2 : For each URL, use Alchemy to extract text and semantic data
 ============================================================================
 '''
 
+def getTextsFromUrls(urls) :
+  alch_handle = AlchemyAPI()
+  texts = {}
+  for url in urls:
+    response = alch_handle.text('url', url)
+    if(response['status'] == 'OK'):
+      text = response['text'].encode('ascii', errors='ignore')
+    else:
+      text = ''
+    texts[url] = text
+    
+  print(texts)
+  return texts
 
 '''
 ============================================================================
@@ -85,6 +99,7 @@ PART 3 : For each snippet of text, enhance with DBpedia Spotlight (annotate)
 def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
   annotatedTexts = {}
   for url, text in texts.items():
+    print(url)
     uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
     annotatedTexts[url] = uris
 
@@ -161,10 +176,8 @@ def main():
   urls = getURLSfromQuery(query)
 
   # Retrieve, for each URL, an associated text
-  texts = {
-      urls[0]: "Paroled labor racketeer Dapper Dino is sought after by a politically ambitious prosecutor schemes to put him back in jail and a deceitful partner sizes him up for concrete shoes."
-  }
-
+  texts = getTextsFromUrls(urls)
+  
   # Retrieve, for each text, the list of corresponding URIs
   annotatedTexts = getURIsFromTexts(texts, spotlightConfidence, spotlightSupport)
 
