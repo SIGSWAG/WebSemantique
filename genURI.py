@@ -1,5 +1,6 @@
 from bing_search_api import BingSearchAPI
 from enum import Enum
+from alchemyapi import AlchemyAPI
 import xml.etree.ElementTree, requests, sys, json
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
@@ -118,6 +119,37 @@ PART 2 : For each URL, use Alchemy to extract text and semantic data
 ============================================================================
 '''
 
+#Renvoie le texte concatene des 30 premieres plus grandes lignes du texte retourne par alchemy
+def getTextsFromUrls(urls) :
+  alch_handle = AlchemyAPI()
+  texts = {}
+  for url in urls:
+    response = alch_handle.text('url', url)
+    if(response['status'] == 'OK'):
+      text = str(response['text'].encode('ascii', errors='ignore'))
+      text = cleanText(text,30)
+    else:
+      text = ''
+    texts[url] = text
+  return texts
+
+def cleanText(text, nbLinesMax):
+  text = deleteSpaces(text)
+  lignes = text.split("\\n")
+  sorted(lignes,key= lambda x:(len(x)),reverse=True)
+  ret = ''
+  for i in range(0,min(nbLinesMax,len(lignes))):
+    ret += lignes[i]
+  return ret
+
+def deleteSpaces(text):
+  cleanText = ''
+  prev = 'a'
+  for i in text:
+    if((i==' ' and prev!=' ') or i!=' '):
+      cleanText += i
+      prev = i
+  return cleanText
 
 '''
 ============================================================================
@@ -128,8 +160,9 @@ PART 3 : For each snippet of text, enhance with DBpedia Spotlight (annotate)
 def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
   annotatedTexts = {}
   for url, text in texts.items():
-    uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
-    annotatedTexts[url] = uris
+    if text and not text.isspace():
+      uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
+      annotatedTexts[url] = uris
 
   return annotatedTexts
 
@@ -161,7 +194,6 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
   response = requests.get(dbpediaSpotlightURL, params = payload)
 
   content = response.text
-    
   if(writeToFile):
     writeContentToFile(spotlightExampleFile, content)
 
@@ -196,10 +228,8 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   urls = getURLSfromQuery(query, maxNumberOfResults, searchType, True)
 
   # Retrieve, for each URL, an associated text
-  texts = {
-      urls[0]: "Paroled labor racketeer Dapper Dino is sought after by a politically ambitious prosecutor schemes to put him back in jail and a deceitful partner sizes him up for concrete shoes."
-  }
-
+  texts = getTextsFromUrls(urls)
+  
   # Retrieve, for each text, the list of corresponding URIs
   annotatedTexts = getURIsFromTexts(texts, spotlightConfidence, spotlightSupport)
 
@@ -226,7 +256,6 @@ python genURI.py Inception 20 0.4 34
 ============================================================================
 '''
 if  __name__ =='__main__':
-
   query = sys.argv[1]
 
   # Number of results to return from queries 
