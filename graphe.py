@@ -3,12 +3,10 @@ import sets
 
 # Reading data back
 with open('exampleRDF.json', 'r') as f:
-     data = json.load(f)
-     
+	 data = json.load(f)
+
 '''for i in data["results"]["bindings"] :
 	print(i["s"]["value"])   '''
-     
-totalCount =  0
 
 dictionnary = dict()
 dictionnary["total"]=set()
@@ -24,26 +22,32 @@ for url in data :
 	print(url["link"])
 
 
-print(str(len(dictionnary["total"])))
+totalCount = len(dictionnary["total"])
 
-
-result=list()
-
-
+nodes = list()
 for url in data :
-	for url1 in data :
-			inters = dictionnary[url["link"]].intersection(dictionnary[url1["link"]])
+	nodes.append({ 'name' : url["link"] })
 
-			res=dict()
-			res["URL1"]=url["link"]
-			res["URL2"]=url1["link"]
-			res["val"]=len(inters)
-			result.append(res)
+links = list()
+for i, url in enumerate(data) :
+	for j, url1 in enumerate(data) :
+		if url != url1 and j >= i : # Remove already computed links
+			inters = dictionnary[url["link"]].intersection(dictionnary[url1["link"]])
+			val = len(inters) / totalCount
+			if val > 0 :
+				res=dict()
+				res["source"]=i
+				res["target"]=j
+				res["val"]=val
+				links.append(res)
 			print(url["link"]+"---"+str(len(inters))+"-->"+url1["link"])
-			
+
+result = {'nodes' : nodes, 'links' : links}
+
 # Writing JSON data
 #with open('resultGraph.json', 'w') as f:
 #     json.dump(result, f)
 
 print(json.dumps(result))		
 		
+
