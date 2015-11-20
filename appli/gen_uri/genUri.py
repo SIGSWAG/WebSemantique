@@ -47,7 +47,7 @@ def getSearchFromGoogleCSE(query, writeToFile):
     "cx": searchEngineKey
   }
 
-  response = requests.get(googleSearchURL, params = payload)
+  response = requests.get(googleSearchURL, params=payload)
   jsonContent = response.json()
 
   if(writeToFile):
@@ -58,7 +58,7 @@ def getSearchFromGoogleCSE(query, writeToFile):
 def getSearchFromBing(query, writeToFile):
   api = BingSearchAPI(bingSearchAPIKey)
   params = {'$format': 'json'}
-  jsonContent =  api.search_web(query, payload = params)
+  jsonContent =  api.search_web(query, payload=params)
 
   if(writeToFile):
     writeContentToFile(googleSearchExampleFile, jsonContent)
@@ -116,7 +116,7 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
     #"sparql":
   }
 
-  response = requests.get(dbpediaSpotlightURL, params = payload)
+  response = requests.get(dbpediaSpotlightURL, params=payload)
 
   content = response.text
     
@@ -154,6 +154,9 @@ def main():
   for opt, arg in opts:
     if opt in ('-m', '--mots_clefs'):
       query = arg
+  if query is '':
+  	print('error, "mots_clefs" parameter mandatory')
+  	exit(2)
 
   # Default values for spotlightConfidence is 0.2 and for spotlightSupport is 20
   if(2 < len(sys.argv)):
