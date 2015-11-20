@@ -3,6 +3,8 @@ import sys
 # Reading data back
 
 
+
+
 def main(jsonString):                         
         
 	data=json.loads(jsonString)
@@ -53,7 +55,7 @@ def main(jsonString):
 
 if __name__ == "__main__":
 	with open ("exampleRDF.json", "r") as myfile:
-		data=myfile.read().replace('\n', '')
+    		data=myfile.read().replace('\n', '')
 	print(main(data))
 
 

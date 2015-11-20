@@ -1,18 +1,19 @@
-from bing_search_api import BingSearchAPI
+from gen_uri.bing_search_api import BingSearchAPI
 import xml.etree.ElementTree
-import requests, sys, json
+import requests, sys, json, os
 import getopt
 
+directory = 'gen_uri'
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 searchEngineKey = "016723847753961302155:y6-cneh1knc"
 googleSearchURL = "https://www.googleapis.com/customsearch/v1"
-googleSearchExampleFile = "exampleResponse.json"
+googleSearchExampleFile = os.path.join(directory, "exampleResponse.json")
 
 bingSearchAPIKey = "mX9yeDnqzockohCH18xBGKH1P/78ESUIpR08YB0zSAo"
 bingSearchURL = "https://api.datamarket.azure.com/Bing/Search/Web"
 
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
-spotlightExampleFile = "spotlightResponseExample.xml"
+spotlightExampleFile = os.path.join(directory, "spotlightResponseExample.xml")
 
 '''
 ============================================================================
