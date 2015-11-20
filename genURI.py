@@ -79,7 +79,7 @@ def getSearchFromGoogleCSE(query, offset, writeToFile):
     "fields": "items(link)",
     "key": googleAPIKey,
     "cx": searchEngineKey,
-    #"lr": "lang_en"
+    "lr": "lang_en",
     "start": offset
   }
 
