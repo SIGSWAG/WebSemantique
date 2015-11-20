@@ -144,33 +144,9 @@ MAIN
 ============================================================================
 '''
 
-def main():
-  query = ''
-  try:
-    opts, args = getopt.getopt(sys.argv[1:],"m:",["mots_clefs="])
-  except getopt.GetoptError:
-    print('genUri.py -m "mots clefs"')
-    sys.exit(2)
-  for opt, arg in opts:
-    if opt in ('-m', '--mots_clefs'):
-      query = arg
-  if query is '':
-  	print('error, "mots_clefs" parameter mandatory')
-  	exit(2)
-
-  # Default values for spotlightConfidence is 0.2 and for spotlightSupport is 20
-  if(2 < len(sys.argv)):
-    spotlightConfidence = sys.argv[2]
-  else:
-    spotlightConfidence = 0.2
-
-  if(3 < len(sys.argv)):
-    spotlightSupport = sys.argv[3]
-  else:
-    spotlightSupport = 20
-
+def main(keywords, spotlightConfidence, spotlightSupport):
   # Retrieve URLS based on query
-  urls = getURLSfromQuery(query)
+  urls = getURLSfromQuery(keywords)
 
   # Retrieve, for each URL, an associated text
   texts = {
@@ -190,8 +166,8 @@ def main():
       })
 
   jsonResponse = json.dumps(response)
+  return(jsonResponse)
 
-  print(jsonResponse)
 
 if  __name__ =='__main__':
-  main()
+  main("test", 0.2, 20)

@@ -37,33 +37,23 @@ def get_params(argv):
 
 
 def main(argv):
-	mots_clefs, seuil_jordan = get_params(argv)
+	keywords, seuil_jordan = get_params(argv)
 	## récupération des URIs
 	os.chdir('gen_uri')
-	uri_process_cmd = get_cmd()
-	uri_process_cmd.append('--mots_clefs={mots_clefs}'.format(mots_clefs=mots_clefs))
-	uri_process = subprocess.Popen(
-							uri_process_cmd
-							,stdout=subprocess.PIPE)
+	from gen_uri import genUri
+	json_uris = genUri.main(keywords, 0.2, 20)
 	os.chdir('..')
 	## récupération des RDFs
 	os.chdir('sparql')
-	sparql_process = subprocess.Popen(
-							get_cmd()
-							,stdin=uri_process.stdout
-							,stdout=subprocess.PIPE)
-	uri_process.stdout.close()
+	from sparql import sparql
+	json_rdfs = sparql.main(json_uris)
 	os.chdir('..')
 	## récupèration du graphe
 	os.chdir('gen_graph')
-	graph_process = subprocess.Popen(
-							get_cmd()
-							,stdin=sparql_process.stdout
-							,stdout=subprocess.PIPE)
-	uri_process.stdout.close()
+	from gen_graph import genGraph
+	output = genGraph.main(json_rdfs)
 	os.chdir('..')
 	## final output
-	output = graph_process.communicate()[0].decode("utf-8")
 	print(output)
 
 
