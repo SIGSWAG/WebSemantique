@@ -9,7 +9,6 @@
 						"http://dbpedia.org/resource/Prison", 
 						"http://dbpedia.org/resource/Partnership"
 						]
-			},
-			..
+			}
 		]
 }
