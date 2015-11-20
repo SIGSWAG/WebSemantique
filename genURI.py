@@ -1,4 +1,5 @@
 from bing_search_api import BingSearchAPI
+from enum import Enum
 import xml.etree.ElementTree, requests, sys, json
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
@@ -12,32 +13,50 @@ bingSearchURL = "https://api.datamarket.azure.com/Bing/Search/Web"
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
 spotlightExampleFile = "spotlightResponseExample.xml"
 
+class SearchType(Enum): 
+  GOOGLE_ONLY = 1
+  BING_ONLY = 2
+  GOOGLE_AND_BING = 3
+
+
 '''
 ============================================================================
 PART 1 : Send a query and retrieve list of URLs
 ============================================================================
 '''
 
-def getURLSfromQuery(query, maxNumberOfResults, fromWeb):
+def getURLSfromQuery(query, maxNumberOfResults, searchType = SearchType.GOOGLE_ONLY, fromWeb = None):
   urls = []
 
-  # If we need to do a real request on the web
   if(fromWeb):
-    # Get the number of requests (10 results per request)
-    numberOfRequests = maxNumberOfResults // 10
-    # Get the number of results to return for the last request
-    lastOffset = maxNumberOfResults % 10
 
-    for offset in range(0, numberOfRequests):
-      jsonContent = getSearchFromGoogleCSE(query, (offset*10), True)
-      addUrlToList(urls, jsonContent)
+    if(searchType == SearchType.GOOGLE_ONLY):
+      # If we need to do a real request on the web
+      
+        # Get the number of requests (10 results per request)
+        numberOfRequests = maxNumberOfResults // 10
+        # Get the number of results to return for the last request (remainder of division)
+        lastOffset = maxNumberOfResults % 10
 
-    if(lastOffset != 0):
-      jsonContent = getSearchFromGoogleCSE(query, (offset*10) + lastOffset, True)
-      addUrlToList(urls, jsonContent)
+        for offset in range(0, numberOfRequests):
+          jsonContent = getSearchFromGoogleCSE(query, (offset*10) + 1, True)
+          addUrlToList(urls, jsonContent)
+
+        if(lastOffset != 0):
+          jsonContent = getSearchFromGoogleCSE(query, (offset*10) + lastOffset + 1, True)
+          addUrlToList(urls, jsonContent)
+
+    elif(searchType == SearchType.BING_ONLY):
+      numberOfRequests = maxNumberOfResults // 10
+    elif(searchType == SearchType.GOOGLE_AND_BING):
+      numberOfRequests = maxNumberOfResults // 10
+    else:
+      # Not a correct search engine
+      numberOfRequests = maxNumberOfResults // 10
+
   else:
-    jsonContent = getSearchFromFile()
-    addUrlToList(urls, jsonContent)
+      jsonContent = getSearchFromFile()
+      addUrlToList(urls, jsonContent)
 
   return urls
 
@@ -60,11 +79,12 @@ def getSearchFromGoogleCSE(query, offset, writeToFile):
     "fields": "items(link)",
     "key": googleAPIKey,
     "cx": searchEngineKey,
-    #"lr": "lang_en",
-    #"start": offset
+    #"lr": "lang_en"
+    "start": offset
   }
 
   response = requests.get(googleSearchURL, params = payload)
+  print(response.url)
   jsonContent = response.text
   print(jsonContent)
 
@@ -163,12 +183,17 @@ def getDBPediaRessources(xmlRawContent):
 '''
 ============================================================================
 MAIN
+@query : A query (string)
+@maxNumberOfResults : The number of results to return (integer) (max 100)
+@searchType : The type of search (SearchType enum)
+@spotlightConfidence : The confidence for Spotlight
+@spotlightSupport : The support for Spotlight
 ============================================================================
 '''
 
-def main(query, maxNumberOfResults, spotlightConfidence, spotlightSupport):
+def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport):
   # Retrieve URLS based on query
-  urls = getURLSfromQuery(query, maxNumberOfResults, True)
+  urls = getURLSfromQuery(query, maxNumberOfResults, searchType, True)
 
   # Retrieve, for each URL, an associated text
   texts = {
@@ -187,7 +212,7 @@ def main(query, maxNumberOfResults, spotlightConfidence, spotlightSupport):
       })
 
   response = {
-    "uris": responseUriArray
+    "pages": responseUriArray
   }
 
   jsonResponse = json.dumps(response)
@@ -221,6 +246,6 @@ if  __name__ =='__main__':
   else:
     spotlightSupport = 20
 
-  jsonResponse = main(query, maxNumberOfResults, spotlightConfidence, spotlightSupport)
+  jsonResponse = main(query, maxNumberOfResults, SearchType.GOOGLE_ONLY, spotlightConfidence, spotlightSupport)
 
   print(jsonResponse)
