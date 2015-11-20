@@ -42,6 +42,8 @@ for url in data :
 			print(url["link"]+"---"+str(len(inters))+"-->"+url1["link"])
 			
 # Writing JSON data
-with open('resultGraph.json', 'w') as f:
-     json.dump(result, f)		
+#with open('resultGraph.json', 'w') as f:
+#     json.dump(result, f)
+
+print(json.dumps(result))		
 		
