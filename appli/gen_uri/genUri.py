@@ -30,7 +30,7 @@ def getURLSfromQuery(query):
 
   urls = []
   for item in jsonObject['items']:
-    print(item['link'])
+    #print(item['link'])
     urls.append(item['link'])
 
   return urls;
