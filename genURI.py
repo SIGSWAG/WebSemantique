@@ -76,19 +76,38 @@ PART 2 : For each URL, use Alchemy to extract text and semantic data
 ============================================================================
 '''
 
+#Renvoie le texte concatene des 30 premieres plus grandes lignes du texte retourne par alchemy
+
 def getTextsFromUrls(urls) :
   alch_handle = AlchemyAPI()
   texts = {}
   for url in urls:
     response = alch_handle.text('url', url)
     if(response['status'] == 'OK'):
-      text = response['text'].encode('ascii', errors='ignore')
+      text = str(response['text'].encode('ascii', errors='ignore'))
+      text = cleanText(text,30)
     else:
       text = ''
     texts[url] = text
-    
-  print(texts)
   return texts
+
+def cleanText(text,nbLinesMax):
+  text = delSpaces(text)
+  lignes = text.split("\\n")
+  sorted(lignes,key= lambda x:(len(x)),reverse=True)
+  ret = ''
+  for i in range(0,min(nbLinesMax,len(lignes))):
+    ret += lignes[i]
+  return ret
+
+def delSpaces(text):
+  cleanText = ''
+  prev = 'a'
+  for i in text:
+    if((i==' ' and prev!=' ') or i!=' '):
+      cleanText += i
+      prev = i
+  return cleanText
 
 '''
 ============================================================================
@@ -99,9 +118,9 @@ PART 3 : For each snippet of text, enhance with DBpedia Spotlight (annotate)
 def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
   annotatedTexts = {}
   for url, text in texts.items():
-    print(url)
-    uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
-    annotatedTexts[url] = uris
+    if text and not text.isspace():
+      uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
+      annotatedTexts[url] = uris
 
   return annotatedTexts
 
@@ -133,7 +152,6 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
   response = requests.get(dbpediaSpotlightURL, params = payload)
 
   content = response.text
-    
   if(writeToFile):
     writeContentToFile(spotlightExampleFile, content)
 
