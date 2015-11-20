@@ -12,7 +12,7 @@ var svg = d3.select("body").append("svg")
 	.attr("width", width)
 	.attr("height", height);
 
-d3.json("resultGraph.json", function(error, graph) {
+d3.json("/assets/json/sample.json", function(error, graph) {
 	if (error) throw error;
 
 	force
