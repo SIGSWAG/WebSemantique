@@ -7,9 +7,11 @@ googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 searchEngineKey = "016723847753961302155:y6-cneh1knc"
 googleSearchURL = "https://www.googleapis.com/customsearch/v1"
 googleSearchExampleFile = "exampleResponse.json"
+googleNbResultsPerRequest = 10
 
 bingSearchAPIKey = "mX9yeDnqzockohCH18xBGKH1P/78ESUIpR08YB0zSAo"
 bingSearchURL = "https://api.datamarket.azure.com/Bing/Search/Web"
+bingNbResultsPerRequest = 50
 
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
 spotlightExampleFile = "spotlightResponseExample.xml"
@@ -26,34 +28,41 @@ PART 1 : Send a query and retrieve list of URLs
 ============================================================================
 '''
 
-def getURLSfromQuery(query, maxNumberOfResults, searchType = SearchType.GOOGLE_ONLY, fromWeb = None):
+def getURLSfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GOOGLE_ONLY, fromWeb = None):
+  if(maxNumberOfResults > 100):
+    maxNumberOfResults = 100
+
   urls = []
 
+  # If we need to do a real request on the web
   if(fromWeb):
-
     if(searchType == SearchType.GOOGLE_ONLY):
-      # If we need to do a real request on the web
-      
-        # Get the number of requests (10 results per request)
-        numberOfRequests = maxNumberOfResults // 10
+        # Get the number of requests to do (10 results per request)
+        numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
         # Get the number of results to return for the last request (remainder of division)
-        lastOffset = maxNumberOfResults % 10
+        lastOffset = maxNumberOfResults % googleNbResultsPerRequest
 
         for offset in range(0, numberOfRequests):
-          jsonContent = getSearchFromGoogleCSE(query, (offset*10) + 1, True)
+          jsonContent = getSearchFromGoogleCSE(query, (offset*googleNbResultsPerRequest) + 1, True)
           addUrlToList(urls, jsonContent)
 
         if(lastOffset != 0):
-          jsonContent = getSearchFromGoogleCSE(query, (offset*10) + lastOffset + 1, True)
+          jsonContent = getSearchFromGoogleCSE(query, (offset*googleNbResultsPerRequest) + lastOffset + 1, True)
           addUrlToList(urls, jsonContent)
 
     elif(searchType == SearchType.BING_ONLY):
-      numberOfRequests = maxNumberOfResults // 10
+      numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
+      lastOffset = maxNumberOfResults % bingNbResultsPerRequest
+      for offset in range(0, numberOfRequests):
+        jsonContent = getSearchFromBing(query, (offset*googleNbResultsPerRequest) + 1, True)
+        # Add urls to list, but need special parser for bing
+
     elif(searchType == SearchType.GOOGLE_AND_BING):
-      numberOfRequests = maxNumberOfResults // 10
+      numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
     else:
       # Not a correct search engine
-      numberOfRequests = maxNumberOfResults // 10
+      numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
+
 
   else:
       jsonContent = getSearchFromFile()
@@ -74,7 +83,7 @@ def getSearchFromFile():
 
   return jsonContent
 
-def getSearchFromGoogleCSE(query, offset, writeToFile):
+def getSearchFromGoogleCSE(query, offset = 1, writeToFile = True):
   payload = {
     "q": query,
     "fields": "items(link)",
@@ -94,7 +103,7 @@ def getSearchFromGoogleCSE(query, offset, writeToFile):
 
   return jsonContent
 
-def getSearchFromBing(query, writeToFile):
+def getSearchFromBing(query, offset = 1, writeToFile = True):
   api = BingSearchAPI(bingSearchAPIKey)
 
   params = {
