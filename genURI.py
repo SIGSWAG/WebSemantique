@@ -1,6 +1,5 @@
 from bing_search_api import BingSearchAPI
-import xml.etree.ElementTree
-import requests, sys, json
+import xml.etree.ElementTree, requests, sys, json
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 searchEngineKey = "016723847753961302155:y6-cneh1knc"
@@ -19,19 +18,35 @@ PART 1 : Send a query and retrieve list of URLs
 ============================================================================
 '''
 
-def getURLSfromQuery(query):
-
-  #jsonContent = getSearchFromGoogleCSE(query, True)
-  jsonContent = getSearchFromFile()
-
-  jsonObject = json.loads(jsonContent)
-
+def getURLSfromQuery(query, maxNumberOfResults, fromWeb):
   urls = []
+
+  # If we need to do a real request on the web
+  if(fromWeb):
+    # Get the number of requests (10 results per request)
+    numberOfRequests = maxNumberOfResults // 10
+    # Get the number of results to return for the last request
+    lastOffset = maxNumberOfResults % 10
+
+    for offset in range(0, numberOfRequests):
+      jsonContent = getSearchFromGoogleCSE(query, (offset*10), True)
+      addUrlToList(urls, jsonContent)
+
+    if(lastOffset != 0):
+      jsonContent = getSearchFromGoogleCSE(query, (offset*10) + lastOffset, True)
+      addUrlToList(urls, jsonContent)
+  else:
+    jsonContent = getSearchFromFile()
+    addUrlToList(urls, jsonContent)
+
+  return urls
+
+def addUrlToList(urls, jsonContent):
+  jsonObject = json.loads(jsonContent)
+  
   for item in jsonObject['items']:
     print(item['link'])
     urls.append(item['link'])
-
-  return urls;
 
 def getSearchFromFile():
   with open(googleSearchExampleFile, "r") as myfile:
@@ -39,15 +54,19 @@ def getSearchFromFile():
 
   return jsonContent
 
-def getSearchFromGoogleCSE(query, writeToFile):
+def getSearchFromGoogleCSE(query, offset, writeToFile):
   payload = {
-    "query": query,
+    "q": query,
+    "fields": "items(link)",
     "key": googleAPIKey,
-    "cx": searchEngineKey
+    "cx": searchEngineKey,
+    #"lr": "lang_en",
+    #"start": offset
   }
 
   response = requests.get(googleSearchURL, params = payload)
-  jsonContent = response.json()
+  jsonContent = response.text
+  print(jsonContent)
 
   if(writeToFile):
     writeContentToFile(googleSearchExampleFile, jsonContent)
@@ -56,7 +75,11 @@ def getSearchFromGoogleCSE(query, writeToFile):
 
 def getSearchFromBing(query, writeToFile):
   api = BingSearchAPI(bingSearchAPIKey)
-  params = {'$format': 'json'}
+
+  params = {
+    "$format": "json"
+  }
+
   jsonContent =  api.search_web(query, payload = params)
 
   if(writeToFile):
@@ -66,7 +89,7 @@ def getSearchFromBing(query, writeToFile):
 
 
 def writeContentToFile(fileName, content):
-  with open(fileName, "w") as jsonFile:
+  with open(fileName, "a+") as jsonFile:
     jsonFile.write(content)
 
 '''
@@ -112,7 +135,7 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
     "text": text,
     "confidence": spotlightConfidence,
     "support": spotlightSupport
-    #"sparql":
+    #"sparql": sparql
   }
 
   response = requests.get(dbpediaSpotlightURL, params = payload)
@@ -143,22 +166,9 @@ MAIN
 ============================================================================
 '''
 
-def main():
-  query = sys.argv[1]
-
-  # Default values for spotlightConfidence is 0.2 and for spotlightSupport is 20
-  if(2 < len(sys.argv)):
-    spotlightConfidence = sys.argv[2]
-  else:
-    spotlightConfidence = 0.2
-
-  if(3 < len(sys.argv)):
-    spotlightSupport = sys.argv[3]
-  else:
-    spotlightSupport = 20
-
+def main(query, maxNumberOfResults, spotlightConfidence, spotlightSupport):
   # Retrieve URLS based on query
-  urls = getURLSfromQuery(query)
+  urls = getURLSfromQuery(query, maxNumberOfResults, True)
 
   # Retrieve, for each URL, an associated text
   texts = {
@@ -168,18 +178,49 @@ def main():
   # Retrieve, for each text, the list of corresponding URIs
   annotatedTexts = getURIsFromTexts(texts, spotlightConfidence, spotlightSupport)
 
-
   # Prepare the JSON
-  response = []
+  responseUriArray = []
   for url, uris in annotatedTexts.items():
-    response.append({
+    responseUriArray.append({
         "url": url,
         "uri": uris
       })
 
+  response = {
+    "uris": responseUriArray
+  }
+
   jsonResponse = json.dumps(response)
 
-  print(jsonResponse)
+  return jsonResponse
 
+'''
+========================================================================
+Usage 
+python genURI.py Inception 20 0.4 34
+============================================================================
+'''
 if  __name__ =='__main__':
-  main()
+
+  query = sys.argv[1]
+
+  # Number of results to return from queries 
+  if(2 < len(sys.argv)):
+    maxNumberOfResults = sys.argv[2]
+  else:
+    maxNumberOfResults = 20
+
+  # Default values for spotlightConfidence is 0.2 and for spotlightSupport is 20
+  if(3 < len(sys.argv)):
+    spotlightConfidence = sys.argv[3]
+  else:
+    spotlightConfidence = 0.2
+
+  if(4 < len(sys.argv)):
+    spotlightSupport = sys.argv[4]
+  else:
+    spotlightSupport = 20
+
+  jsonResponse = main(query, maxNumberOfResults, spotlightConfidence, spotlightSupport)
+
+  print(jsonResponse)
