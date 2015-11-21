@@ -25,4 +25,3 @@ if 'max_number_of_results' in arguments and	'mots_clefs' in arguments and 'searc
 	print(response)
 else:
 	print('6 parametres necessaires : "max_number_of_results", "mots_clefs", "search_type", "spotlight_confidence", "from_web", "spotlight_support"')
-	

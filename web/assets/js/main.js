@@ -35,7 +35,7 @@ $(function(){
 
 		params.mots_clefs = $("#searchText").val();
 		params.max_number_of_results = 10;
-		params.search_type = 1;
+		params.search_type = 2;
 		params.spotlight_confidence = 0.1;
 		params.from_web = "true";
 		params.spotlight_support = "false";
