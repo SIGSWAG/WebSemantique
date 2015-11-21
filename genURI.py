@@ -11,6 +11,7 @@ googleNbResultsPerRequest = 10
 
 bingSearchAPIKey = "mX9yeDnqzockohCH18xBGKH1P/78ESUIpR08YB0zSAo"
 bingSearchURL = "https://api.datamarket.azure.com/Bing/Search/Web"
+bingSearchExampleFile = "bingResponse.json"
 bingNbResultsPerRequest = 50
 
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
@@ -21,14 +22,13 @@ class SearchType(Enum):
   BING_ONLY = 2
   GOOGLE_AND_BING = 3
 
-
 '''
 ============================================================================
 PART 1 : Send a query and retrieve list of URLs
 ============================================================================
 '''
 
-def getURLSfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GOOGLE_ONLY, fromWeb = None):
+def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GOOGLE_ONLY, fromWeb = None):
   if(maxNumberOfResults > 100):
     maxNumberOfResults = 100
 
@@ -37,45 +37,78 @@ def getURLSfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GO
   # If we need to do a real request on the web
   if(fromWeb):
     if(searchType == SearchType.GOOGLE_ONLY):
-        # Get the number of requests to do (10 results per request)
-        numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
-        # Get the number of results to return for the last request (remainder of division)
-        lastOffset = maxNumberOfResults % googleNbResultsPerRequest
-
-        for offset in range(0, numberOfRequests):
-          jsonContent = getSearchFromGoogleCSE(query, (offset*googleNbResultsPerRequest) + 1, True)
-          addUrlToList(urls, jsonContent)
-
-        if(lastOffset != 0):
-          jsonContent = getSearchFromGoogleCSE(query, (offset*googleNbResultsPerRequest) + lastOffset + 1, True)
-          addUrlToList(urls, jsonContent)
+      getURLsFromGoogle(query, maxNumberOfResults, urls)
 
     elif(searchType == SearchType.BING_ONLY):
-      numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
-      lastOffset = maxNumberOfResults % bingNbResultsPerRequest
-      for offset in range(0, numberOfRequests):
-        jsonContent = getSearchFromBing(query, (offset*googleNbResultsPerRequest) + 1, True)
-        # Add urls to list, but need special parser for bing
+      getURLsFromBing(query, maxNumberOfResults, urls)
 
     elif(searchType == SearchType.GOOGLE_AND_BING):
-      numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
+      # Divide evenly the number of requests between the two search engines
+      numberOfRequestsPerSearchEngine = maxNumberOfResults // 2
+      # The remainder will be added to the number of requests of Bing (less restrictive than Google limit wise)
+      lastOffsetToAddToBing = maxNumberOfResults % 2
+
+      # Google
+      getURLsFromGoogle(query, numberOfRequestsPerSearchEngine, urls)
+
+      # Bing
+      getURLsFromBing(query, numberOfRequestsPerSearchEngine + lastOffsetToAddToBing, urls)
+
     else:
-      # Not a correct search engine
+      # Not a correct search engine, throw error ?
       numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
-
-
   else:
       jsonContent = getSearchFromFile()
       addUrlToList(urls, jsonContent)
 
   return urls
 
-def addUrlToList(urls, jsonContent):
+def getURLsFromGoogle(query, maxNumberOfResults, urls):
+  # Get the number of requests to do (10 results per request)
+  numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
+  # Get the number of results to return for the last request (remainder of division)
+  lastOffset = maxNumberOfResults % googleNbResultsPerRequest
+
+  for offset in range(0, numberOfRequests):
+    jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1, True)
+    addGoogleUrlToList(urls, jsonContent)
+
+  # If a last request is needed to retrieve the last few results as requested by user 
+  if(lastOffset != 0):
+    jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1, True)
+    addGoogleUrlToList(urls, jsonContent)
+
+def getURLsFromBing(query, maxNumberOfResults, urls):
+  # Get the number of requests to do (50 results per request)
+  numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
+  # Get the number of results to return for the last request (remainder of division)
+  lastOffset = maxNumberOfResults % bingNbResultsPerRequest
+
+  offset = 0
+  for offset in range(0, numberOfRequests):
+    jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest), True)
+    addBingUrlToList(urls, jsonContent)
+
+  # If a last request is needed to retrieve the last few results as requested by user 
+  if(lastOffset != 0):
+    jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest) + lastOffset, True)
+    addBingUrlToList(urls, jsonContent)
+
+def addGoogleUrlToList(urls, jsonContent):
   jsonObject = json.loads(jsonContent)
   
   for item in jsonObject['items']:
     print(item['link'])
     urls.append(item['link'])
+
+def addBingUrlToList(urls, jsonContent):
+  jsonObject = json.loads(jsonContent)
+
+  jsonObject = jsonObject['d']
+
+  for result in jsonObject['results']:
+    print(result['Url'])
+    urls.append(result['Url'])
 
 def getSearchFromFile():
   with open(googleSearchExampleFile, "r") as myfile:
@@ -96,24 +129,29 @@ def getSearchFromGoogleCSE(query, offset = 1, writeToFile = True):
   response = requests.get(googleSearchURL, params = payload)
   print(response.url)
   jsonContent = response.text
-  print(jsonContent)
+  #print(jsonContent)
 
   if(writeToFile):
     writeContentToFile(googleSearchExampleFile, jsonContent)
 
   return jsonContent
 
-def getSearchFromBing(query, offset = 1, writeToFile = True):
+def getSearchFromBing(query, offset = 0, writeToFile = True):
   api = BingSearchAPI(bingSearchAPIKey)
 
   params = {
-    "$format": "json"
+    "$format": "json",
+    "$skip": offset
   }
 
-  jsonContent =  api.search_web(query, payload = params)
+  jsonContent = api.search_web(query, payload = params)
+
+  print(jsonContent.content.decode('utf-8').encode('cp850','replace').decode('cp850'))
+  
+  jsonContent = jsonContent.text
 
   if(writeToFile):
-    writeContentToFile(googleSearchExampleFile, jsonContent)
+    writeContentToFile(bingSearchExampleFile, jsonContent)
 
   return jsonContent
 
@@ -203,6 +241,9 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
   response = requests.get(dbpediaSpotlightURL, params = payload)
 
   content = response.text
+
+  print(content)
+
   if(writeToFile):
     writeContentToFile(spotlightExampleFile, content)
 
@@ -234,7 +275,7 @@ MAIN
 
 def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport):
   # Retrieve URLS based on query
-  urls = getURLSfromQuery(query, maxNumberOfResults, searchType, True)
+  urls = getURLsfromQuery(query, maxNumberOfResults, searchType, True)
 
   # Retrieve, for each URL, an associated text
   texts = getTextsFromUrls(urls)
@@ -259,31 +300,45 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   return jsonResponse
 
 '''
-========================================================================
+=========================================================================================
 Usage 
-python genURI.py Inception 20 0.4 34
-============================================================================
+python genURI.py Inception 20 all 0.4 34
+python genURI.py query searchEngine numberOfResults spotlightConfidence spotlightSupport
+=========================================================================================
 '''
 if  __name__ =='__main__':
   query = sys.argv[1]
 
   # Number of results to return from queries 
   if(2 < len(sys.argv)):
-    maxNumberOfResults = sys.argv[2]
+    maxNumberOfResults = int(sys.argv[2])
   else:
     maxNumberOfResults = 20
 
-  # Default values for spotlightConfidence is 0.2 and for spotlightSupport is 20
+  # Search engine on which to search results for
   if(3 < len(sys.argv)):
-    spotlightConfidence = sys.argv[3]
+    if(sys.argv[3] == "google"):
+      searchType = SearchType.GOOGLE_ONLY
+    elif(sys.argv[3] == "bing"):
+      searchType = SearchType.BING_ONLY
+    elif(sys.argv[3] == "all"):
+      searchType = SearchType.GOOGLE_AND_BING
+    else:
+      searchType = SearchType.GOOGLE_ONLY
+  else:
+    searchType = SearchType.GOOGLE_ONLY
+
+  # Default values for spotlightConfidence is 0.2 and for spotlightSupport is 20
+  if(4 < len(sys.argv)):
+    spotlightConfidence = sys.argv[4]
   else:
     spotlightConfidence = 0.2
 
-  if(4 < len(sys.argv)):
-    spotlightSupport = sys.argv[4]
+  if(5 < len(sys.argv)):
+    spotlightSupport = sys.argv[5]
   else:
     spotlightSupport = 20
 
-  jsonResponse = main(query, maxNumberOfResults, SearchType.GOOGLE_ONLY, spotlightConfidence, spotlightSupport)
+  jsonResponse = main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport)
 
   print(jsonResponse)
