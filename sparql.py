@@ -2,9 +2,9 @@ import requests, sys, json
 
 def main():
 
-    dbpediaEndpoint = "http://dbpedia.org/sparql"
+    dbpediaEndpoint = "http://live.dbpedia.org/sparql"
     inputURIs = "sample.json"
-
+    outputFileName = "output.json"
 
     # Lecture des URIs
 
@@ -19,16 +19,22 @@ def main():
     # Requête SPARQL
 
     payload = {
-        "query": """SELECT DISTINCT ?Concept
-                    WHERE {[] a ?Concept}
-                    LIMIT 100""",
+        "query": """SELECT DISTINCT *
+                    WHERE {
+                        ?film rdf:type <http://dbpedia.org/ontology/Film> .
+                        ?film ?prop ?propval
+                    } LIMIT 250
+                    OFFSET 5000""",
         "format": "json",
         "timeout": "30000"
     }
 
     response = requests.get(dbpediaEndpoint, params = payload)
-    content = response.text
+    responseJson = json.loads(response.text)
 
-    print(content)
+    # TODO transformer le JSON dans le format approprié
+
+    with open(outputFileName, "w") as myfile:
+        myfile.write(json.dumps(responseJson))
 
 main()
