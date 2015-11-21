@@ -31,18 +31,22 @@
 
 	<script src="assets/material/js/ripples.min.js"></script>
 	<script src="assets/material/js/material.min.js"></script>
+
+	<!-- Graph generation -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.9/d3.js"></script>
+	<script type="text/javascript" src="assets/js/graph.js"></script>
+
 	<script>
 	$(document).ready(function() {
           // This command is used to initialize some elements and make them work properly
           $.material.init();
+		  $("#graph").graph({
+			  json: "/assets/json/sample.json"
+		  });
      });
 	</script>
 
 	<script type="text/javascript" src="assets/js/main.js" ></script>
-
-	<!-- Graph generation -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.9/d3.js"></script>
-	<script type="text/javascript" src="assets/js/graph.js" ></script>
 
 </body>
 
