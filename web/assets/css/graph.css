@@ -1,11 +1,17 @@
+.graph {
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 15px;
+}
+
 .graph .node {
     cursor: all-scroll;
 }
+
 .graph .node circle {
-    stroke: #fff;
+    stroke: #ccc;
     stroke-width: 1.5px;
 }
 .graph .link {
-    stroke: #999;
+    stroke: #ccc;
     stroke-opacity: .6;
 }
