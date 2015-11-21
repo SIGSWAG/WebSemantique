@@ -1,17 +1,18 @@
 #!/usr/bin/python3
+
 import os
 import cgi
 import sys
-sys.path.append(os.path.abspath('../appli'))
-import main
+sys.path.append(os.path.abspath(os.path.join('..', 'appli')))
 
-
-arguments = cgi.FieldStorage()
 os.chdir('..')
 os.chdir('appli')
+import main
+
 print("Content-Type: application/json")  # JSON is following.
 print()
 
+arguments = cgi.FieldStorage()
 if 'max_number_of_results' in arguments and	'mots_clefs' in arguments and 'search_type' in arguments and 'spotlight_confidence' in arguments and 'from_web' in arguments and 'spotlight_support' in arguments :
 	response = main.main([
 						 '-m', arguments.getvalue('mots_clefs')
@@ -23,5 +24,5 @@ if 'max_number_of_results' in arguments and	'mots_clefs' in arguments and 'searc
 						])
 	print(response)
 else:
-	print('5 parametres necessaires : "max_number_of_results", "mots_clefs", "search_type", "spotlight_confidence", "from_web"')
-
+	print('6 parametres necessaires : "max_number_of_results", "mots_clefs", "search_type", "spotlight_confidence", "from_web", "spotlight_support"')
+	
