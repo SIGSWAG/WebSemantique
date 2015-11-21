@@ -177,8 +177,8 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
 
 def getURIsFromText(text, spotlightConfidence, spotlightSupport):
   
-  content = getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, None)
-  #content = getAnnotatedTextFromFile()
+  #content = getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, None)
+  content = getAnnotatedTextFromFile()
 
   # Extract URI
   uris = getDBPediaRessources(content)
