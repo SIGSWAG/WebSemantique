@@ -1,27 +1,65 @@
 import json
 import sys
-# Reading data back
+import operator 
 
 
-def main(jsonString):                         
-        
+def main(jsonString):
 	data=json.loads(jsonString)
-     
+
 	dictionnary = dict()
 	dictionnary["total"]=set()
 
+
+	urls = list()
+	nodes = list()
+
 	for url in data :
+		listeFilms= dict()
+		listeDescFilms = dict()
 		dictionnary[url["link"]]=set()
-		for uri in url["results"] :
-			dictionnary["total"].add(uri["s"]["value"])
+		for uri in url["results"]["graphePage"]:
+			# print(uri["s"])
 			dictionnary[url["link"]].add(uri["s"]["value"])
 			if uri["o"]["type"] == "uri" :
-				dictionnary["total"].add(uri["o"]["value"])
 				dictionnary[url["link"]].add(uri["o"]["value"])
+		# print(url["link"]+" tot "+str(len(dictionnary[url["link"]])))
+		for movie in url["results"]["films"]:
+			dictionnary[movie["link"]]=set()
+			for uri in movie["graphe"] :
+				dictionnary[movie["link"]].add(uri["s"]["value"])
+				if uri["o"]["type"] == "uri" :
+					dictionnary[movie["link"]].add(uri["o"]["value"])
+		#calculate here jaccard for the movie
+			# print(movie["link"]+" "+str(len(dictionnary[movie["link"]])))
+			inters = dictionnary[movie["link"]].intersection(dictionnary[url["link"]])
+			union = dictionnary[movie["link"]].union(dictionnary[url["link"]])
+			coeff = len(inters)/len(union)
+			listeFilms[movie["link"]] = coeff;
+			listeDescFilms[movie["link"]]=movie
+		arraySorted = sorted(listeFilms.items(), key=operator.itemgetter(1), reverse=True)#sort to get the 3 best movies
+		
+		i=0;
+		films = list();
+		
+		
+		while (i<3 and i<len(arraySorted)) :
+			# print(arraySorted[i])
+			films.append({"movie":listeDescFilms[arraySorted[i][0]], "coeff":arraySorted[i][1]})
+			i=i+1
+		nodes.append({ "link" : url["link"], "results":{"graphePage":url["results"]["graphePage"], "films":films}})
+			
+		#get the 3 best movies corresponding now
+			
+		
+	
+		
 		#print(url["link"])
 
 
-	totalCount = len(dictionnary["total"])
+	'''totalCount = len(dictionnary["total"])
+
+
+
 
 	nodes = list()
 	for url in data :
@@ -43,34 +81,12 @@ def main(jsonString):
 
 	result = {'nodes' : nodes, 'links' : links}
 
-	# Writing JSON data
-	#with open('resultGraph.json', 'w') as f:
-	#     json.dump(result, f)
+		'''
+	return json.dumps(nodes)
 
-	return json.dumps(result)		
-		                         
-                            
 
 if __name__ == "__main__":
 	with open ("exampleRDF.json", "r") as myfile:
 		data=myfile.read().replace('\n', '')
-	print(main(data))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		print(json.dumps(main(data)))
 
