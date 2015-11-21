@@ -1,5 +1,5 @@
-﻿var width = 500,
-	height = 500;
+﻿var width = 300,
+	height = 300;
 
 var color = d3.scale.category20();
 
@@ -31,6 +31,7 @@ d3.json("/assets/json/sample.json", function(error, graph) {
 
 	var linksLabels = svg.selectAll("text").data(graph.links).enter()
 		.append("text")
+			.attr("fill", "#ccc")
 			.text(function(d) { return d.val; });
 
 
@@ -65,6 +66,7 @@ d3.json("/assets/json/sample.json", function(error, graph) {
 		.attr("xlink:href", function(d) { return d.name })
 		.attr("target", "_blank")
 		.append("text")
+			.attr("fill", "#ccc")
 			.attr("x", 12)
 			.attr("dy", ".35em")
 			.text(function(d) { return d.name; });
