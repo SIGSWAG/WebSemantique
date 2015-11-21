@@ -50,7 +50,7 @@ def get_params(argv):
 		if opt in ('-r', '--max_number_of_results'):
 			max_number_of_results = int(arg)
 		if opt in ('-t', '--search_type'):
-			search_type = int(arg)
+			search_type = genUri.SearchType(int(arg))
 		if opt in ('-c', '--spotlight_confidence'):
 			spotlight_confidence = float(arg)
 		if opt in ('-f', '--from_web'):
@@ -68,7 +68,7 @@ def get_params(argv):
 		print("Le nombre maximum de requêtes doit être entre 1 et 100.")
 		print('$ main.py -m "mots clefs" -r 10 -s 1 -c 0.1 -f false')
 		sys.exit(4)
-	if not search_type in [s.value for s in genUri.SearchType]:
+	if not search_type in [s for s in genUri.SearchType]:
 		print("Le type de requête doit être entre compris entre 1 et 3 : 1=google, 2=bing, 3=les deux")
 		print('$ main.py -m "mots clefs" -r 10 -s 1 -c 0.1 -f false')
 		sys.exit(5)

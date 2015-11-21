@@ -40,18 +40,18 @@ def getURLSfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GO
   # If we need to do a real request on the web
   if(fromWeb):
     if(searchType == SearchType.GOOGLE_ONLY):
-        # Get the number of requests to do (10 results per request)
-        numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
-        # Get the number of results to return for the last request (remainder of division)
-        lastOffset = maxNumberOfResults % googleNbResultsPerRequest
+      # Get the number of requests to do (10 results per request)
+      numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
+      # Get the number of results to return for the last request (remainder of division)
+      lastOffset = maxNumberOfResults % googleNbResultsPerRequest
 
-        for offset in range(0, numberOfRequests):
-          jsonContent = getSearchFromGoogleCSE(query, (offset*googleNbResultsPerRequest) + 1, True)
-          addUrlToList(urls, jsonContent)
+      for offset in range(0, numberOfRequests):
+        jsonContent = getSearchFromGoogleCSE(query, (offset*googleNbResultsPerRequest) + 1, True)
+        addUrlToList(urls, jsonContent)
 
-        if(lastOffset != 0):
-          jsonContent = getSearchFromGoogleCSE(query, (offset*googleNbResultsPerRequest) + lastOffset + 1, True)
-          addUrlToList(urls, jsonContent)
+      if(lastOffset != 0):
+        jsonContent = getSearchFromGoogleCSE(query, (offset*googleNbResultsPerRequest) + lastOffset + 1, True)
+        addUrlToList(urls, jsonContent)
 
     elif(searchType == SearchType.BING_ONLY):
       numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
@@ -67,7 +67,7 @@ def getURLSfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GO
       numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
   else:
       jsonContent = getSearchFromFile()
-      print(jsonContent)
+      # print(jsonContent)
       addUrlToList(urls, jsonContent)
 
   return urls
@@ -76,7 +76,7 @@ def addUrlToList(urls, jsonContent):
   jsonObject = json.loads(jsonContent)
   
   for item in jsonObject['items']:
-    print(item['link'])
+    # print(item['link'])
     urls.append(item['link'])
 
 def getSearchFromFile():
@@ -96,9 +96,9 @@ def getSearchFromGoogleCSE(query, offset = 1, writeToFile = True):
   }
 
   response = requests.get(googleSearchURL, params=payload)
-  print(response)
+  # print(response)
   jsonContent = response.text
-  print(jsonContent)
+  # print(jsonContent)
 
   if(writeToFile):
     writeContentToFile(googleSearchExampleFile, jsonContent)
@@ -236,7 +236,7 @@ MAIN
 def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport, fromWeb):
   # Retrieve URLS based on query
   urls = getURLSfromQuery(query, maxNumberOfResults, searchType, fromWeb)
-
+  # print(urls)
   # Retrieve, for each URL, an associated text
   texts = getTextsFromUrls(urls)
   
@@ -256,8 +256,6 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   }
 
   jsonResponse = json.dumps(response)
-  return(jsonResponse)
-
   return jsonResponse
 
 
