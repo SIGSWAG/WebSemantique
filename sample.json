@@ -2,11 +2,11 @@
     "pages": [
       {
         "url": "http://example.com",
-        "uri": ["uri1", "uri2"]
-      },
-      {
-        "url": "http://sample.com",
-        "uri": ["uri1", "uri2", "uri3"]
+        "uri": ["http://dbpedia.org/resource/Racket_%28crime%29", 
+						"http://dbpedia.org/resource/Politics", 
+						"http://dbpedia.org/resource/Prosecutor", 
+						"http://dbpedia.org/resource/Prison", 
+						"http://dbpedia.org/resource/Partnership"]
       }
     ]
 }
