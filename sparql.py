@@ -13,7 +13,7 @@ def requete(listURI):
 	struct['results'] = {}
 	struct['results']['graphePage'] = []
 	struct['results']['films'] = []
-	struct['results']['films']
+
 	
 
 	payload = {
@@ -33,22 +33,16 @@ def requete(listURI):
 
 	responseJson = response.json()
 	
-	graphe = []
-	
 	jacky = {}
 	jacky['link']='toto'
 	jacky['graphe'] = responseJson['results']['bindings']
-
-	struct['results']['films'].append(jacky)
 	
-	
-
-	with open(outputFileName, "w") as myfile:
-		myfile.write(json.dumps(struct))
+	return jacky
 
 def main():
 
 	# Lecture des URIs
+	sortie = []
 
 	with open(inputURIs, "r") as myfile:
 		jsonContent = myfile.read()
@@ -56,17 +50,29 @@ def main():
 
 	
 
+	
+
 	for page in jsonObject["pages"]:
 		listURI = "("
 		#print(page["url"] + " --- " + str(page["uri"]))
+		
+		struct = {}
+		struct['link'] = page["url"]
+		struct['results'] = {}
+		struct['results']['graphePage'] = []
+		struct['results']['films'] = []
+		
 		for uri in page["uri"]:
 			listURI += "\"" + uri + "\","
 		listURI=listURI[0:-1] + ")"
 		#print(listURI)
-		requete(listURI)
+		struct['results']['films'].append(requete(listURI))
+		sortie.append(struct)
 
 
 	#print(listURI)
+	with open(outputFileName, "w") as myfile:
+		myfile.write(json.dumps(sortie))
 	# Requête SPARQL
 
 
