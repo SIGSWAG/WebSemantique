@@ -64,35 +64,43 @@ def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GO
   return urls
 
 def getURLsFromGoogle(query, maxNumberOfResults, urls):
-  # Get the number of requests to do (10 results per request)
-  numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
-  # Get the number of results to return for the last request (remainder of division)
-  lastOffset = maxNumberOfResults % googleNbResultsPerRequest
-
-  for offset in range(0, numberOfRequests):
-    jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1, True)
+  if(maxNumberOfResults < googleNbResultsPerRequest):
+    jsonContent = getSearchFromGoogleCSE(query, 1, maxNumberOfResults, True)
     addGoogleUrlToList(urls, jsonContent)
+  else :
+    # Get the number of requests to do (10 results per request)
+    numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
+    # Get the number of results to return for the last request (remainder of division)
+    lastOffset = maxNumberOfResults % googleNbResultsPerRequest
 
-  # If a last request is needed to retrieve the last few results as requested by user 
-  if(lastOffset != 0):
-    jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1, True)
-    addGoogleUrlToList(urls, jsonContent)
+    for offset in range(0, numberOfRequests):
+      jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1, True)
+      addGoogleUrlToList(urls, jsonContent)
+
+    # If a last request is needed to retrieve the last few results as requested by user 
+    if(lastOffset != 0):
+      jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1, True)
+      addGoogleUrlToList(urls, jsonContent)
 
 def getURLsFromBing(query, maxNumberOfResults, urls):
-  # Get the number of requests to do (50 results per request)
-  numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
-  # Get the number of results to return for the last request (remainder of division)
-  lastOffset = maxNumberOfResults % bingNbResultsPerRequest
-
-  offset = 0
-  for offset in range(0, numberOfRequests):
-    jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest), True)
+  if(maxNumberOfResults < bingNbResultsPerRequest):
+    jsonContent = getSearchFromBing(query, 0, maxNumberOfResults, True)
     addBingUrlToList(urls, jsonContent)
+  else :
+    # Get the number of requests to do (50 results per request)
+    numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
+    # Get the number of results to return for the last request (remainder of division)
+    lastOffset = maxNumberOfResults % bingNbResultsPerRequest
 
-  # If a last request is needed to retrieve the last few results as requested by user 
-  if(lastOffset != 0):
-    jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest) + lastOffset, True)
-    addBingUrlToList(urls, jsonContent)
+    offset = 0
+    for offset in range(0, numberOfRequests):
+      jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest), True)
+      addBingUrlToList(urls, jsonContent)
+
+    # If a last request is needed to retrieve the last few results as requested by user 
+    if(lastOffset != 0):
+      jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest) + lastOffset, True)
+      addBingUrlToList(urls, jsonContent)
 
 def addGoogleUrlToList(urls, jsonContent):
   jsonObject = json.loads(jsonContent)
@@ -116,14 +124,15 @@ def getSearchFromFile():
 
   return jsonContent
 
-def getSearchFromGoogleCSE(query, offset = 1, writeToFile = True):
+def getSearchFromGoogleCSE(query, offset = 1, numberOfResults = googleNbResultsPerRequest, writeToFile = True):
   payload = {
     "q": query,
     "fields": "items(link)",
     "key": googleAPIKey,
     "cx": searchEngineKey,
     "lr": "lang_en",
-    "start": offset
+    "start": offset,
+    "num": numberOfResults
   }
 
   response = requests.get(googleSearchURL, params = payload)
@@ -136,12 +145,13 @@ def getSearchFromGoogleCSE(query, offset = 1, writeToFile = True):
 
   return jsonContent
 
-def getSearchFromBing(query, offset = 0, writeToFile = True):
+def getSearchFromBing(query, offset = 0, numberOfResults = bingNbResultsPerRequest, writeToFile = True):
   api = BingSearchAPI(bingSearchAPIKey)
 
   params = {
     "$format": "json",
-    "$skip": offset
+    "$skip": offset,
+    "$top": numberOfResults
   }
 
   jsonContent = api.search_web(query, payload = params)
