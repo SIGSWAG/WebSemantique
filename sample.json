@@ -1,5 +1,5 @@
 {
-    "uris": [
+    "pages": [
       {
         "url": "http://example.com",
         "uri": ["uri1", "uri2"]
