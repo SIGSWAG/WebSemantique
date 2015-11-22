@@ -5,16 +5,38 @@ dbpediaEndpoint = "http://live.dbpedia.org/sparql"
 inputURIs = "sample.json"
 outputFileName = "output.json"
 
-def requete(listURI):
-# Requête SPARQL
-
-	struct = {}
-	struct['link'] = 'http:zbbooob'
-	struct['results'] = {}
-	struct['results']['graphePage'] = []
-	struct['results']['films'] = []
+def requetePage(uri):
+# Requête SPARQL	
 
 	
+	payload = {
+		"query": """SELECT DISTINCT *
+					WHERE {
+						
+						
+						""" + uri + """ ?p ?o.
+						
+					} LIMIT 250
+					""",
+		"format": "json",
+		"timeout": "30000"
+	}
+
+
+	response = requests.get(dbpediaEndpoint, params = payload)
+
+	
+	if(response.status_code==200):
+		responseJson = response.json()
+		
+		graphe = responseJson['results']['bindings']
+		
+		return graphe
+	else:
+		return []
+
+def requeteFilms(listURI):
+# Requête SPARQL	
 
 	payload = {
 		"query": """SELECT DISTINCT ?s ?p ?o
@@ -30,14 +52,17 @@ def requete(listURI):
 	}
 
 	response = requests.get(dbpediaEndpoint, params = payload)
-
-	responseJson = response.json()
 	
-	jacky = {}
-	jacky['link']='toto'
-	jacky['graphe'] = responseJson['results']['bindings']
-	
-	return jacky
+	if(response.status_code==200):
+		responseJson = response.json()
+		
+		jacky = {}
+		jacky['link']= responseJson['results']['bindings'][0]['s']['value']
+		jacky['graphe'] = responseJson['results']['bindings']
+		
+		return jacky
+	else:
+		return {}
 
 def main():
 
@@ -64,9 +89,11 @@ def main():
 		
 		for uri in page["uri"]:
 			listURI += "\"" + uri + "\","
+			struri = "<" + uri + ">"
+			struct['results']['graphePage']+=requetePage(struri)
 		listURI=listURI[0:-1] + ")"
 		#print(listURI)
-		struct['results']['films'].append(requete(listURI))
+		struct['results']['films'].append(requeteFilms(listURI))
 		sortie.append(struct)
 
 
