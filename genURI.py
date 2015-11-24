@@ -210,7 +210,7 @@ def getTextsFromUrls(urls) :
 		text = ""
 		if(rawResponse is not None):
 			response = rawResponse
-			print("\n")
+			print("============== Alchemy ============== \n")
 			print(response)
 			if(response['status'] == 'OK'):
 				text = str(response['text'].encode('ascii', errors='ignore'))
@@ -237,12 +237,6 @@ def deleteSpaces(text):
 			cleanText += i
 			prev = i
 	return cleanText
-
-'''
-============================================================================
-PART 3 : For each snippet of text, enhance with DBpedia Spotlight (annotate)
-============================================================================
-'''
 
 
 '''
@@ -343,8 +337,6 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   }
 
   jsonResponse = json.dumps(response)
-  
-  writeToFile(sampleOutput, jsonResponse)
 
   writeContentToFile(sampleOutput, jsonResponse)
 
