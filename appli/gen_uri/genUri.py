@@ -50,7 +50,7 @@ def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GO
   if(fromWeb):
     if(appendKeyword):
       query += " " + appendKeywordMovie
-      print(query)
+      # print(query)
 
     if(searchType == SearchType.GOOGLE_ONLY):
       getURLsFromGoogle(query, maxNumberOfResults, urls)
@@ -121,7 +121,7 @@ def getURLsFromBing(query, maxNumberOfResults, urls):
 
 def addGoogleUrlToList(urls, jsonContent):
   jsonObject = json.loads(jsonContent)
-  print(jsonObject)
+  # print(jsonObject)
   for item in jsonObject['items']:
     # print(item['link'])
     urls.append(item['link'])
@@ -213,8 +213,8 @@ def getTextsFromUrls(urls) :
 		text = ""
 		if(rawResponse is not None):
 			response = rawResponse
-			print("\n")
-			print(response)
+			# print("\n")
+			# print(response)
 			if(response['status'] == 'OK'):
 				text = str(response['text'].encode('ascii', errors='ignore'))
 				text = cleanText(text,30)
@@ -347,7 +347,7 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
 
   jsonResponse = json.dumps(response)
   
-  writeToFile(sampleOutput, jsonResponse)
+  # writeToFile(sampleOutput, jsonResponse)
 
   writeContentToFile(sampleOutput, jsonResponse)
   return jsonResponse
