@@ -101,6 +101,8 @@ def main(argv):
 	cache_dir = 'cache'
 	output = ''
 	cached_file_path = os.path.join(cache_dir,request_cached)
+	if not os.path.isdir(cache_dir):
+		os.mkdir(cache_dir)
 	if request_cached in os.listdir(cache_dir):
 		for line in open(cached_file_path):
 			output += line
