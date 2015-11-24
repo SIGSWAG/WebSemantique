@@ -39,6 +39,7 @@ $(function(){
 		params.spotlight_confidence = 0.1;
 		params.from_web = "true";
 		params.spotlight_support = "false";
+		params.append_keyword = "false";
 
 		$.ajax({
 			method: "GET",

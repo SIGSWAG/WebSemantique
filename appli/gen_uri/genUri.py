@@ -1,11 +1,16 @@
 from gen_uri.bing_search_api import BingSearchAPI
 from gen_uri.alchemyapi import AlchemyAPI
+from gen_uri.threadingRequests import *
 import xml.etree.ElementTree, requests, sys, json
 import requests, sys, json, os
 import getopt
 from enum import Enum
 
 directory = 'gen_uri'
+alchemyRootURL = "http://access.alchemyapi.com/calls"
+alchemyTextSearchURL = "/url/URLGetText"
+alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
+
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 searchEngineKey = "016723847753961302155:y6-cneh1knc"
 googleSearchURL = "https://www.googleapis.com/customsearch/v1"
@@ -22,6 +27,8 @@ spotlightExampleFile = os.path.join(directory, "spotlightResponseExample.xml")
 
 sampleOutput = os.path.join(directory, "sampleOutput.json")
 
+appendKeywordMovie = "movie"
+
 class SearchType(Enum): 
   GOOGLE_ONLY = 1
   BING_ONLY = 2
@@ -33,7 +40,7 @@ class SearchType(Enum):
 PART 1 : Send a query and retrieve list of URLs
 ============================================================================
 '''
-def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GOOGLE_ONLY, fromWeb = None):
+def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GOOGLE_ONLY, appendKeyword = False, fromWeb = False):
   if(maxNumberOfResults > 100):
     maxNumberOfResults = 100
 
@@ -41,6 +48,10 @@ def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GO
 
   # If we need to do a real request on the web
   if(fromWeb):
+    if(appendKeyword):
+      query += " " + appendKeywordMovie
+      print(query)
+
     if(searchType == SearchType.GOOGLE_ONLY):
       getURLsFromGoogle(query, maxNumberOfResults, urls)
 
@@ -110,7 +121,7 @@ def getURLsFromBing(query, maxNumberOfResults, urls):
 
 def addGoogleUrlToList(urls, jsonContent):
   jsonObject = json.loads(jsonContent)
-  
+  print(jsonObject)
   for item in jsonObject['items']:
     # print(item['link'])
     urls.append(item['link'])
@@ -183,35 +194,59 @@ PART 2 : For each URL, use Alchemy to extract text and semantic data
 
 #Renvoie le texte concatene des 30 premieres plus grandes lignes du texte retourne par alchemy
 def getTextsFromUrls(urls) :
-  alch_handle = AlchemyAPI()
-  texts = {}
-  for url in urls:
-    response = alch_handle.text('url', url)
-    if(response['status'] == 'OK'):
-      text = str(response['text'].encode('ascii', errors='ignore'))
-      text = cleanText(text,30)
-    else:
-      text = ''
-    texts[url] = text
-  return texts
+	texts = {}
+	params_list = []
+	for url in urls:
+		param = {}
+		param['url'] = url
+		param['apikey'] = alchemyAPIKey
+		param['outputMode'] = 'json'
+		params_list.append(param)
+
+	p = RequestPool(alchemyRootURL+alchemyTextSearchURL,params_list)
+	p.launch()
+	tabResponses = p.getResults()
+	i=1
+	for url in urls:
+		rawResponse = tabResponses[i]
+		i+=1
+		text = ""
+		if(rawResponse is not None):
+			response = rawResponse
+			print("\n")
+			print(response)
+			if(response['status'] == 'OK'):
+				text = str(response['text'].encode('ascii', errors='ignore'))
+				text = cleanText(text,30)
+			else:
+				text = ''
+		texts[url] = text
+	return texts
 
 def cleanText(text, nbLinesMax):
-  text = deleteSpaces(text)
-  lignes = text.split("\\n")
-  sorted(lignes,key=lambda x:(len(x)),reverse=True)
-  ret = ''
-  for i in range(0,min(nbLinesMax,len(lignes))):
-    ret += lignes[i]
-  return ret
+	text = deleteSpaces(text)
+	lignes = text.split("\\n")
+	sorted(lignes,key=lambda x:(len(x)),reverse=True)
+	ret = ''
+	for i in range(0,min(nbLinesMax,len(lignes))):
+		ret += lignes[i]
+	return ret
 
 def deleteSpaces(text):
-  cleanText = ''
-  prev = 'a'
-  for i in text:
-    if((i==' ' and prev!=' ') or i!=' '):
-      cleanText += i
-      prev = i
-  return cleanText
+	cleanText = ''
+	prev = 'a'
+	for i in text:
+		if((i==' ' and prev!=' ') or i!=' '):
+			cleanText += i
+			prev = i
+	return cleanText
+
+'''
+============================================================================
+PART 3 : For each snippet of text, enhance with DBpedia Spotlight (annotate)
+============================================================================
+'''
+
 
 '''
 ============================================================================
@@ -288,10 +323,10 @@ MAIN
 @fromWeb : if the search is done on the web or from a saved version of the request
 ============================================================================
 '''
-def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport, fromWeb):
+def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport, fromWeb, appendKeyword):
   # Retrieve URLS based on query
-  urls = getURLsfromQuery(query, maxNumberOfResults, searchType, fromWeb)
-  # print(urls)
+  urls = getURLsfromQuery(query, maxNumberOfResults, searchType, appendKeyword, fromWeb)
+
   # Retrieve, for each URL, an associated text
   texts = getTextsFromUrls(urls)
   
@@ -311,17 +346,19 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   }
 
   jsonResponse = json.dumps(response)
+  
+  writeToFile(sampleOutput, jsonResponse)
 
   writeContentToFile(sampleOutput, jsonResponse)
   return jsonResponse
 
 
 '''
-=========================================================================================
+=========================================================================================================
 Usage 
-python genURI.py Inception 20 all 0.4 34
-python genURI.py query searchEngine numberOfResults spotlightConfidence spotlightSupport
-=========================================================================================
+python genURI.py Inception 20 all 0.4 34 True
+python genURI.py query searchEngine numberOfResults spotlightConfidence spotlightSupport appendKeyword
+=========================================================================================================
 '''
 if  __name__ =='__main__':
   query = sys.argv[1]
@@ -356,6 +393,11 @@ if  __name__ =='__main__':
   else:
     spotlightSupport = 20
 
-  jsonResponse = main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport)
+  if(6 < len(sys.argv)):
+    appendKeyword = sys.argv[6]
+  else:
+    appendKeyword = False
+
+  jsonResponse = main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport, appendKeyword)
 
   print(jsonResponse)
