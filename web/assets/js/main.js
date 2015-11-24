@@ -47,7 +47,7 @@ $(function(){
 		// laisser a true pour le web
 		params.from_web = "true";
 		params.spotlight_support = 20;
-		params.append_keyword = "false";
+		params.append_keyword = $("input[name='appendKeyword']:checked").length?"true":"false";
 
 		$.ajax({
 			method: "GET",
