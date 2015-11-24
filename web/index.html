@@ -13,13 +13,52 @@
 </head>
 
 <body>
-	<div class="container-fluid">
-		<form id="search">
+	<div id="container" class="container-fluid">
+		<form id="search" class="">
 			<input id="searchText" name="searchText" class="form-control text-center" placeholder="Find the movie you're looking for !" type="text">
-	  		<button id="send" class="btn btn-primary btn-flat"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Ok</button>
+	  		<!--<button id="send" class="btn btn-primary btn-flat"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Ok</button>-->
+	  		<!--<div class="form-group label-floating">
+			  <label class="control-label" for="focusedInput1">Find the movie you're looking for !</label>
+			  <input class="form-control" id="focusedInput1" type="text">
+			</div>
+		-->
+			<a class="btn btn-primary" role="button" data-toggle="collapse" href="#searchOptions" aria-expanded="false" aria-controls="searchOptions">
+			  Search Options
+			</a>
+	  		<div class="collapse"  id="searchOptions">
+	  			<div>
+		  			<div class="radio radio-primary">
+						<label>
+						<input name="searchType" id="searchType1" value="1" type="radio" required="">
+						Google
+						</label>
+					</div>
+					<div class="radio radio-primary">
+						<label>
+						<input name="searchType" id="searchType2" value="2" checked="" type="radio">
+						Bing
+						</label>
+					</div>
+					<div class="radio radio-primary">
+						<label>
+						<input name="searchType" id="searchType3" value="3" checked="" type="radio">
+						Both
+						</label>
+					</div>
+				</div>
+				<div class="form-group label-floating inputNumber">
+					<label for="maxNumberOfResults" class="control-label">Max number of result</label>
+					<input class="form-control" id="maxNumberOfResults" type="number" min="1" max="50" required="">
+					<span class="material-input"></span>
+	              	</div>
+				<div class="form-group label-floating inputNumber">
+					<label for="spotlightConfidence" class="control-label">Spotlight confidence</label>
+					<input class="form-control" id="spotlightConfidence" type="number" value="0" min="0.1" max="1" step="0.1" required="">
+					<span class="material-input"></span>
+	              </div>
+		  	</div>
 	  	</form>
 	  	<div id="results">
-
 	  	</div>
 		<div id="graph">
 
@@ -40,12 +79,16 @@
 	$(document).ready(function() {
           // This command is used to initialize some elements and make them work properly
           $.material.init();
-		  $("#graph").graph({
-			  json: "/assets/json/sample.json"
-		  });
+          $("#searchText").val("");
+          $("#maxNumberOfResults").val(10);
+          $("#spotlightConfidence").val(0.1);
+          /*
+		$("#graph").graph({
+		  	json: "/assets/json/sample.json"
+		});
+		*/
      });
 	</script>
-
 	<script type="text/javascript" src="assets/js/main.js" ></script>
 
 </body>

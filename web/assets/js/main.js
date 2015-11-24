@@ -1,7 +1,3 @@
-function displayResults(jsonResponse){
-
-}
-
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
          json = JSON.stringify(json, undefined, 4);
@@ -34,11 +30,16 @@ $(function(){
 		var params = {};
 
 		params.mots_clefs = $("#searchText").val();
-		params.max_number_of_results = 10;
-		params.search_type = 2;
-		params.spotlight_confidence = 0.1;
+		params.max_number_of_results =  $("#maxNumberOfResults").val();
+		// 1 -> google
+		// 2 -> bing
+		// 3 -> google & bing	
+		params.search_type =  $("input[name='searchType']:checked").val();
+		// Confiance  petit -> plus de result
+		params.spotlight_confidence = $("#spotlightConfidence").val();
+		// laisser a true pour le web
 		params.from_web = "true";
-		params.spotlight_support = "false";
+		params.spotlight_support = 20;
 
 		$.ajax({
 			method: "GET",
