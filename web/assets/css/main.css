@@ -123,12 +123,12 @@ body{
   animation: rotating 2s linear infinite;
 }
 
-#progressBar, .progressMsg{
+#progressBar, #progressMsg{
 	width : 80%;
 	margin : auto;
 }
 
-.progressMsg{
+#progressMsg{
 	color : #bdbdbd;
 }
 
