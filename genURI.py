@@ -17,6 +17,8 @@ bingNbResultsPerRequest = 50
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
 spotlightExampleFile = "spotlightResponseExample.xml"
 
+sampleOutput = "sampleOutput.json"
+
 class SearchType(Enum): 
   GOOGLE_ONLY = 1
   BING_ONLY = 2
@@ -248,7 +250,7 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
     #"sparql": sparql
   }
 
-  response = requests.get(dbpediaSpotlightURL, params = payload)
+  response = requests.post(dbpediaSpotlightURL, data = payload)
 
   content = response.text
 
@@ -306,6 +308,8 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   }
 
   jsonResponse = json.dumps(response)
+  
+  writeToFile(sampleOutput, jsonResponse)
 
   return jsonResponse
 
