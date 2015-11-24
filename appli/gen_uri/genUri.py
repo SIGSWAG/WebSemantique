@@ -214,7 +214,7 @@ def getTextsFromUrls(urls) :
     if(rawResponse is not None):
       response = rawResponse
       # print("============== Alchemy ============== \n")
-      print(response)
+      # print(response)
       if(response['status'] == 'OK'):
         text = str(response['text'].encode('ascii', errors='ignore'))
         text = cleanText(text,30)
