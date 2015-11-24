@@ -1,3 +1,5 @@
+
+
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
          json = JSON.stringify(json, undefined, 4);
@@ -29,6 +31,39 @@ function drawGraph(json) {
 
 
 $(function(){
+	var Elements = {
+		$search : $("#search"),
+		$loader : $("#loader"),
+		$results : $("#results"),
+		$graph : $("#graph"),
+		$searchOptions : $("#searchOptions")
+	};
+
+	var States = {
+		init: function(){
+			Elements.$search.removeClass("small");
+			Elements.$loader.addClass("hide");
+			Elements.$results.addClass("hide");
+			Elements.$graph.addClass("hide");
+			Elements.$searchOptions.collapse("show");
+		},
+		loading: function(){
+			Elements.$search.addClass("small");
+			Elements.$loader.removeClass("hide");
+			Elements.$results.addClass("hide");
+			Elements.$graph.addClass("hide");
+			Elements.$searchOptions.collapse("hide");
+		},
+		displayResults: function(){
+			Elements.$search.addClass("small");
+			Elements.$loader.addClass("hide");
+			Elements.$results.removeClass("hide");
+			Elements.$graph.removeClass("hide");
+			Elements.$searchOptions.collapse("hide");
+		}
+	};
+
+
 	$("#search").submit(function(e){
 		e.preventDefault();
 		$this = $(this);
@@ -49,6 +84,7 @@ $(function(){
 		params.spotlight_support = 20;
 		params.append_keyword = $("input[name='appendKeyword']:checked").length?"true":"false";
 
+		States.loading();
 		$.ajax({
 			method: "GET",
 			url: path,
@@ -57,6 +93,7 @@ $(function(){
 				$("#results").append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
 				drawGraph(json);
 				console.log(syntaxHighlight(json));
+				States.displayResults();
 			},
 			error: function (resultat, statut, erreur) {
 				console.log("error");
@@ -69,4 +106,10 @@ $(function(){
 		});
 		return false;
 	});
+
+
+
+	// Run
+	States.init();
 });
+

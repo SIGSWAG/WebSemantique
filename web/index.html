@@ -14,8 +14,8 @@
 
 <body>
 	<div id="container" class="container-fluid">
-		<form id="search" class="small">
-			<input id="searchText" name="searchText" class="form-control text-center" placeholder="Find the movie you're looking for !" type="text">
+		<form id="search" class="">
+			<input id="searchText" name="searchText" class="form-control text-center" placeholder="Surf and see !" type="text">
 	  		<!--<button id="send" class="btn btn-primary btn-flat"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Ok</button>-->
 	  		<!--<div class="form-group label-floating">
 			  <label class="control-label" for="focusedInput1">Find the movie you're looking for !</label>
@@ -28,11 +28,11 @@
 				<div class="ripple-wrapper"></div>
 			</button>
 		-->
-			<a class="btn btn-primary" role="button" data-toggle="collapse" href="#searchOptions" aria-expanded="true" aria-controls="searchOptions">
+			<a class="btn btn-primary" role="button" data-toggle="collapse" href="#searchOptions" aria-expanded="false" aria-controls="searchOptions">
 			  Search Options
 			</a>
 			<input class="btn btn-success" role="button" type="submit" value="Find it now !">
-	  		<div class="collapse in"  id="searchOptions">
+	  		<div class="collapse"  id="searchOptions">
 	  			<div>
 		  			<div class="radio radio-primary">
 						<label>
@@ -71,16 +71,16 @@
 				</div>
 		  	</div>
 	  	</form>
-	  	<div id="loader">
+	  	<div id="loader" class="hide">
 	  		<div id="progressBar" class="progress progress-striped active">
 	              	<div class="progress-bar" style="width:30%"></div>
 	          </div>
 	          <h1 id="progressMsg">Calculating exponnential fist ...</h1>
 	  		<img id="bobine" class="img-responsive rotating" src="assets/img/bobine.png">
 	  	</div>
-	  	<div id="results">
+	  	<div id="results" class="hide">
 	  	</div>
-		<div id="graph">
+		<div id="graph" class="hide">
 		
 		</div>
 	</div>
