@@ -309,7 +309,7 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
 
   jsonResponse = json.dumps(response)
 
-  writeToFile(sampleOutput, jsonResponse)
+  writeContentToFile(sampleOutput, jsonResponse)
 
   return jsonResponse
 
