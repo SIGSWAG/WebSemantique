@@ -340,7 +340,7 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   
   writeToFile(sampleOutput, jsonResponse)
 
-  writeToFile(sampleOutput, jsonResponse)
+  writeContentToFile(sampleOutput, jsonResponse)
 
   return jsonResponse
 
