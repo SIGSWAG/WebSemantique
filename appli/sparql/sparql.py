@@ -2,7 +2,7 @@ import requests, sys, json, codecs, os
 
 
 dbpediaEndpoint = "http://live.dbpedia.org/sparql"
-outputFileName = os.path.join("sample_output","sparql.txt")
+outputFileName = os.path.join("sparql", os.path.join("sample_output","sparql.txt"))
 
 def requetePage(uri):
 # Requête SPARQL
@@ -88,7 +88,7 @@ def main(jsonContent):
 	with open(outputFileName, "w+") as myfile:
 		myfile.write(json.dumps(sortie))
 	# Requête SPARQL
-	return sortie
+	return json.dumps(sortie)
 
 if __name__ == "__main__":
 	with open(outputFileName, "r") as myfile:
