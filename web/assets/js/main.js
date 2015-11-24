@@ -1,5 +1,3 @@
-
-
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
          json = JSON.stringify(json, undefined, 4);
@@ -51,10 +49,12 @@ $(function(){
 		$loader : $("#loader"),
 		$results : $("#results"),
 		$graph : $("#graph"),
-		$searchOptions : $("#searchOptions")
+		$searchOptions : $("#searchOptions"),
+		$progressMsg : $("#progressMsg")
 	};
 
 	var States = {
+		interval : null,
 		init: function(){
 			Elements.$search.removeClass("small");
 			Elements.$loader.addClass("hide");
@@ -68,8 +68,12 @@ $(function(){
 			Elements.$results.addClass("hide");
 			Elements.$graph.addClass("hide");
 			Elements.$searchOptions.collapse("hide");
+			setInterval(function(){
+				States.interval = Elements.$progressMsg.text(getLoadingMessage());
+			}, 3000);
 		},
 		displayResults: function(){
+			clearInterval(States.interval);
 			Elements.$search.addClass("small");
 			Elements.$loader.addClass("hide");
 			Elements.$results.removeClass("hide");
