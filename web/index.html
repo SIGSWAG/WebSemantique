@@ -22,6 +22,12 @@
 			  <input class="form-control" id="focusedInput1" type="text">
 			</div>
 		-->
+		<!--
+			<button id="searchSubmit" type="button" type="submit" class="btn btn-fab btn-raised btn-material-red">
+				<i class="mdi-navigation-arrow-forward"></i>
+				<div class="ripple-wrapper"></div>
+			</button>
+		-->
 			<a class="btn btn-primary" role="button" data-toggle="collapse" href="#searchOptions" aria-expanded="true" aria-controls="searchOptions">
 			  Search Options
 			</a>
@@ -59,10 +65,19 @@
 	              </div>
 		  	</div>
 	  	</form>
+	  	<div id="loader">
+	  		<div id="progressBar" class="progress progress-striped active">
+	              	<div class="progress-bar" ></div>
+	          </div>
+	          <h1 id="progressMsg1" class="progressMsg">Calculating exponential fist ...</h1>
+	          <h1 id="progressMsg2" class="progressMsg">Seeking pop-corn ...</h1>
+	          <h1 id="progressMsg3" class="progressMsg">Skipping the ads ...</h1>
+	  		<img id="bobine" class="img-responsive rotating" src="assets/img/bobine.png">
+	  	</div>
 	  	<div id="results">
 	  	</div>
 		<div id="graph">
-
+		
 		</div>
 	</div>
 
