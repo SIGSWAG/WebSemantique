@@ -21,7 +21,6 @@ function syntaxHighlight(json) {
 }
 
 function drawGraph(json) {
-
 	$("#results").graph({
 		json: json
 	});
