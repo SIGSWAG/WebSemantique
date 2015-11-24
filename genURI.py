@@ -101,12 +101,12 @@ def getURLsFromBing(query, maxNumberOfResults, urls):
 
     offset = 0
     for offset in range(0, numberOfRequests):
-      jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest), True)
+      jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest), bingNbResultsPerRequest, True)
       addBingUrlToList(urls, jsonContent)
 
     # If a last request is needed to retrieve the last few results as requested by user 
     if(lastOffset != 0):
-      jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest) + lastOffset, True)
+      jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest) + lastOffset, bingNbResultsPerRequest, True)
       addBingUrlToList(urls, jsonContent)
 
 def addGoogleUrlToList(urls, jsonContent):
@@ -338,6 +338,8 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
 
   jsonResponse = json.dumps(response)
   
+  writeToFile(sampleOutput, jsonResponse)
+
   writeToFile(sampleOutput, jsonResponse)
 
   return jsonResponse
