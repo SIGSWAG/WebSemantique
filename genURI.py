@@ -6,8 +6,10 @@ import xml.etree.ElementTree, requests, sys, json, re
 
 alchemyRootURL = "http://access.alchemyapi.com/calls"
 alchemyTextSearchURL = "/url/URLGetText"
-alchemyGetNews = "/data/GetNews"
+alchemyGetNewsURL = "/data/GetNews"
+alchemyGetConceptsURL = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedConcepts"
 alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
+alchemyAPIKeyRescue = "1c29f8e0024bf320f7974af9cbe6612ec1dd8d73"
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 googleAPIKeyRescue = "AIzaSyA1CXFhP9LGmIFZokfkOjnU78Y32dRYWk0"
@@ -45,9 +47,7 @@ PART 1 : Send a query and retrieve list of URLs
 ============================================================================
 '''
 
-
-def getURLsfromQuery(query, maxNumberOfResults=100, searchType=SearchType.GOOGLE_ONLY, appendKeyword=False,
-                     fromWeb=False):
+def getURLsfromQuery(query, maxNumberOfResults=100, searchType=SearchType.GOOGLE_ONLY, appendKeyword=False, fromWeb=False):
     if (maxNumberOfResults > 100):
         maxNumberOfResults = 100
 
@@ -293,9 +293,16 @@ def prepareSpotlightRequest(text, spotlightConfidence, spotlightSupport):
     return payload;
 
 
-def getConceptsFromAlchemy():
-    # TODO
-    return
+def getConceptsFromAlchemy(url):
+    payload = {
+        "url": url,
+        "apikey": alchemyAPIKey,
+        "outputMode": "json",
+        "linkedData": "1"
+    }
+
+    response = requests.get(alchemyGetConceptsURL, params=payload)
+    print(response.text)
 
 
 '''
