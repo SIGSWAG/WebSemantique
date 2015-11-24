@@ -86,7 +86,7 @@ def main(jsonString):
 
 
 if __name__ == "__main__":
-	with open ("exampleRDF.json", "r") as myfile:
+	with open (os.path.join("sample_output","exampleRDF.json"), "r") as myfile:
 		data=myfile.read().replace('\n', '')
 		print(json.dumps(main(data)))
 
