@@ -1,54 +1,60 @@
-
-//trouver des films
-
-select distinct ?s  where {
-
-?s a <http://dbpedia.org/ontology/Film>
-} LIMIT 100
-
-//trouver des choses
-select distinct ?s  where {
-
-?s a ?p
-} LIMIT 100
-
-//calculer le vocabulaire ?
-Mettre toutes les URIS De 1 dans un set
-Mettre toutes les URIS de 2 dans un set
-Faire la différence entre ces deux set
+import json
+import sys
+import operator 
 
 
-dbpediaEndpoint = "http://live.dbpedia.org/sparql"
-mainPredicate = "<http://dbpedia.org/ontology/Film>"
-def requetePage(uri):
-# Requête SPARQL	
-
-	
-	payload = {
-		"query": """SELECT DISTINCT *
-					WHERE {
-						
-						
-						""" + uri + """ ?p ?o.
-						
-					} LIMIT 250
-					""",
-		"format": "json",
-		"timeout": "30000"
-	}
-
-
-	response = requests.get(dbpediaEndpoint, params = payload)
-
-	
-	if(response.status_code==200):
-		responseJson = response.json()
+def main(jsonStringMovies, jsonStringGeneral):                         
+        
+	dataMovies=json.loads(jsonStringMovies)
+	dataGeneral=json.loads(jsonStringGeneral)
+     
+	dictionnary = dict()
+	setGeneral =set()
+	setMovies =set()
 		
-		graphe = responseJson['results']['bindings']
+	result = list()
+
+	for uri in dataGeneral["results"]["bindings"] :
+		setGeneral.add(uri["p"]["value"])
+	
+	for uri in dataMovies["results"]["bindings"] :
+		setMovies.add(uri["p"]["value"])	
 		
-		return graphe
-	else:
-		return []
+	resultSet = setMovies.difference(setGeneral);	
+	
+	for uri in resultSet :
+		result.append({"predicat": uri})
+
+	'''totalCount = len(dictionnary["total"])
+	nodes = list()
+	for url in data :
+		nodes.append({ 'name' : url["link"] })
+	links = list()
+	for i, url in enumerate(data) :
+		for j, url1 in enumerate(data) :
+			if url != url1 and j >= i : # Remove already computed links
+				inters = dictionnary[url["link"]].intersection(dictionnary[url1["link"]])
+				val = len(inters) / totalCount
+				if val > 0 :
+					res=dict()
+					res["source"]=i
+					res["target"]=j
+					res["val"]=val
+					links.append(res)
+				#print(url["link"]+"---"+str(len(inters))+"-->"+url1["link"])
+	result = {'nodes' : nodes, 'links' : links}
+		'''
+	return result		
+		                         
+                            
+
+if __name__ == "__main__":
+	with open ("vocabFilms.json", "r") as myfile:
+    		vocabFilms=myfile.read().replace('\n', '')
+	with open ("vocab.json", "r") as myfile:
+    		vocabGeneral=myfile.read().replace('\n', '')
+	
+    		print(json.dumps(main(vocabFilms,vocabGeneral)))
 
 
 
