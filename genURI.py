@@ -2,10 +2,11 @@ from threadingRequests import *
 from bing_search_api import BingSearchAPI
 from enum import Enum
 from alchemyapi import AlchemyAPI
-import xml.etree.ElementTree, requests, sys, json
+import xml.etree.ElementTree, requests, sys, json, re
 
 alchemyRootURL = "http://access.alchemyapi.com/calls"
 alchemyTextSearchURL = "/url/URLGetText"
+alchemyGetNews = "/data/GetNews"
 alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
@@ -29,12 +30,12 @@ sampleOutput = "sampleOutput.json"
 
 appendKeywordMovie = "movie"
 
+regexWhitespaces = re.compile(r'\s+')
 
-class SearchType(Enum):
-    GOOGLE_ONLY = 1
-    BING_ONLY = 2
-    GOOGLE_AND_BING = 3
-
+class SearchType(Enum): 
+  GOOGLE_ONLY = 1
+  BING_ONLY = 2
+  GOOGLE_AND_BING = 3
 
 '''
 ============================================================================
@@ -227,6 +228,7 @@ PART 2 : For each URL, use Alchemy to extract text and semantic data
 ============================================================================
 '''
 
+<<<<<<< Updated upstream
 
 # Renvoie le texte concatene des 30 premieres plus grandes lignes du texte retourne par alchemy
 def getTextsFromUrls(urls):
@@ -259,6 +261,37 @@ def getTextsFromUrls(urls):
         texts[url] = text
     return texts
 
+=======
+#Renvoie le texte concatene des 30 premieres plus grandes lignes du texte retourne par alchemy
+def getTextsFromUrls(urls) :
+	texts = {}
+	params_list = []
+	for url in urls:
+		param = {}
+		param['url'] = url
+		param['apikey'] = alchemyAPIKey
+		param['outputMode'] = 'json'
+		params_list.append(param)
+
+	p = RequestPool(alchemyRootURL+alchemyTextSearchURL,params_list)
+	p.launch()
+	tabResponses = p.getResults()
+	i=1
+	for url in urls:
+		rawResponse = tabResponses[i]
+		i+=1
+		text = ""
+		if(rawResponse is not None):
+			response = rawResponse
+			print(response)
+			if(response['status'] == 'OK'):
+				text = str(response['text'].encode('ascii', errors='ignore'))
+				text = regexWhitespaces.sub(' ', text)
+				text = cleanText(text,30)
+			else:
+				text = ''
+		texts[url] = text
+	return texts
 
 def cleanText(text, nbLinesMax):
     text = deleteSpaces(text)
@@ -288,6 +321,11 @@ def prepareSpotlightRequest(text, spotlightConfidence, spotlightSupport):
         # "sparql": sparql
     }
     return payload;
+
+
+def getConceptsFromAlchemy():
+	# TODO
+
 
 '''
 def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport, writeToFile=False):
@@ -362,6 +400,10 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
 def getDBPediaRessources(xmlRawContent):
     xmlRoot = xml.etree.ElementTree.fromstring(xmlRawContent)
     xmlRoot = xmlRoot.find("Resources")
+    # If there is no Resource tag, return empty araay
+    if(xmlRoot.find('Resource') is None):
+      return []
+    
     resources = xmlRoot.findall("Resource")
 
     uris = []
