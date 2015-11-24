@@ -9,7 +9,7 @@ from enum import Enum
 directory = 'gen_uri'
 alchemyRootURL = "http://access.alchemyapi.com/calls"
 alchemyTextSearchURL = "/url/URLGetText"
-alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
+alchemyAPIKey = "fba860572f0c70ba1b86a8dd497ad0487f36ac5a"
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 searchEngineKey = "016723847753961302155:y6-cneh1knc"
@@ -17,7 +17,7 @@ googleSearchURL = "https://www.googleapis.com/customsearch/v1"
 googleSearchExampleFile = os.path.join(directory, os.path.join("sample_output", "exampleResponse.json"))
 googleNbResultsPerRequest = 10
 
-bingSearchAPIKey = "mX9yeDnqzockohCH18xBGKH1P/78ESUIpR08YB0zSAo"
+bingSearchAPIKey = "Qf4hLruRDq3/DICqgrhXPVQRlfrebkPCwI0Hd66EgmU"
 bingSearchURL = "https://api.datamarket.azure.com/Bing/Search/Web"
 bingSearchExampleFile = os.path.join(directory, os.path.join("sample_output", "bingResponse.json"))
 bingNbResultsPerRequest = 50
@@ -122,7 +122,6 @@ def getURLsFromBing(query, maxNumberOfResults, urls):
 
 def addGoogleUrlToList(urls, jsonContent):
   jsonObject = json.loads(jsonContent)
-  # print(jsonObject)
   for item in jsonObject['items']:
     # print(item['link'])
     urls.append(item['link'])
@@ -215,7 +214,7 @@ def getTextsFromUrls(urls) :
     if(rawResponse is not None):
       response = rawResponse
       # print("============== Alchemy ============== \n")
-      # print(response)
+      print(response)
       if(response['status'] == 'OK'):
         text = str(response['text'].encode('ascii', errors='ignore'))
         text = cleanText(text,30)

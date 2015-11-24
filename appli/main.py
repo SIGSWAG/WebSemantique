@@ -22,7 +22,7 @@ class Params(object):
 		self.spotlight_support_hash = (str(spotlight_support) + "è8_|=)").encode('utf-8')
 		self.from_web = from_web
 		self.from_web_hash = (str(from_web) + "mT\ç{").encode('utf-8')
-		self.append_keyword = from_web
+		self.append_keyword = append_keyword
 		self.append_keyword_hash = (str(append_keyword) + "5@ç9^").encode('utf-8')
 
 
