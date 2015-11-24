@@ -3,8 +3,8 @@
 	$.fn.graph = function(parameters){
 
 		var defaultSettings = {
-			width: '100%',
-			height: 800,
+			width: 500,
+			height: 300,
 			json: "",
 			linksLabelsColor: "#ccc",
 			labelsColor: "#ccc"

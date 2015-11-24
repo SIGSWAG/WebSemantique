@@ -21,6 +21,7 @@ function syntaxHighlight(json) {
 }
 
 function drawGraph(json) {
+
 	$("#results").graph({
 		json: json
 	});
@@ -47,14 +48,15 @@ $(function(){
 		// laisser a true pour le web
 		params.from_web = "true";
 		params.spotlight_support = 20;
+		params.append_keyword = "false";
 
 		$.ajax({
 			method: "GET",
 			url: path,
 			data: $.param(params),
 			success : function(json, statut){
-				// $("#results").append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
-
+				$("#results").append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
+				drawGraph(json);
 				console.log(syntaxHighlight(json));
 			},
 			error: function (resultat, statut, erreur) {
