@@ -32,10 +32,12 @@ appendKeywordMovie = "movie"
 
 regexWhitespaces = re.compile(r'\s+')
 
-class SearchType(Enum): 
-  GOOGLE_ONLY = 1
-  BING_ONLY = 2
-  GOOGLE_AND_BING = 3
+
+class SearchType(Enum):
+    GOOGLE_ONLY = 1
+    BING_ONLY = 2
+    GOOGLE_AND_BING = 3
+
 
 '''
 ============================================================================
@@ -44,7 +46,8 @@ PART 1 : Send a query and retrieve list of URLs
 '''
 
 
-def getURLsfromQuery(query, maxNumberOfResults=100, searchType=SearchType.GOOGLE_ONLY, appendKeyword=False,fromWeb=False):
+def getURLsfromQuery(query, maxNumberOfResults=100, searchType=SearchType.GOOGLE_ONLY, appendKeyword=False,
+                     fromWeb=False):
     if (maxNumberOfResults > 100):
         maxNumberOfResults = 100
 
@@ -150,7 +153,6 @@ def addGoogleUrlToList(urls, jsonContent):
         return False
 
 
-
 def addBingUrlToList(urls, jsonContent):
     jsonObject = json.loads(jsonContent)
 
@@ -228,7 +230,6 @@ PART 2 : For each URL, use Alchemy to extract text and semantic data
 ============================================================================
 '''
 
-<<<<<<< Updated upstream
 
 # Renvoie le texte concatene des 30 premieres plus grandes lignes du texte retourne par alchemy
 def getTextsFromUrls(urls):
@@ -293,7 +294,8 @@ def prepareSpotlightRequest(text, spotlightConfidence, spotlightSupport):
 
 
 def getConceptsFromAlchemy():
-	# TODO
+    # TODO
+    return
 
 
 '''
@@ -319,24 +321,26 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport, writeToFile=F
 
     return annotatedTexts
 '''
-def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
-  annotatedTexts = {}
-  for url, text in texts.items():
-    if text and not text.isspace():
-      uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
-      annotatedTexts[url] = uris
 
-  return annotatedTexts
+
+def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
+    annotatedTexts = {}
+    for url, text in texts.items():
+        if text and not text.isspace():
+            uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
+            annotatedTexts[url] = uris
+
+    return annotatedTexts
+
 
 def getURIsFromText(text, spotlightConfidence, spotlightSupport):
-  
-  content = getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, None)
-  #content = getAnnotatedTextFromFile()
+    content = getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, None)
+    # content = getAnnotatedTextFromFile()
 
-  # Extract URI
-  uris = getDBPediaRessources(content)
+    # Extract URI
+    uris = getDBPediaRessources(content)
 
-  return uris
+    return uris
 
 
 def getAnnotatedTextFromFile():
@@ -370,9 +374,9 @@ def getDBPediaRessources(xmlRawContent):
     xmlRoot = xml.etree.ElementTree.fromstring(xmlRawContent)
     xmlRoot = xmlRoot.find("Resources")
     # If there is no Resource tag, return empty araay
-    if(xmlRoot.find('Resource') is None):
-      return []
-    
+    if (xmlRoot.find('Resource') is None):
+        return []
+
     resources = xmlRoot.findall("Resource")
 
     uris = []
