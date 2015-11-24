@@ -29,6 +29,21 @@ function drawGraph(json) {
 
 }
 
+// Random loading messages generation
+var verbs = ["Calculating", "Computing", "Analyzing", "Generating", "Extrapolating", "Exploring", "Improving", "Processing", "Hashing", "Defining", "Quantifying", "Structuring", "Counting", "Measuring", "Abstracting", "Adding", "Substracting", "Multiplying", "Dividing", "Simplifying"];
+var adjs = ["exponential", "underlying", "differential", "overloaded", "underloaded", "integrated", "abstract", "rigorous", "related", "similar", "logic", "formal", "natural", "virtual", "alternative", "derivable", "dedicated", "included", "excluded", "imported", "exported"];
+var nouns = ["matrix", "values", "data", "search engines", "indices", "key/value pairs", "RDF triples", "numbers", "quantities", "structures", "patterns", "measures", "conclusion", "abstraction", "systems", "metadata", "theory", "language", "axioms"];
+
+function getRandomElement(items){
+    return items[Math.floor(Math.random()*items.length)];
+}
+
+function getLoadingMessage(){
+    var verb = getRandomElement(verbs);
+    var adj = getRandomElement(adjs);
+    var noun = getRandomElement(nouns);
+    return [verb, adj, noun].join(" ") + "...";
+}
 
 $(function(){
 	var Elements = {
@@ -75,7 +90,7 @@ $(function(){
 		params.max_number_of_results =  $("#maxNumberOfResults").val();
 		// 1 -> google
 		// 2 -> bing
-		// 3 -> google & bing	
+		// 3 -> google & bing
 		params.search_type =  $("input[name='searchType']:checked").val();
 		// Confiance  petit -> plus de result
 		params.spotlight_confidence = $("#spotlightConfidence").val();
