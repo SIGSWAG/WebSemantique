@@ -10,7 +10,7 @@ def requetePage(uri):
 
 	
 	payload = {
-		"query": """SELECT DISTINCT *
+		"query": """SELECT DISTINCT (""" + uri + """ as ?s) ?p ?o
 					WHERE {
 						
 						
