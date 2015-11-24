@@ -25,27 +25,6 @@ def main(jsonStringMovies, jsonStringGeneral):
 	for uri in resultSet :
 		result.append({"predicat": uri})
 
-	'''totalCount = len(dictionnary["total"])
-	nodes = list()
-	for url in data :
-		nodes.append({ 'name' : url["link"] })
-	links = list()
-	for i, url in enumerate(data) :
-		for j, url1 in enumerate(data) :
-			if url != url1 and j >= i : # Remove already computed links
-				inters = dictionnary[url["link"]].intersection(dictionnary[url1["link"]])
-				val = len(inters) / totalCount
-				if val > 0 :
-					res=dict()
-					res["source"]=i
-					res["target"]=j
-					res["val"]=val
-					links.append(res)
-				#print(url["link"]+"---"+str(len(inters))+"-->"+url1["link"])
-	result = {'nodes' : nodes, 'links' : links}
-		'''
-	return result		
-		                         
                             
 
 if __name__ == "__main__":
