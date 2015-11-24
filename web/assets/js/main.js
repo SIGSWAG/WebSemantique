@@ -20,6 +20,13 @@ function syntaxHighlight(json) {
     });
 }
 
+function drawGraph(json) {
+	$("#results").graph({
+		json: json
+	});
+
+}
+
 
 $(function(){
 	$("#search").submit(function(e){
@@ -46,7 +53,8 @@ $(function(){
 			url: path,
 			data: $.param(params),
 			success : function(json, statut){
-				$("#results").append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
+				// $("#results").append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
+
 				console.log(syntaxHighlight(json));
 			},
 			error: function (resultat, statut, erreur) {
