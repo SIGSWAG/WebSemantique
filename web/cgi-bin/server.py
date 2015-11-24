@@ -11,9 +11,17 @@ import main
 
 print("Content-Type: application/json")  # JSON is following.
 print()
-arguments = cgi.FieldStorage()
-if 'seuil_jordan' in arguments and 'mots_clefs' in arguments:
-	main.main(['-m', arguments.getvalue('mots_clefs'), '-s', arguments.getvalue('seuil_jordan') ])
-else:
-	print('deux parametres necessaires : "seuil_jordan" et "mots_clefs"')
 
+arguments = cgi.FieldStorage()
+if 'max_number_of_results' in arguments and	'mots_clefs' in arguments and 'search_type' in arguments and 'spotlight_confidence' in arguments and 'from_web' in arguments and 'spotlight_support' in arguments :
+	response = main.main([
+						 '-m', arguments.getvalue('mots_clefs')
+						,'-r', arguments.getvalue('max_number_of_results')
+						,'-t', arguments.getvalue('search_type')
+						,'-c', arguments.getvalue('spotlight_confidence')
+						,'-f', arguments.getvalue('from_web')
+						,'-s', arguments.getvalue('spotlight_support')
+						])
+	print(response)
+else:
+	print('6 parametres necessaires : "max_number_of_results", "mots_clefs", "search_type", "spotlight_confidence", "from_web", "spotlight_support"')

@@ -2,6 +2,26 @@
 import sys, getopt
 import subprocess
 import os
+import hashlib
+from gen_uri import genUri
+from sparql import sparql
+from gen_graph import genGraph
+
+
+class Params(object):
+	def __init__(self, mots_clefs, max_number_of_results, search_type, spotlight_confidence, from_web, spotlight_support):
+		self.mots_clefs = mots_clefs
+		self.mots_clefs_hash = (mots_clefs + "&é6,;").encode('utf-8')
+		self.max_number_of_results = max_number_of_results
+		self.max_number_of_results_hash = (str(max_number_of_results) + "&éàç").encode('utf-8')
+		self.search_type = search_type
+		self.search_type_hash = (str(search_type) + "#`é98;").encode('utf-8')
+		self.spotlight_confidence = spotlight_confidence
+		self.spotlight_confidence_hash = (str(spotlight_confidence) + "&é)ç{").encode('utf-8')
+		self.spotlight_support = spotlight_support
+		self.spotlight_support_hash = (str(spotlight_support) + "è8_|=)").encode('utf-8')
+		self.from_web = from_web
+		self.from_web_hash = (str(from_web) + "mT\ç{").encode('utf-8')
 
 
 def get_cmd():
@@ -11,62 +31,85 @@ def get_cmd():
 
 
 ## récupère les paramètres depuis la ligne de commande.
-## les params mots_clefs et seuil_jordan sont obligatoires
+## les params mots_clefs et max_number_of_results sont obligatoires
 def get_params(argv):
 	mots_clefs = ''
-	seuil_jordan = -1
+	max_number_of_results = -1
+	search_type = -1
+	spotlight_confidence = -1
+	spotlight_support = ''
+	from_web = None
 	try:
-		opts, args = getopt.getopt(argv,"m:s:",["mots_clefs=", "seuil_jordan="])
+		opts, args = getopt.getopt(argv,"m:r:t:c:f:s:",["mots_clefs=", "max_number_of_results=", "search_type=", "spotlight_confidence=", "from_web=", "spotlight_support="])
 	except getopt.GetoptError:
-		print('main.py -m "mots clefs" -s 0.3')
+		print('main.py -m "mots clefs" -r 10 -s 1 -c 0.1 -f false')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt in ('-m', '--mots_clefs'):
 			mots_clefs = arg
-		if opt in ('-s', '--seuil_jordan'):
-			seuil_jordan = float(arg)
+		if opt in ('-r', '--max_number_of_results'):
+			max_number_of_results = int(arg)
+		if opt in ('-t', '--search_type'):
+			search_type = genUri.SearchType(int(arg))
+		if opt in ('-c', '--spotlight_confidence'):
+			spotlight_confidence = float(arg)
+		if opt in ('-f', '--from_web'):
+			if arg == "true":
+				from_web = True
+			elif arg == "false":
+				from_web = False
+		if opt in ('-s', '--spotlight_support'):
+			spotlight_support = arg
 	if not mots_clefs:
 		print("Vous devez au minimum renseigner un mot clef.")
-		print('$ main.py -m "mots clefs" -s 0.3')
+		print('$ main.py -m "mots clefs" -r 10 -s 1 -c 0.1 -f false')
 		sys.exit(3)
-	if seuil_jordan < 0 or seuil_jordan > 1:
-		print("Le seuil de jordan doit être entre 0 et 1.")
-		print('$ main.py -m "mots clefs" -s 0.3')
+	if max_number_of_results < 1 or max_number_of_results > 100:
+		print("Le nombre maximum de requêtes doit être entre 1 et 100.")
+		print('$ main.py -m "mots clefs" -r 10 -s 1 -c 0.1 -f false')
 		sys.exit(4)
-	return mots_clefs, seuil_jordan
+	if not search_type in [s for s in genUri.SearchType]:
+		print("Le type de requête doit être entre compris entre 1 et 3 : 1=google, 2=bing, 3=les deux")
+		print('$ main.py -m "mots clefs" -r 10 -s 1 -c 0.1 -f false')
+		sys.exit(5)
+	if spotlight_confidence < 0 or spotlight_confidence > 1:
+		print("Le paramètre spotlight_confidence doit se situer entre 0 et 1")
+		print('$ main.py -m "mots clefs" -r 10 -s 1 -c 0.1 -f false')
+		sys.exit(6)
+	if from_web is None:
+		print("Le paramètre from_web est obligatoire et doit valoir soit true soit false")
+		print('$ main.py -m "mots clefs" -r 10 -s 1 -c 0.1 -f false')
+		sys.exit(7)
+	return Params(mots_clefs, max_number_of_results, search_type, spotlight_confidence, from_web, spotlight_support)
 
 
 def main(argv):
-	mots_clefs, seuil_jordan = get_params(argv)
-	## récupération des URIs
-	os.chdir('gen_uri')
-	uri_process_cmd = get_cmd()
-	uri_process_cmd.append('--mots_clefs={mots_clefs}'.format(mots_clefs=mots_clefs))
-	uri_process = subprocess.Popen(
-							uri_process_cmd
-							,stdout=subprocess.PIPE)
-	os.chdir('..')
-	## récupération des RDFs
-	os.chdir('sparql')
-	sparql_process = subprocess.Popen(
-							get_cmd()
-							,stdin=uri_process.stdout
-							,stdout=subprocess.PIPE)
-	uri_process.stdout.close()
-	os.chdir('..')
-	## récupèration du graphe
-	os.chdir('gen_graph')
-	graph_process = subprocess.Popen(
-							get_cmd()
-							,stdin=sparql_process.stdout
-							,stdout=subprocess.PIPE)
-	uri_process.stdout.close()
-	os.chdir('..')
-	## final output
-	output = graph_process.communicate()[0].decode("utf-8")
-	print(output)
+	parametres_main = get_params(argv)
+	request_cached = hashlib.sha1(parametres_main.mots_clefs_hash).hexdigest() + hashlib.sha1(parametres_main.max_number_of_results_hash).hexdigest() + hashlib.sha1(parametres_main.search_type_hash).hexdigest() + hashlib.sha1(parametres_main.spotlight_confidence_hash).hexdigest() + hashlib.sha1(parametres_main.from_web_hash).hexdigest()
+	cache_dir = 'cache'
+	output = ''
+	cached_file_path = os.path.join(cache_dir,request_cached)
+	if request_cached in os.listdir(cache_dir):
+		for line in open(cached_file_path):
+			output += line
+	else:
+		## récupération des URIs
+		json_uris = genUri.main(parametres_main.mots_clefs
+								,parametres_main.max_number_of_results
+								,parametres_main.search_type
+								,parametres_main.spotlight_confidence
+								,parametres_main.spotlight_support
+								,parametres_main.from_web)
+		## récupération des RDFs
+		json_rdfs = sparql.main(json_uris)
+		## récupèration du graphe
+		output = genGraph.main(json_rdfs)
+		## on enregistre la requête
+		with open(cached_file_path, 'w') as cached_file:
+			cached_file.write(output)
+	return output
 
 
 if __name__ == "__main__":
-	main(sys.argv[1:])
-
+	response = main(sys.argv[1:])
+	print(response)

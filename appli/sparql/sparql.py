@@ -3,8 +3,8 @@ import os
 
 
 def main(ensemble_uri):
-	with open(os.path.abspath('sample_output/sparql.txt')) as f:
-		lines = f.read()
+	with open(os.path.abspath(os.path.join('sparql', os.path.join('sample_output', 'sparql.txt')))) as f:
+		lines = f.read().replace('\n', '')
 	return lines
 
 
