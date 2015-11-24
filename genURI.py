@@ -19,6 +19,8 @@ spotlightExampleFile = "spotlightResponseExample.xml"
 
 sampleOutput = "sampleOutput.json"
 
+appendKeywordMovie = "movie"
+
 class SearchType(Enum): 
   GOOGLE_ONLY = 1
   BING_ONLY = 2
@@ -30,7 +32,7 @@ PART 1 : Send a query and retrieve list of URLs
 ============================================================================
 '''
 
-def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GOOGLE_ONLY, fromWeb = None):
+def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GOOGLE_ONLY, appendKeyword = False, fromWeb = False):
   if(maxNumberOfResults > 100):
     maxNumberOfResults = 100
 
@@ -38,6 +40,10 @@ def getURLsfromQuery(query, maxNumberOfResults = 100, searchType = SearchType.GO
 
   # If we need to do a real request on the web
   if(fromWeb):
+    if(appendKeyword):
+      query += " " + appendKeywordMovie
+      print(query)
+
     if(searchType == SearchType.GOOGLE_ONLY):
       getURLsFromGoogle(query, maxNumberOfResults, urls)
 
@@ -285,9 +291,9 @@ MAIN
 ============================================================================
 '''
 
-def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport):
+def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport, appendKeyword):
   # Retrieve URLS based on query
-  urls = getURLsfromQuery(query, maxNumberOfResults, searchType, True)
+  urls = getURLsfromQuery(query, maxNumberOfResults, searchType, appendKeyword, True)
 
   # Retrieve, for each URL, an associated text
   texts = getTextsFromUrls(urls)
@@ -314,11 +320,11 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   return jsonResponse
 
 '''
-=========================================================================================
+=========================================================================================================
 Usage 
-python genURI.py Inception 20 all 0.4 34
-python genURI.py query searchEngine numberOfResults spotlightConfidence spotlightSupport
-=========================================================================================
+python genURI.py Inception 20 all 0.4 34 True
+python genURI.py query searchEngine numberOfResults spotlightConfidence spotlightSupport appendKeyword
+=========================================================================================================
 '''
 if  __name__ =='__main__':
   query = sys.argv[1]
@@ -353,6 +359,11 @@ if  __name__ =='__main__':
   else:
     spotlightSupport = 20
 
-  jsonResponse = main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport)
+  if(6 < len(sys.argv)):
+    appendKeyword = sys.argv[6]
+  else:
+    appendKeyword = False
+
+  jsonResponse = main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport, appendKeyword)
 
   print(jsonResponse)
