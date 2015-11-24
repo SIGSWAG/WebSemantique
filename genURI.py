@@ -1,7 +1,12 @@
+from threadingRequests import *
 from bing_search_api import BingSearchAPI
 from enum import Enum
 from alchemyapi import AlchemyAPI
 import xml.etree.ElementTree, requests, sys, json
+
+alchemyRootURL = "http://access.alchemyapi.com/calls"
+alchemyTextSearchURL = "/url/URLGetText"
+alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 searchEngineKey = "016723847753961302155:y6-cneh1knc"
@@ -16,6 +21,8 @@ bingNbResultsPerRequest = 50
 
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
 spotlightExampleFile = "spotlightResponseExample.xml"
+
+sampleOutput = "sampleOutput.json"
 
 class SearchType(Enum): 
   GOOGLE_ONLY = 1
@@ -74,12 +81,12 @@ def getURLsFromGoogle(query, maxNumberOfResults, urls):
     lastOffset = maxNumberOfResults % googleNbResultsPerRequest
 
     for offset in range(0, numberOfRequests):
-      jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1, True)
+      jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1, googleNbResultsPerRequest, True)
       addGoogleUrlToList(urls, jsonContent)
 
     # If a last request is needed to retrieve the last few results as requested by user 
     if(lastOffset != 0):
-      jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1, True)
+      jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1, googleNbResultsPerRequest, True)
       addGoogleUrlToList(urls, jsonContent)
 
 def getURLsFromBing(query, maxNumberOfResults, urls):
@@ -104,7 +111,7 @@ def getURLsFromBing(query, maxNumberOfResults, urls):
 
 def addGoogleUrlToList(urls, jsonContent):
   jsonObject = json.loads(jsonContent)
-  
+  print(jsonObject)
   for item in jsonObject['items']:
     print(item['link'])
     urls.append(item['link'])
@@ -178,35 +185,59 @@ PART 2 : For each URL, use Alchemy to extract text and semantic data
 
 #Renvoie le texte concatene des 30 premieres plus grandes lignes du texte retourne par alchemy
 def getTextsFromUrls(urls) :
-  alch_handle = AlchemyAPI()
-  texts = {}
-  for url in urls:
-    response = alch_handle.text('url', url)
-    if(response['status'] == 'OK'):
-      text = str(response['text'].encode('ascii', errors='ignore'))
-      text = cleanText(text,30)
-    else:
-      text = ''
-    texts[url] = text
-  return texts
+	texts = {}
+	params_list = []
+	for url in urls:
+		param = {}
+		param['url'] = url
+		param['apikey'] = alchemyAPIKey
+		param['outputMode'] = 'json'
+		params_list.append(param)
+
+	p = RequestPool(alchemyRootURL+alchemyTextSearchURL,params_list)
+	p.launch()
+	tabResponses = p.getResults()
+	i=1
+	for url in urls:
+		rawResponse = tabResponses[i]
+		i+=1
+		text = ""
+		if(rawResponse is not None):
+			response = rawResponse
+			print("\n")
+			print(response)
+			if(response['status'] == 'OK'):
+				text = str(response['text'].encode('ascii', errors='ignore'))
+				text = cleanText(text,30)
+			else:
+				text = ''
+		texts[url] = text
+	return texts
 
 def cleanText(text, nbLinesMax):
-  text = deleteSpaces(text)
-  lignes = text.split("\\n")
-  sorted(lignes,key= lambda x:(len(x)),reverse=True)
-  ret = ''
-  for i in range(0,min(nbLinesMax,len(lignes))):
-    ret += lignes[i]
-  return ret
+	text = deleteSpaces(text)
+	lignes = text.split("\\n")
+	sorted(lignes,key=lambda x:(len(x)),reverse=True)
+	ret = ''
+	for i in range(0,min(nbLinesMax,len(lignes))):
+		ret += lignes[i]
+	return ret
 
 def deleteSpaces(text):
-  cleanText = ''
-  prev = 'a'
-  for i in text:
-    if((i==' ' and prev!=' ') or i!=' '):
-      cleanText += i
-      prev = i
-  return cleanText
+	cleanText = ''
+	prev = 'a'
+	for i in text:
+		if((i==' ' and prev!=' ') or i!=' '):
+			cleanText += i
+			prev = i
+	return cleanText
+
+'''
+============================================================================
+PART 3 : For each snippet of text, enhance with DBpedia Spotlight (annotate)
+============================================================================
+'''
+
 
 '''
 ============================================================================
@@ -248,7 +279,7 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
     #"sparql": sparql
   }
 
-  response = requests.get(dbpediaSpotlightURL, params = payload)
+  response = requests.post(dbpediaSpotlightURL, data = payload)
 
   content = response.text
 
@@ -306,6 +337,8 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   }
 
   jsonResponse = json.dumps(response)
+  
+  writeToFile(sampleOutput, jsonResponse)
 
   return jsonResponse
 
