@@ -108,14 +108,19 @@ def getURLsFromGoogle(query, maxNumberOfResults, urls):
         for offset in range(0, numberOfRequests):
             jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1,
                                                  googleNbResultsPerRequest, True)
-            addGoogleUrlToList(urls, jsonContent)
+            if not addGoogleUrlToList(urls, jsonContent):
+                jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1,
+                                                 googleNbResultsPerRequest, True)
+                addGoogleUrlToList(urls, jsonContent)
 
         # If a last request is needed to retrieve the last few results as requested by user
         if (lastOffset != 0):
             jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1,
                                                  googleNbResultsPerRequest, True)
-            addGoogleUrlToList(urls, jsonContent)
-
+            if not addGoogleUrlToList(urls, jsonContent):
+                jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1,
+                                                 googleNbResultsPerRequest, True)
+                addGoogleUrlToList(urls, jsonContent):
 
 def getURLsFromBing(query, maxNumberOfResults, urls):
     if (maxNumberOfResults < bingNbResultsPerRequest):
@@ -302,7 +307,17 @@ def getConceptsFromAlchemy(url):
     }
 
     response = requests.get(alchemyGetConceptsURL, params=payload)
-    print(response.text)
+    
+    jsonContent = jsonContent.text
+
+    jsonObject = json.loads(jsonContent)
+
+    uris = []
+    for uri in jsonObject['concepts']:
+        if 'dbpedia' in uri:
+            uris.append(uri['dbpedia'])
+
+    return uris
 
 
 '''
@@ -335,6 +350,8 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
     for url, text in texts.items():
         if text and not text.isspace():
             uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
+            urisFromAlchemyConcepts = getConceptsFromAlchemy(url)
+            uris.append(urisFromAlchemyConcepts)
             annotatedTexts[url] = uris
 
     return annotatedTexts
