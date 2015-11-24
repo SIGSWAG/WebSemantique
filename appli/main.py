@@ -97,7 +97,7 @@ def get_params(argv):
 
 def main(argv):
 	parametres_main = get_params(argv)
-	request_cached = hashlib.sha1(parametres_main.mots_clefs_hash).hexdigest() + hashlib.sha1(parametres_main.max_number_of_results_hash).hexdigest() + hashlib.sha1(parametres_main.search_type_hash).hexdigest() + hashlib.sha1(parametres_main.spotlight_confidence_hash).hexdigest() + hashlib.sha1(parametres_main.from_web_hash).hexdigest() + hashlib.sha1(parametres_main.append_keyword_hash).hexdigest()
+	request_cached = parametres_main.mots_clefs + '_' + hashlib.sha1(parametres_main.mots_clefs_hash + parametres_main.max_number_of_results_hash + parametres_main.search_type_hash + parametres_main.spotlight_confidence_hash + parametres_main.from_web_hash + parametres_main.append_keyword_hash).hexdigest()
 	cache_dir = 'cache'
 	output = ''
 	cached_file_path = os.path.join(cache_dir,request_cached)
