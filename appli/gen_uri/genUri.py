@@ -19,7 +19,7 @@ googleNbResultsPerRequest = 10
 
 bingSearchAPIKey = "mX9yeDnqzockohCH18xBGKH1P/78ESUIpR08YB0zSAo"
 bingSearchURL = "https://api.datamarket.azure.com/Bing/Search/Web"
-bingSearchExampleFile = "bingResponse.json"
+bingSearchExampleFile = os.path.join(directory, "bingResponse.json")
 bingNbResultsPerRequest = 50
 
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
@@ -213,8 +213,8 @@ def getTextsFromUrls(urls) :
 		text = ""
 		if(rawResponse is not None):
 			response = rawResponse
-			# print("\n")
-			# print(response)
+			# print("============== Alchemy ============== \n")
+			# print(response)
 			if(response['status'] == 'OK'):
 				text = str(response['text'].encode('ascii', errors='ignore'))
 				text = cleanText(text,30)
@@ -240,12 +240,6 @@ def deleteSpaces(text):
 			cleanText += i
 			prev = i
 	return cleanText
-
-'''
-============================================================================
-PART 3 : For each snippet of text, enhance with DBpedia Spotlight (annotate)
-============================================================================
-'''
 
 
 '''
@@ -346,8 +340,6 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
   }
 
   jsonResponse = json.dumps(response)
-  
-  # writeToFile(sampleOutput, jsonResponse)
 
   writeContentToFile(sampleOutput, jsonResponse)
   return jsonResponse

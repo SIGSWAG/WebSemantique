@@ -2890,6 +2890,7 @@
 {
  "items": [
   {
+<<<<<<< HEAD:appli/gen_uri/exampleResponse.json
    "link": "https://www.youtube.com/watch?v=1lOEkYKYS9Q"
   },
   {
@@ -2903,6 +2904,94 @@
   },
   {
    "link": "http://www.1999.co.jp/eng/10308073"
+=======
+   "link": "https://en.wikipedia.org/wiki/Fish"
+  },
+  {
+   "link": "http://fishshell.com/"
+  },
+  {
+   "link": "http://www.331fish.com/"
+  },
+  {
+   "link": "http://www.fishrestaurantcharleston.com/"
+  },
+  {
+   "link": "http://animals.nationalgeographic.com/animals/fish/"
+>>>>>>> feature/genURI:exampleResponse.json
+  }
+ ]
+}
+{
+ "items": [
+  {
+<<<<<<< HEAD:appli/gen_uri/exampleResponse.json
+   "link": "https://www.youtube.com/watch?v=1lOEkYKYS9Q"
+  },
+  {
+   "link": "http://www.amazon.com/4000-SDF-1-Macross-fortress-Movie/dp/B00SIIJL24"
+  },
+  {
+   "link": "https://www.youtube.com/playlist?list=PLAAA01B3CFF8327E7"
+  },
+  {
+   "link": "https://hlj.com/product/hsgmc05"
+  },
+  {
+   "link": "http://www.1999.co.jp/eng/10308073"
+=======
+   "link": "https://en.wikipedia.org/wiki/Fish"
+  },
+  {
+   "link": "http://fishshell.com/"
+  },
+  {
+   "link": "http://www.331fish.com/"
+  },
+  {
+   "link": "http://www.fishrestaurantcharleston.com/"
+  },
+  {
+   "link": "http://animals.nationalgeographic.com/animals/fish/"
+  }
+ ]
+}
+{
+ "items": [
+  {
+   "link": "https://en.wikipedia.org/wiki/Fish"
+  },
+  {
+   "link": "http://fishshell.com/"
+  },
+  {
+   "link": "http://www.331fish.com/"
+  },
+  {
+   "link": "http://www.fishrestaurantcharleston.com/"
+  },
+  {
+   "link": "http://animals.nationalgeographic.com/animals/fish/"
+  }
+ ]
+}
+{
+ "items": [
+  {
+   "link": "https://en.wikipedia.org/wiki/Fish"
+  },
+  {
+   "link": "http://fishshell.com/"
+  },
+  {
+   "link": "http://www.331fish.com/"
+  },
+  {
+   "link": "http://www.fishrestaurantcharleston.com/"
+  },
+  {
+   "link": "http://animals.nationalgeographic.com/animals/fish/"
+>>>>>>> feature/genURI:exampleResponse.json
   }
  ]
 }
