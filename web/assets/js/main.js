@@ -25,10 +25,40 @@ function replaceAll(str, find, replace) {
 }
 
 function drawGraph(json) {
-	$("#results").graph({
-		json: json
-	});
+	graph = {"nodes":[], "links":[]};
+	for(var i=0 ; i<json.length ; i++){
+		graph.nodes.push({
+			"name": json[i].link
+		});
+		for(var j=0 ; j<json[i].results.films.length ; j++){
+			var trouve = false;
+			for(var k=0 ; k<graph.nodes.length ; k++){
+				if(graph.nodes[k].name == json[i].results.films[j].movie.link){
+					trouve = true;
+					graph.links.push({
+						"source": i,
+						"target": k,
+						"value": json[i].results.films[j].coeff
+					})
+				}
+			}
+			if(!trouve){
+				graph.nodes.push({
+					"name": json[i].results.films[j].movie.link
+				});
 
+				graph.links.push({
+					"source": i,
+					"target": graph.nodes.length-1,
+					"value": json[i].results.films[j].coeff
+				});
+			}
+		}
+	}
+	$("#results").append('<pre class="json">'+syntaxHighlight(graph)+'</pre>');
+	$("#graph").graph({
+		json: JSON.stringify(graph)
+	});
 }
 
 // Random loading messages generation
@@ -158,6 +188,7 @@ $(function(){
 			// to remove when ajax is ready
 			clearTimeout(loadingTimeout)
 			loadResults(json);
+			drawGraph(json);
 			Elements.$searchSubmit.removeAttr("disabled");
 			//Elements.$search.addClass("small");
 			Elements.$loader.addClass("hide");
@@ -202,9 +233,8 @@ $(function(){
 			data: $.param(params),
 			success : function(json, statut){
 				Elements.$results.append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
-				drawGraph(json);
 				console.log(syntaxHighlight(json));
-				States.displayResults();
+				States.displayResults(json);
 			},
 			error: function (resultat, statut, erreur) {
 				console.log("error");
@@ -217,10 +247,9 @@ $(function(){
 		});
 		*/
 
-		setTimeout(function(){States.displayResults(jsonsample)},5*1000);
+		setTimeout(function(){States.displayResults(jsonsample)},5*100);
 		return false;
 	});
-
 
 	// Run
 	States.init();
