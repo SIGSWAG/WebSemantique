@@ -118,7 +118,7 @@ if	__name__ =='__main__':
 	if(1 < len(sys.argv)):
 		uriFilm = str(sys.argv[1])
 	else:
-		uriFilm = 'http://dbpedia.org/resource/The_Big_Blue'
+		uriFilm = 'http://dbpedia.org/resource/The_Lord_of_the_Rings:_The_Fellowship_of_the_Ring'
   
 	if(2 < len(sys.argv)):
 		spotlightConfidence = sys.argv[2]
