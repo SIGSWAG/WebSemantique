@@ -253,6 +253,7 @@ def getTextsFromUrls(urls):
     texts = {}
     tabResponses = makeAlchemyRequest(urls, alchemyTextSearchURL)
     i = 1
+    fail = 0
     for url in urls:
         rawResponse = tabResponses[i]
         i += 1
