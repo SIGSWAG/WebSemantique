@@ -6,8 +6,10 @@ import xml.etree.ElementTree, requests, sys, json, re
 
 alchemyRootURL = "http://access.alchemyapi.com/calls"
 alchemyTextSearchURL = "/url/URLGetText"
+alchemyConceptSearchURL = "/url/URLGetRankedConcepts"
 alchemyGetNews = "/data/GetNews"
-alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
+alchemyAPIKey = "9d4bfa22ad347204f33e0451834cef0fe6f5b9e3"
+alchemyAPIKeyRescue = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 googleAPIKeyRescue = "AIzaSyA1CXFhP9LGmIFZokfkOjnU78Y32dRYWk0"
@@ -233,8 +235,33 @@ PART 2 : For each URL, use Alchemy to extract text and semantic data
 
 # Renvoie le texte concatene des 30 premieres plus grandes lignes du texte retourne par alchemy
 def getTextsFromUrls(urls):
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$")
     texts = {}
+    tabResponses = makeAlchemyRequest(urls, alchemyTextSearchURL)
+    i = 1
+    for url in urls:
+        rawResponse = tabResponses[i]
+        i += 1
+        text = ""
+        fail = 0
+        if  rawResponse is not None :
+            response = rawResponse
+            if  response['status'] == 'OK' :
+                text = str(response['text'].encode('ascii', errors='ignore'))
+                text = cleanText(text, 30)
+            else:
+                text = ""
+                fail+=1
+        else:
+            fail+=1
+        texts[url] = text
+
+    if fail==len(urls):
+        globals()['alchemyAPIKey'] = alchemyAPIKeyRescue
+        return getTextsFromUrls(urls)
+
+    return texts
+
+def makeAlchemyRequest(urls, alchemyEndpoint = alchemyTextSearchURL):
     params_list = []
     for url in urls:
         param = {}
@@ -243,25 +270,10 @@ def getTextsFromUrls(urls):
         param['outputMode'] = 'json'
         params_list.append(param)
 
-    p = RequestPool(alchemyRootURL + alchemyTextSearchURL, params_list)
+    p = RequestPool(alchemyRootURL + alchemyEndpoint, params_list)
     p.launch()
     tabResponses = p.getResults()
-    i = 1
-    for url in urls:
-        rawResponse = tabResponses[i]
-        i += 1
-        text = ""
-        if (rawResponse is not None):
-            response = rawResponse
-            print("============== Alchemy ============== \n")
-            if (response['status'] == 'OK'):
-                text = str(response['text'].encode('ascii', errors='ignore'))
-                text = cleanText(text, 30)
-            else:
-                text = ""
-        texts[url] = text
-    return texts
-
+    return tabResponses
 
 def cleanText(text, nbLinesMax):
     text = deleteSpaces(text)
@@ -282,6 +294,37 @@ def deleteSpaces(text):
             prev = i
     return cleanText
 
+def getConceptsFromAlchemy(urls):
+    concepts = []
+    responses = makeAlchemyRequest(urls,alchemyConceptSearchURL)
+    i=1
+    for url in urls :
+        response = responses[i]
+        i+=1
+        responseConcepts = []
+        if response is not None :
+            if response['status'] == 'OK':
+                responseConcepts = response['concepts']
+        concepts.append({'url':url,'concepts':responseConcepts})
+    return concepts
+
+
+'''
+============================================================================
+PART 3 : For each Alchemy text output, use Spotlight to find related URI
+============================================================================
+'''
+
+def makeSpotlightRequests(texts, spotlightConfidence, spotlightSupport) :
+    spotParams = []
+    for url, text in texts.items():
+        if text and not text.isspace():
+            spotParam = prepareSpotlightRequest(text, spotlightConfidence, spotlightSupport)
+            spotParams.append(spotParam)
+
+    p = RequestPool(dbpediaSpotlightURL, spotParams)
+    p.launch()
+    return p.getResults()
 
 def prepareSpotlightRequest(text, spotlightConfidence, spotlightSupport):
     payload = {
@@ -292,28 +335,13 @@ def prepareSpotlightRequest(text, spotlightConfidence, spotlightSupport):
     }
     return payload;
 
-
-def getConceptsFromAlchemy():
-    # TODO
-    return
-
-
 '''
 def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport, writeToFile=False):
     annotatedTexts = {}
-    spotParams = []
-    print(texts)
-    for url, text in texts.items():
-        if text and not text.isspace():
-            spotParam = prepareSpotlightRequest(text, spotlightConfidence, spotlightSupport)
-            spotParams.append(spotParam)
 
-    p = RequestPool(dbpediaSpotlightURL, spotParams)
-    p.launch()
-    results = p.getResults()
+    results = makeSpotlightRequests(texts,spotlightConfidence,spotlightSupport)
 
     for result in results:
-        print("-----------------------")
         print(result)
     content = ""
     if writeToFile:
@@ -321,7 +349,6 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport, writeToFile=F
 
     return annotatedTexts
 '''
-
 
 def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
     annotatedTexts = {}
@@ -404,6 +431,8 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
     urls = getURLsfromQuery(query, maxNumberOfResults, searchType, appendKeyword, False)
 
     # Retrieve, for each URL, an associated text
+    concepts = getConceptsFromAlchemy(urls)
+    print(concepts)
     texts = getTextsFromUrls(urls)
 
     # Retrieve, for each text, the list of corresponding URIs
