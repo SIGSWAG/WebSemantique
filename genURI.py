@@ -55,22 +55,19 @@ def getURLsfromQuery(query, maxNumberOfResults=100, searchType=SearchType.GOOGLE
         maxNumberOfResults = 100
 
     urls = []
+    titles = {}
 
     # If we need to do a real request on the web
     if (fromWeb):
         if (appendKeyword):
             query += " " + appendKeywordMovie
-            print(query)
+            #print(query)
 
         if (searchType == SearchType.GOOGLE_ONLY):
-            getURLsFromGoogle(query, maxNumberOfResults, urls)
-
-    if (fromWeb):
-        if (searchType == SearchType.GOOGLE_ONLY):
-            getURLsFromGoogle(query, maxNumberOfResults, urls)
+            getURLsFromGoogle(query, maxNumberOfResults, urls, titles)
 
         elif (searchType == SearchType.BING_ONLY):
-            getURLsFromBing(query, maxNumberOfResults, urls)
+            getURLsFromBing(query, maxNumberOfResults, urls, titles)
 
         elif (searchType == SearchType.GOOGLE_AND_BING):
             # Divide evenly the number of requests between the two search engines
@@ -79,29 +76,29 @@ def getURLsfromQuery(query, maxNumberOfResults=100, searchType=SearchType.GOOGLE
             lastOffsetToAddToBing = maxNumberOfResults % 2
 
             # Google
-            getURLsFromGoogle(query, numberOfRequestsPerSearchEngine, urls)
+            getURLsFromGoogle(query, numberOfRequestsPerSearchEngine, urls, titles)
 
             # Bing
-            getURLsFromBing(query, numberOfRequestsPerSearchEngine + lastOffsetToAddToBing, urls)
+            getURLsFromBing(query, numberOfRequestsPerSearchEngine + lastOffsetToAddToBing, urls, titles)
 
         else:
             # Not a correct search engine, throw error ?
             numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
     else:
         jsonContent = getSearchFromFile()
-        print(jsonContent)
-        addGoogleUrlToList(urls, jsonContent)
+        #print(jsonContent)
+        addGoogleUrlToList(urls, titles, jsonContent)
 
-    return urls
+    return urls, titles
 
 
-def getURLsFromGoogle(query, maxNumberOfResults, urls):
+def getURLsFromGoogle(query, maxNumberOfResults, urls, titles):
     if (maxNumberOfResults < googleNbResultsPerRequest):
 
         jsonContent = getSearchFromGoogleCSE(query, 1, maxNumberOfResults, True)
-        if not addGoogleUrlToList(urls, jsonContent):
+        if not addGoogleUrlToList(urls, titles, jsonContent):
             jsonContent = getSearchFromGoogleCSE(query, 1, maxNumberOfResults, True)
-            addGoogleUrlToList(urls, jsonContent)
+            addGoogleUrlToList(urls, titles, jsonContent)
     else:
         # Get the number of requests to do (10 results per request)
         numberOfRequests = maxNumberOfResults // googleNbResultsPerRequest
@@ -114,21 +111,21 @@ def getURLsFromGoogle(query, maxNumberOfResults, urls):
             if not addGoogleUrlToList(urls, jsonContent):
                 jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1,
                                                  googleNbResultsPerRequest, True)
-                addGoogleUrlToList(urls, jsonContent)
+                addGoogleUrlToList(urls, titles, jsonContent)
 
         # If a last request is needed to retrieve the last few results as requested by user
         if (lastOffset != 0):
             jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1,
                                                  googleNbResultsPerRequest, True)
-            if not addGoogleUrlToList(urls, jsonContent):
+            if not addGoogleUrlToList(urls, titles, jsonContent):
                 jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1,
                                                  googleNbResultsPerRequest, True)
-                addGoogleUrlToList(urls, jsonContent)
+                addGoogleUrlToList(urls, titles, jsonContent)
 
-def getURLsFromBing(query, maxNumberOfResults, urls):
+def getURLsFromBing(query, maxNumberOfResults, urls, titles):
     if (maxNumberOfResults < bingNbResultsPerRequest):
         jsonContent = getSearchFromBing(query, 0, maxNumberOfResults, True)
-        addBingUrlToList(urls, jsonContent)
+        addBingUrlToList(urls, titles, jsonContent)
     else:
         # Get the number of requests to do (50 results per request)
         numberOfRequests = maxNumberOfResults // bingNbResultsPerRequest
@@ -138,22 +135,24 @@ def getURLsFromBing(query, maxNumberOfResults, urls):
         offset = 0
         for offset in range(0, numberOfRequests):
             jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest), bingNbResultsPerRequest, True)
-            addBingUrlToList(urls, jsonContent)
+            addBingUrlToList(urls, titles, jsonContent)
 
         # If a last request is needed to retrieve the last few results as requested by user
         if (lastOffset != 0):
             jsonContent = getSearchFromBing(query, (offset * bingNbResultsPerRequest) + lastOffset,
                                             bingNbResultsPerRequest, True)
-            addBingUrlToList(urls, jsonContent)
+            addBingUrlToList(urls, titles, jsonContent)
 
 
-def addGoogleUrlToList(urls, jsonContent):
+def addGoogleUrlToList(urls, titles, jsonContent):
     jsonObject = json.loads(jsonContent)
-    print(jsonObject)
+    #print(jsonObject)
     if 'items' in jsonObject:
         for item in jsonObject['items']:
-            print(item['link'])
-            urls.append(item['link'])
+            #print(item['link'])
+            link = item['link']
+            urls.append(link)
+            titles[link] = item['title']
         return True
     else:
         globals()['googleAPIKey'] = googleAPIKeyRescue
@@ -161,14 +160,16 @@ def addGoogleUrlToList(urls, jsonContent):
         return False
 
 
-def addBingUrlToList(urls, jsonContent):
+def addBingUrlToList(urls, titles, jsonContent):
     jsonObject = json.loads(jsonContent)
 
     jsonObject = jsonObject['d']
 
     for result in jsonObject['results']:
-        print(result['Url'])
-        urls.append(result['Url'])
+        link = result['Url']
+        #print(result['Url'])
+        titles[link] = result['Title']
+        urls.append(link)
 
 
 def getSearchFromFile():
@@ -181,7 +182,7 @@ def getSearchFromFile():
 def getSearchFromGoogleCSE(query, offset=1, numberOfResults=googleNbResultsPerRequest, writeToFile=True):
     payload = {
         "q": query,
-        "fields": "items(link)",
+        "fields": "items(link,title)",
         "key": googleAPIKey,
         "cx": searchEngineKey,
         "lr": "lang_en",
@@ -190,7 +191,7 @@ def getSearchFromGoogleCSE(query, offset=1, numberOfResults=googleNbResultsPerRe
     }
 
     response = requests.get(googleSearchURL, params=payload)
-    print(response.url)
+    #print(response.url)
     jsonContent = response.text
     # print(jsonContent)
 
@@ -212,7 +213,7 @@ def getSearchFromBing(query, offset=0, numberOfResults=bingNbResultsPerRequest, 
 
     jsonContent = api.search_web(query, payload=params)
 
-    print(jsonContent.content.decode('utf-8').encode('cp850', 'replace').decode('cp850'))
+    #print(jsonContent.content.decode('utf-8').encode('cp850', 'replace').decode('cp850'))
 
     jsonContent = jsonContent.text
 
@@ -311,7 +312,7 @@ def getConceptsFromAlchemyBIS(urls):
         if response is not None :
             if response['status'] == 'OK':
                 responseConcepts = response['concepts']
-                print(responseConcepts)
+                #print(responseConcepts)
                 for concept in responseConcepts :
                     if 'dbpedia' in concept:
                         dbpediaConcepts.append(concept['dbpedia'])
@@ -388,7 +389,7 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
         if text and not text.isspace():
             uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
             urisFromAlchemyConcepts = getConceptsFromAlchemy(url)
-            uris.append(urisFromAlchemyConcepts)
+            uris = uris + urisFromAlchemyConcepts
             annotatedTexts[url] = uris
 
     return annotatedTexts
@@ -423,7 +424,7 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
 
     content = response.text
 
-    print(content)
+    #print(content)
 
     if writeToFile:
         writeContentToFile(spotlightExampleFile, content)
@@ -462,7 +463,7 @@ MAIN
 
 def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSupport, appendKeyword):
     # Retrieve URLS based on query
-    urls = getURLsfromQuery(query, maxNumberOfResults, searchType, appendKeyword, False)
+    (urls, titles) = getURLsfromQuery(query, maxNumberOfResults, searchType, appendKeyword, True)
 
     # Retrieve, for each URL, an associated text and associated concepts
     concepts = getConceptsFromAlchemyBIS(urls)
@@ -474,8 +475,10 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
     # Prepare the JSON
     responseUriArray = []
     for url, uris in annotatedTexts.items():
+        title = titles[url]
         responseUriArray.append({
             "url": url,
+            "title": title,
             "uri": uris
         })
 
@@ -487,7 +490,7 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
 
     writeContentToFile(sampleOutput, jsonResponse)
 
-    writeContentToFile(sampleOutput, jsonResponse)
+    print(jsonResponse)
 
     return jsonResponse
 
