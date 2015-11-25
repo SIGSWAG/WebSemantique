@@ -1,3 +1,4 @@
+var LOCAL = true;
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
          json = JSON.stringify(json, undefined, 4);
@@ -116,12 +117,18 @@ $(function(){
 		},timer);
 	};
 
-	var createRanking = function(json){
-
+	var createRanking = function(json, num){
+		var rank = $("#rankPrototype").prop('innerHTML');
+		rank = replaceAll(rank, "{{rank}}", num);
+		rank = replaceAll(rank, "{{linkFilm}}", json.movie.link);
+		rank = replaceAll(rank, "{{filmName}}", json.movie.infos.name.value);
+		rank = replaceAll(rank, "{{coef}}", (json.coeff*100)+"%");
+		var $rank = $("<li>"+rank+"</li>");
+		return $rank;
 	};
 
 	var createFilm = function(json){
-		var film = $("#filmPrototype .film").clone().prop('outerHTML');
+		var film = $("#filmPrototype .film").prop('outerHTML');
 		film = replaceAll(film, "{{linkFilm}}", json.movie.link);
 		film = replaceAll(film, "{{filmName}}", json.movie.infos.name.value);
 		if(json.movie.infos.director){
@@ -142,18 +149,16 @@ $(function(){
 	};
 
 	var createResult = function(json){
-		var result = $("#resultPrototype .result").clone().prop('outerHTML');
+		var result = $("#resultPrototype .result").prop('outerHTML');
 		result = replaceAll(result, "{{link}}", json.link);
 		result = replaceAll(result, "{{title}}", json.title);
 		// here replace title
 		var $result = $(result);
 		// Pour chaque film
 		for (var i = 0; i < json.results.films.length; i++) {
-			var $film = createFilm(json.results.films[i]);
-			console.log("BEFORE : "+$result.find(".result-right").prop('outerHTML'));
-			console.log("FILM : "+$film.prop('outerHTML'));
-			$result.find(".result-right").append($film);
-			console.log("AFTER : "+$result.find(".result-right").prop('outerHTML'));
+			$result.find(".result-right").append(createFilm(json.results.films[i]));
+			$result.find(".ranking").append(createRanking(json.results.films[i], i+1))
+
 		};
 		return $result;
 	};
@@ -229,26 +234,30 @@ $(function(){
 		params.append_keyword = $("input[name='appendKeyword']:checked").length?"true":"false";
 
 		States.loading();
-		$.ajax({
-			method: "GET",
-			url: path,
-			data: $.param(params),
-			success : function(json, statut){
-				//Elements.$results.append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
-				console.log("SUCCESS-JSON : "+json);
-				States.displayResults(json);
-			},
-			error: function (resultat, statut, erreur) {
-				console.log("error");
-				alert("Erreur lors de l'appel à "+path);
-				console.log(resultat, statut, erreur);
-			},
-			complete: function(response){
-				console.log("COMPLETE - RESPONSE : "+response);
-			}
-		});
+		if(LOCAL){
+			setTimeout(function(){States.displayResults(jsonsample)},5*100);
+		}
+		else{
+			$.ajax({
+				method: "GET",
+				url: path,
+				data: $.param(params),
+				success : function(json, statut){
+					console.log("SUCCESS-JSON : "+json);
+					States.displayResults(json);
+				},
+				error: function (resultat, statut, erreur) {
+					console.log("error");
+					alert("Erreur lors de l'appel à "+path);
+					console.log(resultat, statut, erreur);
+					States.init();
+				},
+				complete: function(response){
+					console.log("COMPLETE - RESPONSE : "+response);
+				}
+			});
+		}
 
-		// setTimeout(function(){States.displayResults(jsonsample)},5*100);
 		return false;
 	});
 
