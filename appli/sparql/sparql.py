@@ -217,6 +217,7 @@ def main(jsonContent):
 		
 		struct = {}
 		struct['link'] = page["url"]
+		struct['title'] = page["title"]
 		struct['results'] = {}
 		struct['results']['graphePage'] = []
 		struct['results']['films'] = []

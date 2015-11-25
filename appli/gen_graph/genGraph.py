@@ -47,7 +47,7 @@ def main(jsonString):
 		while (i<3 and i<len(arraySorted)) :
 			films.append({"movie":listeDescFilms[arraySorted[i][0]], "coeff":arraySorted[i][1]})
 			i=i+1
-		nodes.append({ "link" : url["link"], "results":{"films":films}})
+		nodes.append({ "link" : url["link"], "title": url["title"], "results":{"films":films}})
 		
 	return json.dumps(nodes)
 
