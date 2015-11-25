@@ -10,6 +10,9 @@ alchemyConceptSearchURL = "/url/URLGetRankedConcepts"
 alchemyGetNews = "/data/GetNews"
 alchemyAPIKey = "9d4bfa22ad347204f33e0451834cef0fe6f5b9e3"
 alchemyAPIKeyRescue = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
+alchemyGetConceptsURL = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedConcepts"
+alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
+alchemyAPIKeyRescueBis = "1c29f8e0024bf320f7974af9cbe6612ec1dd8d73"
 
 googleAPIKey = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 googleAPIKeyRescue = "AIzaSyA1CXFhP9LGmIFZokfkOjnU78Y32dRYWk0"
@@ -47,9 +50,7 @@ PART 1 : Send a query and retrieve list of URLs
 ============================================================================
 '''
 
-
-def getURLsfromQuery(query, maxNumberOfResults=100, searchType=SearchType.GOOGLE_ONLY, appendKeyword=False,
-                     fromWeb=False):
+def getURLsfromQuery(query, maxNumberOfResults=100, searchType=SearchType.GOOGLE_ONLY, appendKeyword=False, fromWeb=False):
     if (maxNumberOfResults > 100):
         maxNumberOfResults = 100
 
@@ -110,14 +111,19 @@ def getURLsFromGoogle(query, maxNumberOfResults, urls):
         for offset in range(0, numberOfRequests):
             jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1,
                                                  googleNbResultsPerRequest, True)
-            addGoogleUrlToList(urls, jsonContent)
+            if not addGoogleUrlToList(urls, jsonContent):
+                jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + 1,
+                                                 googleNbResultsPerRequest, True)
+                addGoogleUrlToList(urls, jsonContent)
 
         # If a last request is needed to retrieve the last few results as requested by user
         if (lastOffset != 0):
             jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1,
                                                  googleNbResultsPerRequest, True)
-            addGoogleUrlToList(urls, jsonContent)
-
+            if not addGoogleUrlToList(urls, jsonContent):
+                jsonContent = getSearchFromGoogleCSE(query, (offset * googleNbResultsPerRequest) + lastOffset + 1,
+                                                 googleNbResultsPerRequest, True)
+                addGoogleUrlToList(urls, jsonContent)
 
 def getURLsFromBing(query, maxNumberOfResults, urls):
     if (maxNumberOfResults < bingNbResultsPerRequest):
@@ -294,18 +300,23 @@ def deleteSpaces(text):
             prev = i
     return cleanText
 
-def getConceptsFromAlchemy(urls):
+def getConceptsFromAlchemyBIS(urls):
     concepts = []
     responses = makeAlchemyRequest(urls,alchemyConceptSearchURL)
     i=1
     for url in urls :
         response = responses[i]
         i+=1
-        responseConcepts = []
+        dbpediaConcepts = []
         if response is not None :
             if response['status'] == 'OK':
                 responseConcepts = response['concepts']
-        concepts.append({'url':url,'concepts':responseConcepts})
+                print(responseConcepts)
+                for concept in responseConcepts :
+                    if 'dbpedia' in concept:
+                        dbpediaConcepts.append(concept['dbpedia'])
+
+        concepts.append({'url':url,'concepts':dbpediaConcepts})
     return concepts
 
 
@@ -335,6 +346,27 @@ def prepareSpotlightRequest(text, spotlightConfidence, spotlightSupport):
     }
     return payload;
 
+def getConceptsFromAlchemy(url):
+    payload = {
+        "url": url,
+        "apikey": alchemyAPIKey,
+        "outputMode": "json",
+        "linkedData": "1"
+    }
+
+    response = requests.get(alchemyGetConceptsURL, params=payload)
+    
+    jsonContent = response.text
+
+    jsonObject = json.loads(jsonContent)
+
+    uris = []
+    for uri in jsonObject['concepts']:
+        if 'dbpedia' in uri:
+            uris.append(uri['dbpedia'])
+
+    return uris
+
 '''
 def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport, writeToFile=False):
     annotatedTexts = {}
@@ -355,6 +387,8 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
     for url, text in texts.items():
         if text and not text.isspace():
             uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
+            urisFromAlchemyConcepts = getConceptsFromAlchemy(url)
+            uris.append(urisFromAlchemyConcepts)
             annotatedTexts[url] = uris
 
     return annotatedTexts
@@ -430,9 +464,8 @@ def main(query, maxNumberOfResults, searchType, spotlightConfidence, spotlightSu
     # Retrieve URLS based on query
     urls = getURLsfromQuery(query, maxNumberOfResults, searchType, appendKeyword, False)
 
-    # Retrieve, for each URL, an associated text
-    concepts = getConceptsFromAlchemy(urls)
-    print(concepts)
+    # Retrieve, for each URL, an associated text and associated concepts
+    concepts = getConceptsFromAlchemyBIS(urls)
     texts = getTextsFromUrls(urls)
 
     # Retrieve, for each text, the list of corresponding URIs
