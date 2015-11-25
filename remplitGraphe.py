@@ -117,9 +117,9 @@ if	__name__ =='__main__':
 
   # Default values for spotlightConfidence is 0.2 and for spotlightSupport is 20
 	if(1 < len(sys.argv)):
-		uriFilm = sys.argv[1]
+		uriFilm = str(sys.argv[1])
 	else:
-		uriFilm = '<http://dbpedia.org/resource/Inception>'
+		uriFilm = 'http://dbpedia.org/resource/Godzilla_(1998_film)'
   
 	if(2 < len(sys.argv)):
 		spotlightConfidence = sys.argv[2]
