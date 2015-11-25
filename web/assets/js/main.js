@@ -55,10 +55,12 @@ function drawGraph(json) {
 			}
 		}
 	}
+	/*
 	$("#results").append('<pre class="json">'+syntaxHighlight(graph)+'</pre>');
 	$("#graph").graph({
 		json: JSON.stringify(graph)
 	});
+*/
 }
 
 // Random loading messages generation
@@ -142,6 +144,7 @@ $(function(){
 	var createResult = function(json){
 		var result = $("#resultPrototype .result").clone().prop('outerHTML');
 		result = replaceAll(result, "{{link}}", json.link);
+		result = replaceAll(result, "{{title}}", json.title);
 		// here replace title
 		var $result = $(result);
 		// Pour chaque film
@@ -226,14 +229,13 @@ $(function(){
 		params.append_keyword = $("input[name='appendKeyword']:checked").length?"true":"false";
 
 		States.loading();
-		/*
 		$.ajax({
 			method: "GET",
 			url: path,
 			data: $.param(params),
 			success : function(json, statut){
-				Elements.$results.append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
-				console.log(syntaxHighlight(json));
+				//Elements.$results.append('<pre class="json">'+syntaxHighlight(json)+'</pre>');
+				console.log("SUCCESS-JSON : "+json);
 				States.displayResults(json);
 			},
 			error: function (resultat, statut, erreur) {
@@ -242,12 +244,11 @@ $(function(){
 				console.log(resultat, statut, erreur);
 			},
 			complete: function(response){
-				Elements.$searchSubmit.removeAttr("disabled");
+				console.log("COMPLETE - RESPONSE : "+response);
 			}
 		});
-		*/
 
-		setTimeout(function(){States.displayResults(jsonsample)},5*100);
+		// setTimeout(function(){States.displayResults(jsonsample)},5*100);
 		return false;
 	});
 
