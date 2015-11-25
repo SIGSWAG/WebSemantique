@@ -73,7 +73,7 @@ def getDBPediaRessources(xmlRawContent):
 
 	graphe = ""
 	for resource in resources:
-		lien = "film relationTheme " + resource.get("URI")
+		lien = "<http://dbpedia.org/resource/Inception> relationTheme <" + resource.get("URI") + ">."
 		graphe+=lien + '\n'
 		
 	return graphe
@@ -128,7 +128,7 @@ if	__name__ =='__main__':
 	if(1 < len(sys.argv)):
 		spotlightConfidence = sys.argv[1]
 	else:
-		spotlightConfidence = 0.12
+		spotlightConfidence = 0.1
 
 	if(2 < len(sys.argv)):
 		spotlightSupport = sys.argv[2]

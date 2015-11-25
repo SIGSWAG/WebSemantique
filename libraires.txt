@@ -1,0 +1,4 @@
+Librairies :
+
+rdflib
+rdflib-jsonld
