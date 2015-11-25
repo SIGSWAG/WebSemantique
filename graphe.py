@@ -25,6 +25,7 @@ def main(jsonString):
 				dictionnary[url["link"]].add(uri["o"]["value"])
 		
 		for movie in url["results"]["films"]:
+			
 			dictionnary[movie["link"]]=set()
 			for uri in movie["graphe"] :
 				dictionnary[movie["link"]].add(uri["s"]["value"])
@@ -37,6 +38,9 @@ def main(jsonString):
 			coeff = len(inters)/len(union)
 			listeFilms[movie["link"]] = coeff;
 			listeDescFilms[movie["link"]]=movie
+			del movie["graphe"]
+		
+
 		arraySorted = sorted(listeFilms.items(), key=operator.itemgetter(1), reverse=True)#sort to get the 3 best movies
 		
 		i=0;
@@ -47,7 +51,7 @@ def main(jsonString):
 			
 			films.append({"movie":listeDescFilms[arraySorted[i][0]], "coeff":arraySorted[i][1]})
 			i=i+1
-		nodes.append({ "link" : url["link"], "results":{"graphePage":url["results"]["graphePage"], "films":films}})
+		nodes.append({ "link" : url["link"], "results":{"films":films}})
 			
 		
 
