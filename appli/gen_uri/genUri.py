@@ -206,10 +206,11 @@ def getSearchFromGoogleCSE(query, offset=1, numberOfResults=googleNbResultsPerRe
 
 def getSearchFromBing(query, offset=0, numberOfResults=bingNbResultsPerRequest, writeToFile=True):
     api = BingSearchAPI(bingSearchAPIKey)
-
+    language = quote('en-US')
     params = {
         "$format": "json",
         "$skip": offset,
+        "Market": language,
         "$top": numberOfResults
     }
 
@@ -222,6 +223,15 @@ def getSearchFromBing(query, offset=0, numberOfResults=bingNbResultsPerRequest, 
 
     return jsonContent
 
+def quote(query):
+    '''Quote query with sign(')'''
+    if query.startswith('\'') is not True:
+        query = '\'' + query 
+
+    if query.endswith('\'') is not True:
+        query = query + '\''         
+    
+    return query
 
 def writeContentToFile(fileName, content, replace=False):
     if replace:
