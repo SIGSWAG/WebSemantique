@@ -63,7 +63,7 @@ def getDBPediaRessources(xmlRawContent):
 
 	graphe = ""
 	for resource in resources:
-		lien = "<" + uriFilm + "> relationTheme <" + resource.get("URI") + ">."
+		lien = "<" + uriFilm + "> <http://SIGSWAG.charisme/relationTheme> <" + resource.get("URI") + ">."
 		graphe+=lien + '\n'
 		
 	return graphe
