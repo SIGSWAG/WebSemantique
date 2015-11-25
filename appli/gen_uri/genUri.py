@@ -385,7 +385,8 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
         if text and not text.isspace():
             uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
             urisFromAlchemyConcepts = getConceptsFromAlchemy(url)
-            uris.append(urisFromAlchemyConcepts)
+            # print(urisFromAlchemyConcepts)
+            uris += urisFromAlchemyConcepts
             annotatedTexts[url] = uris
 
     return annotatedTexts
