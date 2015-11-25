@@ -10,14 +10,6 @@ def writeContentToFile(fileName, content):
   with open(fileName, "w") as jsonFile:
     jsonFile.write(content)
 
-def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
-	annotatedTexts = {}
-	for url, text in texts.items():
-		if text and not text.isspace():
-			uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
-			annotatedTexts[url] = uris
-
-	return annotatedTexts
 
 def getURIsFromText(text, spotlightConfidence, spotlightSupport):
   
@@ -27,11 +19,9 @@ def getURIsFromText(text, spotlightConfidence, spotlightSupport):
   # Extract URI
 	graphe = getDBPediaRessources(content)
 	
-	writeContentToFile(spotlightExampleFile, graphe)
-	
-		
-
 	return graphe
+	
+	
 def getAnnotatedTextFromFile():
 	with open(spotlightExampleFile, "r") as myfile:
 		content = myfile.read()
@@ -73,7 +63,7 @@ def getDBPediaRessources(xmlRawContent):
 
 	graphe = ""
 	for resource in resources:
-		lien = "film relationTheme " + resource.get("URI")
+		lien = "<" + uriFilm + "> <http://SIGSWAG.charisme/relationTheme> <" + resource.get("URI") + ">."
 		graphe+=lien + '\n'
 		
 	return graphe
@@ -97,8 +87,9 @@ def main(spotlightConfidence, spotlightSupport):
   
   # Retrieve, for each text, the list of corresponding URIs
 	annotatedTexts = getURIsFromText(text, spotlightConfidence, spotlightSupport)
+	
+	writeContentToFile(spotlightExampleFile, annotatedTexts)
 
-	print(annotatedTexts)
   # Prepare the JSON
   # responseUriArray = []
   # for url, uris in annotatedTexts.items():
@@ -118,23 +109,26 @@ def main(spotlightConfidence, spotlightSupport):
 '''
 =========================================================================================
 Usage 
-python genURI.py Inception 20 all 0.4 34
-python genURI.py query searchEngine numberOfResults spotlightConfidence spotlightSupport
+python remplitGraphe.py '<http://dbpedia.org/resource/Inception>' 0.1 20
+python remplitGraphe.py uriFilm spotlightConfidence spotlightSupport
 =========================================================================================
 '''
 if	__name__ =='__main__':
 
   # Default values for spotlightConfidence is 0.2 and for spotlightSupport is 20
 	if(1 < len(sys.argv)):
-		spotlightConfidence = sys.argv[1]
+		uriFilm = str(sys.argv[1])
 	else:
-		spotlightConfidence = 0.12
-
+		uriFilm = 'http://dbpedia.org/resource/Godzilla_(1998_film)'
+  
 	if(2 < len(sys.argv)):
-		spotlightSupport = sys.argv[2]
+		spotlightConfidence = sys.argv[2]
+	else:
+		spotlightConfidence = 0.1
+
+	if(3 < len(sys.argv)):
+		spotlightSupport = sys.argv[3]
 	else:
 		spotlightSupport = 20
 
-	jsonResponse = main(spotlightConfidence, spotlightSupport)
-
-	print(jsonResponse)
+	main(spotlightConfidence, spotlightSupport)
