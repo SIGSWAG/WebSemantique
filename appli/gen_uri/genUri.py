@@ -416,12 +416,9 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
         "support": spotlightSupport
         # "sparql": sparql
     }
-
     response = requests.post(dbpediaSpotlightURL, data=payload)
 
     content = response.text
-
-  # print(content)
 
     if writeToFile:
         writeContentToFile(spotlightExampleFile, content)
