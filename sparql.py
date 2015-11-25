@@ -7,6 +7,7 @@ outputFileName = "output.json"
 grapheAlternatif = rdflib.Graph()
 grapheAlternatif.parse("baseAlternative.rdf", format="nt")
 
+
 def construitGrapheFilm(uri):
 	jacky = {}
 	jacky['link']= uri
@@ -64,8 +65,8 @@ def requetePage(uri):
 						
 						<"""+uri+"""> ?p ?o.
 						
-					} LIMIT 10
-					""",
+					} LIMIT """+nombreLiensParURI
+					,
 		"format": "json",
 		"timeout": "30000"
 	}
@@ -95,8 +96,8 @@ def chercheFilms(uri):
 						?s a <http://dbpedia.org/ontology/Film>.
 						?s ?p <"""+ uri +""">.
 						
-					} LIMIT 5
-					""",
+					} LIMIT """+nombreFilmsDBPedia
+					,
 		"format": "json",
 		"timeout": "30000"
 	}
@@ -127,7 +128,7 @@ def chercheFilmsAlternatif(uri):
 		"""SELECT DISTINCT ?s
 		   WHERE {
 		   ?s ?p <"""+ uri +""">.
-		   }LIMIT 5""")
+		   }LIMIT """ + nombreFilmsAlternatif)
 
 	filmsURI = []
 
@@ -153,8 +154,8 @@ def requeteFilm(uriFilm):
 						
 						<"""+uriFilm+"""> ?p ?o.
 						
-					} LIMIT 10
-					""",
+					} LIMIT	"""+nombreLiensFilmsDBPedia
+					,
 		"format": "json",
 		"timeout": "30000"
 	}
@@ -177,7 +178,7 @@ def requeteFilmAlternative(uriFilm):
 		"""SELECT DISTINCT (<"""+uriFilm+"""> as ?s) ?p ?o
 		   WHERE {
 		   <"""+uriFilm+"""> ?p ?o.
-		   }LIMIT 10""")
+		   }LIMIT 10""" + nombreLiensFilmsAlternatif)
 
 	graphe = []
 
@@ -251,6 +252,29 @@ python sparql.py
 '''
 if	__name__ =='__main__':
 
+	if(1 < len(sys.argv)):
+		nombreLiensParURI = sys.argv[1]
+	else:
+		nombreLiensParURI = '50'
+  
+	if(2 < len(sys.argv)):
+		nombreFilmsDBPedia = sys.argv[2]
+	else:
+		nombreFilmsDBPedia = '5'
 
+	if(3 < len(sys.argv)):
+		nombreFilmsAlternatif = sys.argv[3]
+	else:
+		nombreFilmsAlternatif = '5'
+		
+	if(4 < len(sys.argv)):
+		nombreLiensFilmsDBPedia = sys.argv[3]
+	else:
+		nombreLiensFilmsDBPedia = '100'
+		
+	if(5 < len(sys.argv)):
+		nombreLiensFilmsAlternatif = sys.argv[3]
+	else:
+		nombreLiensFilmsAlternatif = '100'
 		
 main()
