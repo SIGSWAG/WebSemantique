@@ -20,7 +20,6 @@ def construitGrapheFilm(uri):
 	jacky["graphe"]+=requeteFilm(uri)
 	jacky["graphe"]+=requeteFilmAlternative(uri)
 	jacky["infos"]=requeteInfoMovie(uri)
-	print(jacky["infos"])
 	return jacky
 
 	
