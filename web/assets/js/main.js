@@ -20,6 +20,10 @@ function syntaxHighlight(json) {
     });
 }
 
+function replaceAll(str, find, replace) {
+  return str.replace(new RegExp(find, 'g'), replace);
+}
+
 function drawGraph(json) {
 	$("#results").graph({
 		json: json
@@ -80,17 +84,51 @@ $(function(){
 		},timer);
 	};
 
-	var createFilm = function(){
+	var createRanking = function(json){
 
 	};
 
-	var createLink = function(){
+	var createFilm = function(json){
+		var film = $("#filmPrototype .film").clone().prop('outerHTML');
+		film = replaceAll(film, "{{linkFilm}}", json.movie.link);
+		film = replaceAll(film, "{{filmName}}", json.movie.infos.name.value);
+		if(json.movie.infos.director){
+			film = replaceAll(film, "{{directorLink}}", json.movie.infos.director.value);
+		}
+		if(json.movie.infos.dirName){
+			film = replaceAll(film, "{{directorName}}", json.movie.infos.dirName.value);
+		}
+		if(json.movie.infos.country){
+			film = replaceAll(film, "{{country}}", json.movie.infos.country.value);
+		}
+		if(json.movie.infos.starring){
+			// traiter le starring ? 
+			film = replaceAll(film, "{{starring}}", json.movie.infos.starring.value);
+		}
+		var $film = $(film);
+		return $(film);
+	};
 
+	var createResult = function(json){
+		var result = $("#resultPrototype .result").clone().prop('outerHTML');
+		result = replaceAll(result, "{{link}}", json.link);
+		// here replace title
+		var $result = $(result);
+		// Pour chaque film
+		for (var i = 0; i < json.results.films.length; i++) {
+			var $film = createFilm(json.results.films[i]);
+			console.log("BEFORE : "+$result.find(".result-right").prop('outerHTML'));
+			console.log("FILM : "+$film.prop('outerHTML'));
+			$result.find(".result-right").append($film);
+			console.log("AFTER : "+$result.find(".result-right").prop('outerHTML'));
+		};
+		return $result;
 	};
 
 	var loadResults = function(json){
-		for (var i = json.length - 1; i >= 0; i--) {
-			console.log(json[i]);
+		for (var i = 0; i < json.length; i++) {
+			// Pour chaque resultats
+			Elements.$results.append(createResult(json[i]));
 		};
 	};
 
@@ -99,16 +137,16 @@ $(function(){
 			console.log("States.init");
 			Elements.$search.removeClass("small");
 			Elements.$loader.addClass("hide");
-			Elements.$results.addClass("hide").empty();
-			Elements.$graph.addClass("hide").empty();
+			Elements.$results.addClass("hide");
+			Elements.$graph.addClass("hide");
 			Elements.$searchOptions.collapse("show");
 		},
 		loading: function(){
 			console.log("States.loading");
 			Elements.$search.addClass("small");
 			Elements.$loader.removeClass("hide");
-			Elements.$results.addClass("hide");
-			Elements.$graph.addClass("hide");
+			Elements.$results.addClass("hide").empty();
+			Elements.$graph.addClass("hide").empty();
 			Elements.$searchOptions.collapse("hide");
 			Elements.$searchSubmit.attr("disabled","disabled");
 			Elements.$searchText.off("focus").focusout();
