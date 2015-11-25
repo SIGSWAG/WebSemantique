@@ -15,7 +15,7 @@
 <body>
 	<div id="container" class="container-fluid">
 		<form id="search" class="">
-			<input id="searchText" name="searchText" class="form-control text-center" placeholder="Surf and see !" type="text">
+			<input id="searchText" name="searchText" class="form-control text-center" placeholder="Surf and see !" type="text" required="" autocomplete="off">
 	  		<!--<button id="send" class="btn btn-primary btn-flat"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Ok</button>-->
 	  		<!--<div class="form-group label-floating">
 			  <label class="control-label" for="focusedInput1">Find the movie you're looking for !</label>
@@ -31,7 +31,7 @@
 			<a class="btn btn-primary" role="button" data-toggle="collapse" href="#searchOptions" aria-expanded="false" aria-controls="searchOptions">
 			  Search Options
 			</a>
-			<input class="btn btn-success" role="button" type="submit" value="Find it now !">
+			<input id="searchSubmit" class="btn btn-success" role="button" type="submit" value="Find it now !">
 	  		<div class="collapse"  id="searchOptions">
 	  			<div>
 		  			<div class="radio radio-primary">
@@ -42,7 +42,7 @@
 					</div>
 					<div class="radio radio-primary">
 						<label>
-						<input name="searchType" id="searchType2" value="2" checked="" type="radio">
+						<input name="searchType" id="searchType2" value="2" type="radio">
 						Bing
 						</label>
 					</div>
@@ -99,7 +99,7 @@
 	$(document).ready(function() {
           // This command is used to initialize some elements and make them work properly
           $.material.init();
-          $("#searchText").val("");
+          $("#searchText").val("").focus();
           $("#maxNumberOfResults").val(10);
           $("#spotlightConfidence").val(0.1);
           /*
@@ -109,6 +109,7 @@
 		*/
      });
 	</script>
+	<script type="text/javascript" src="assets/js/jsonsample.js" ></script>
 	<script type="text/javascript" src="assets/js/main.js" ></script>
 
 </body>
