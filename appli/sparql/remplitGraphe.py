@@ -7,8 +7,8 @@ spotlightExampleFile = "spotlightResponseExample.xml"
 
 
 def writeContentToFile(fileName, content):
-  with open(fileName, "w") as jsonFile:
-    jsonFile.write(content)
+	with open(fileName, "w") as jsonFile:
+		jsonFile.write(content)
 
 
 def getURIsFromText(text, spotlightConfidence, spotlightSupport):
@@ -16,6 +16,7 @@ def getURIsFromText(text, spotlightConfidence, spotlightSupport):
 	content = getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, None)
   #content = getAnnotatedTextFromFile()
 
+	
   # Extract URI
 	graphe = getDBPediaRessources(content)
 	
@@ -36,6 +37,7 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
 		"support": spotlightSupport
 	#"sparql": sparql
 	}
+
 	
 	headers = {
 		"Accept": "text/xml"
@@ -44,13 +46,13 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
 	
 	for i in range(0,9):
 		response = requests.get(dbpediaSpotlightURL, headers = headers, params = payload)
-
+		print(response.status_code)
 		if(response.status_code==200):	
 			
 			content = response.content.decode('utf-8').encode('cp850','replace').decode('cp850')
 
-			if(writeToFile):
-				writeContentToFile(spotlightExampleFile, content)
+
+			
 			
 			return content
 
@@ -59,6 +61,11 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
 def getDBPediaRessources(xmlRawContent):
 	xmlRoot = xml.etree.ElementTree.fromstring(xmlRawContent)
 	xmlRoot = xmlRoot.find("Resources")
+	
+	# If there is no Resource tag, return empty araay
+	if (xmlRoot is None):
+		return ""
+	
 	resources = xmlRoot.findall("Resource")
 
 	graphe = ""
@@ -84,27 +91,19 @@ def main(spotlightConfidence, spotlightSupport):
   # Retrieve, for each URL, an associated text
 	with open(inputResumes, "r") as myfile:
 		text = myfile.read()
+		
+	caractere = "\n\n"
+	nts = ""
+	for paragraphe in text.split(caractere):
   
-  # Retrieve, for each text, the list of corresponding URIs
-	annotatedTexts = getURIsFromText(text, spotlightConfidence, spotlightSupport)
-	
-	writeContentToFile(spotlightExampleFile, annotatedTexts)
-
-  # Prepare the JSON
-  # responseUriArray = []
-  # for url, uris in annotatedTexts.items():
-	# responseUriArray.append({
-		# "url": url,
-		# "uri": uris
-	  # })
-
-  # response = {
-	# "pages": responseUriArray
-  # }
-
-  # jsonResponse = json.dumps(response)
+	  # Retrieve, for each text, the list of corresponding URIs
+		nts+= getURIsFromText(paragraphe, spotlightConfidence, spotlightSupport)
+		
+	writeContentToFile(spotlightExampleFile, nts)
 
 	return 0
+	
+	
 
 '''
 =========================================================================================
@@ -119,12 +118,12 @@ if	__name__ =='__main__':
 	if(1 < len(sys.argv)):
 		uriFilm = str(sys.argv[1])
 	else:
-		uriFilm = 'http://dbpedia.org/resource/Godzilla_(1998_film)'
+		uriFilm = 'http://dbpedia.org/resource/Into_the_Wild_(film)'
   
 	if(2 < len(sys.argv)):
 		spotlightConfidence = sys.argv[2]
 	else:
-		spotlightConfidence = 0.1
+		spotlightConfidence = 0.2
 
 	if(3 < len(sys.argv)):
 		spotlightSupport = sys.argv[3]
