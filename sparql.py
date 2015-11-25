@@ -7,19 +7,64 @@ outputFileName = "output.json"
 grapheAlternatif = rdflib.Graph()
 grapheAlternatif.parse("baseAlternative.rdf", format="nt")
 
+def construitGrapheFilm(uri):
+	jacky = {}
+	jacky['link']= uri
+	jacky['graphe'] = []
+	jacky["graphe"]+=requeteFilm(uri)
+	jacky["graphe"]+=requeteFilmAlternative(uri)
+	jacky["infos"]=requeteInfoMovie(uri)
+	return jacky
 
-		
-def requetePage(uri):
+	
+def requeteInfoMovie(uri):
 # Requête SPARQL	
 
 	
 	payload = {
-		"query": """SELECT DISTINCT ("""+uri+""" as ?s) ?p ?o
+		"query": """select distinct * where {
+
+				<"""+uri+"""> <http://xmlns.com/foaf/0.1/name> ?name
+
+
+				OPTIONAL{
+
+				<http://dbpedia.org/resource/Inception>  <http://dbpedia.org/ontology/director> ?director.
+				?director <http://xmlns.com/foaf/0.1/name> ?dirName.
+				<http://dbpedia.org/resource/Inception>  <http://dbpedia.org/property/country> ?country.
+				<http://dbpedia.org/resource/Inception> <http://dbpedia.org/property/starring> ?starring.
+				}
+			}
+			LIMIT 1
+					""",
+		"format": "json",
+		"timeout": "30000"
+	}
+
+
+	response = requests.get(dbpediaEndpoint, params = payload)
+
+	
+	if(response.status_code==200):
+		responseJson = response.json()
+		
+		graphe = responseJson['results']['bindings'][0]
+		
+		return graphe
+	else:
+		return []
+	
+		
+def requetePage(uri):
+# Requête SPARQL	
+	
+	payload = {
+		"query": """SELECT DISTINCT (<"""+uri+"""> as ?s) ?p ?o
 					WHERE {
 						
-						"""+uri+""" ?p ?o.
+						<"""+uri+"""> ?p ?o.
 						
-					} LIMIT 250
+					} LIMIT 10
 					""",
 		"format": "json",
 		"timeout": "30000"
@@ -59,7 +104,6 @@ def chercheFilms(uri):
 	response = requests.get(dbpediaEndpoint, params = payload)
 	
 	if(response.status_code==200):
-		print("yo")
 		responseJson = response.json()
 		
 		filmsURI = []
@@ -67,11 +111,7 @@ def chercheFilms(uri):
 
 		try:
 			for film in responseJson['results']['bindings'][0]['s']['value']:
-				jacky = {}
-				jacky['link']= film
-				jacky['graphe'] = {}
-				jacky["graphe"].append(requeteFilm(film))
-				filmsURI.append(jacky)
+				filmsURI.append(construitGrapheFilm(film))
 		except:
 			return []
 			
@@ -82,60 +122,85 @@ def chercheFilms(uri):
 		
 		
 def chercheFilmsAlternatif(uri):
-	qres = g.query(
+
+	qres = grapheAlternatif.query(
 		"""SELECT DISTINCT ?s
 		   WHERE {
 		   ?s ?p <"""+ uri +""">.
 		   }LIMIT 5""")
 
-	graphe = []
+	filmsURI = []
+
+	try:	
+		for s in qres:
+			filmsURI.append(construitGrapheFilm(s[0]))
 		
-	for s, p, o in qres:
+	except:
+		return []
 		
-		lien = {}
-		lien["s"]={}
-		lien["s"]["value"]=s
-		lien["s"]["type"]="uri"
-		lien["p"]={}
-		lien["p"]["value"]=p
-		lien["p"]["type"]="uri"
-		lien["o"]={}
-		lien["o"]["value"]=o
-		lien["o"]["type"]="uri"
-		graphe.append(lien)
-		
-	return graphe
+	return filmsURI	
 		
 		
 
 def requeteFilm(uriFilm):
 # Requête SPARQL	
 
+
 	payload = {
-		"query": """SELECT DISTINCT (("""+uriFilm+""") as ?s) ?p ?o
+		"query": """SELECT DISTINCT (<"""+uriFilm+"""> as ?s) ?p ?o
 					WHERE {
 						
 						
-						"""+uriFilm+""" ?p ?o.
+						<"""+uriFilm+"""> ?p ?o.
 						
-					} LIMIT 250
+					} LIMIT 10
 					""",
 		"format": "json",
 		"timeout": "30000"
 	}
+	
 
 	response = requests.get(dbpediaEndpoint, params = payload)
 	
 	if(response.status_code==200):
 		responseJson = response.json()
 		
-		jacky = {}
-		jacky['link']= responseJson['results']['bindings'][0]['s']['value']
-		jacky['graphe'] = responseJson['results']['bindings']
-		
-		return jacky
+		return responseJson['results']['bindings']
 	else:
 		return {}
+		
+		
+def requeteFilmAlternative(uriFilm):
+# Requête SPARQL	
+
+	qres = grapheAlternatif.query(
+		"""SELECT DISTINCT (<"""+uriFilm+"""> as ?s) ?p ?o
+		   WHERE {
+		   <"""+uriFilm+"""> ?p ?o.
+		   }LIMIT 10""")
+
+	graphe = []
+
+	try:	
+		for s, p, o in qres:
+	
+			lien = {}
+			lien["s"]={}
+			lien["s"]["value"]=s
+			lien["s"]["type"]="uri"
+			lien["p"]={}
+			lien["p"]["value"]=p
+			lien["p"]["type"]="uri"
+			lien["o"]={}
+			lien["o"]["value"]=o
+			lien["o"]["type"]="uri"
+			graphe.append(lien)
+
+	except:
+		return []
+		
+	return graphe
+		
 
 def main():
 
@@ -152,7 +217,7 @@ def main():
 
 	for page in jsonObject["pages"]:
 		listURI = "("
-		#print(page["url"] + " --- " + str(page["uri"]))
+
 		
 		struct = {}
 		struct['link'] = page["url"]
@@ -160,18 +225,18 @@ def main():
 		struct['results']['graphePage'] = []
 		struct['results']['films'] = []
 		
-		films={}
 		
+		#Pour chaque URI, on enrichit le graphe de la page, et on cherche 5 films max dans dbpedia,
+		#et dans le graphe alternatif, qui sont liés à l'uri
 		for uri in page["uri"]:
-			struri = "<" + uri + ">"
-			struct['results']['graphePage']+=requetePage(struri)
+			struct['results']['graphePage']+=requetePage(uri)
 			struct["results"]["films"]+=chercheFilms(uri)
+			struct["results"]["films"]+=chercheFilmsAlternatif(uri)
 			
 
 		sortie.append(struct)
 
 
-	#print(listURI)
 	with open(outputFileName, "w") as myfile:
 		myfile.write(json.dumps(sortie))
 	# Requête SPARQL
