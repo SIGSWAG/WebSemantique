@@ -56,12 +56,11 @@ function drawGraph(json) {
 			}
 		}
 	}
-	/*
+	
 	$("#results").append('<pre class="json">'+syntaxHighlight(graph)+'</pre>');
 	$("#graph").graph({
 		json: JSON.stringify(graph)
 	});
-*/
 }
 
 // Random loading messages generation
@@ -141,7 +140,7 @@ $(function(){
 			film = replaceAll(film, "{{country}}", json.movie.infos.country.value);
 		}
 		if(json.movie.infos.starring){
-			// traiter le starring ? 
+			// traiter le starring ?
 			film = replaceAll(film, "{{starring}}", json.movie.infos.starring.value);
 		}
 		var $film = $(film);
@@ -264,6 +263,3 @@ $(function(){
 	// Run
 	States.init();
 });
-
-
-
