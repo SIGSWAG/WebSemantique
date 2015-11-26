@@ -2,7 +2,8 @@
 	"pages": [
 			{
 				"url": "http://www.imdb.com/title/tt1375666/", 
-				"uri": ["http://dbpedia.org/resource/Dream"
+				"uri": ["http://dbpedia.org/resource/Spider-Man",
+						"http://dbpedia.org/resource/Death"
 						]
 			},
 			{

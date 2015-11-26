@@ -5,7 +5,8 @@ dbpediaEndpoint = "http://live.dbpedia.org/sparql"
 inputURIs = "sample.json"
 outputFileName = "output.json"
 grapheAlternatif = rdflib.Graph()
-grapheAlternatif.parse("baseAlternative.rdf", format="nt")
+grapheAlternatif.parse("baseAlternativeFat.rdf", format="nt")
+filmsObtenus = ""
 
 
 def construitGrapheFilm(uri):
@@ -17,6 +18,53 @@ def construitGrapheFilm(uri):
 	jacky["infos"]=requeteInfoMovie(uri)
 	return jacky
 
+
+def cherche_mots_clefs(mots):
+# Requête SPARQL	
+
+	filter = ""
+	for mot in mots:
+		filter += "regex(?a, \".*" + mot + ".*\")&&"
+		
+	payload = {
+		"query": """SELECT DISTINCT ?s
+					WHERE {
+						
+						?s a <http://dbpedia.org/ontology/Film>.
+						?s <http://dbpedia.org/ontology/abstract> ?a.
+						FILTER(""" + filter[0:-2] + """).
+						
+					} LIMIT """+nombreFilmsMotsClefs
+					,
+		"format": "json",
+		"timeout": "30000"
+	}
+	
+	print(payload["query"])
+
+	response = requests.get(dbpediaEndpoint, params = payload)
+	
+	if(response.status_code==200):
+		responseJson = response.json()
+		#print(responseJson)
+		
+		filmsURI = []
+		
+		for film in responseJson['results']['bindings']:
+			try:
+				jacky = {}
+				jacky['link']= film["s"]["value"]
+				jacky["infos"]=requeteInfoMovie(film["s"]["value"])
+				filmsURI.append(jacky)
+			except:
+				jacky = {}
+			
+		return filmsURI
+	
+	
+	else:
+		return {}
+	
 	
 def requeteInfoMovie(uri):
 # Requête SPARQL	
@@ -30,10 +78,10 @@ def requeteInfoMovie(uri):
 
 				OPTIONAL{
 
-				<http://dbpedia.org/resource/Inception>  <http://dbpedia.org/ontology/director> ?director.
+				<"""+uri+""">  <http://dbpedia.org/ontology/director> ?director.
 				?director <http://xmlns.com/foaf/0.1/name> ?dirName.
-				<http://dbpedia.org/resource/Inception>  <http://dbpedia.org/property/country> ?country.
-				<http://dbpedia.org/resource/Inception> <http://dbpedia.org/property/starring> ?starring.
+				<"""+uri+""">  <http://dbpedia.org/property/country> ?country.
+				<"""+uri+"""> <http://dbpedia.org/property/starring> ?starring.
 				}
 			}
 			LIMIT 1
@@ -111,8 +159,8 @@ def chercheFilms(uri):
 		
 
 		try:
-			for film in responseJson['results']['bindings'][0]['s']['value']:
-				filmsURI.append(construitGrapheFilm(film))
+			for film in responseJson['results']['bindings']:
+				filmsURI.append(construitGrapheFilm(film["s"]["value"]))
 		except:
 			return []
 			
@@ -265,16 +313,24 @@ if	__name__ =='__main__':
 	if(3 < len(sys.argv)):
 		nombreFilmsAlternatif = sys.argv[3]
 	else:
-		nombreFilmsAlternatif = '5'
+		nombreFilmsAlternatif = '10'
 		
 	if(4 < len(sys.argv)):
-		nombreLiensFilmsDBPedia = sys.argv[3]
+		nombreLiensFilmsDBPedia = sys.argv[4]
 	else:
 		nombreLiensFilmsDBPedia = '100'
 		
 	if(5 < len(sys.argv)):
-		nombreLiensFilmsAlternatif = sys.argv[3]
+		nombreLiensFilmsAlternatif = sys.argv[5]
 	else:
 		nombreLiensFilmsAlternatif = '100'
 		
-main()
+	if(6 < len(sys.argv)):
+		nombreLiensFilmsAlternatif = sys.argv[6]
+	else:
+		nombreFilmsMotsClefs = '10'
+
+list = []
+list.append("Gun")
+list.append("war")
+cherche_mots_clefs(list)
