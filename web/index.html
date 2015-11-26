@@ -14,20 +14,9 @@
 
 <body>
 	<div id="container" class="container-fluid">
+<!-- SEARCH -->
 		<form id="search" class="">
 			<input id="searchText" name="searchText" class="form-control text-center" placeholder="Surf and see !" type="text" required="" autocomplete="off">
-	  		<!--<button id="send" class="btn btn-primary btn-flat"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Ok</button>-->
-	  		<!--<div class="form-group label-floating">
-			  <label class="control-label" for="focusedInput1">Find the movie you're looking for !</label>
-			  <input class="form-control" id="focusedInput1" type="text">
-			</div>
-		-->
-		<!--
-			<button id="searchSubmit" type="button" type="submit" class="btn btn-fab btn-raised btn-material-red">
-				<i class="mdi-navigation-arrow-forward"></i>
-				<div class="ripple-wrapper"></div>
-			</button>
-		-->
 			<a class="btn btn-material-orange" role="button" data-toggle="collapse" href="#searchOptions" aria-expanded="false" aria-controls="searchOptions">
 			  Search Options
 			</a>
@@ -71,21 +60,25 @@
 				</div>
 		  	</div>
 	  	</form>
+<!-- FILMLIST -->
+	  	<section id="filmList" class="container hide">
+	  	</section>
+<!-- LOADER -->
 	  	<section id="loader" class="hide">
-	  		<div id="progressBar" class="progress progress-striped active">
-	              	
+	  		<div id="progressBar" class="progress progress-striped active">	
 	          </div>
 	          <h1 id="progressMsg">Calculating exponential matrix</h1>
 	  		<img id="bobine" class="img-responsive rotating" src="assets/img/bobine.png">
 	  	</section>
+<!-- RESULTS -->
 	  	<section id="results" class="container hide">
 	  	</section>
+<!-- GRAPH -->
 		<section id="graph" class="hide">
-		
 		</section>
 
 
-
+<!-- PROTOTYPES -->
 	  	<section id="resultPrototype" class="hide">
 			<div class="result row">
 				<div class="result-left col-xs-6">
@@ -115,8 +108,6 @@
 				</dl>
 			</div>
 	  	</section>
-
-
 	</div>
 
 	<script src="assets/js/jquery-2.1.4.min.js"></script>
@@ -144,6 +135,7 @@
      });
 	</script>
 	<script type="text/javascript" src="assets/js/jsonsample.js" ></script>
+	<script type="text/javascript" src="assets/js/jsonlistsample.js" ></script>
 	<script type="text/javascript" src="assets/js/main.js" ></script>
 
 </body>

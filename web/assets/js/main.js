@@ -1,4 +1,6 @@
-var LOCAL = false;
+var LOCAL = true;
+
+
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
          json = JSON.stringify(json, undefined, 4);
@@ -90,6 +92,7 @@ $(function(){
 		$searchText : $("#searchText"),
 		$loader : $("#loader"),
 		$results : $("#results"),
+		$filmList : $("#filmList"),
 		$graph : $("#graph"),
 		$searchOptions : $("#searchOptions"),
 		$progressMsg : $("#progressMsg"),
@@ -123,31 +126,31 @@ $(function(){
 			rank = replaceAll(rank, "{{linkFilm}}", json.movie.link);
 		if(json.movie.infos && json.movie.infos.name && json.movie.infos.name.value)
 			rank = replaceAll(rank, "{{filmName}}", json.movie.infos.name.value);
-		rank = replaceAll(rank, "{{coef}}", (json.coeff*100)+"%");
+		rank = replaceAll(rank, "{{coef}}", (Math.floor(json.coeff*100*1000)/1000)+"%");
 		var $rank = $("<li>"+rank+"</li>");
 		return $rank;
 	};
 
 	var createFilm = function(json){
 		var film = $("#filmPrototype .film").prop('outerHTML');
-		if(json.movie.link)
-			film = replaceAll(film, "{{linkFilm}}", json.movie.link);
-		if(json.movie.infos){
-			if(json.movie.infos.name){
-				film = replaceAll(film, "{{filmName}}", json.movie.infos.name.value);
+		if(json.link)
+			film = replaceAll(film, "{{linkFilm}}", json.link);
+		if(json.infos){
+			if(json.infos.name){
+				film = replaceAll(film, "{{filmName}}", json.infos.name.value);
 			}
-			if(json.movie.infos.director){
-				film = replaceAll(film, "{{directorLink}}", json.movie.infos.director.value);
+			if(json.infos.director){
+				film = replaceAll(film, "{{directorLink}}", json.infos.director.value);
 			}
-			if(json.movie.infos.dirName){
-				film = replaceAll(film, "{{directorName}}", json.movie.infos.dirName.value);
+			if(json.infos.dirName){
+				film = replaceAll(film, "{{directorName}}", json.infos.dirName.value);
 			}
-			if(json.movie.infos.country){
-				film = replaceAll(film, "{{country}}", json.movie.infos.country.value);
+			if(json.infos.country){
+				film = replaceAll(film, "{{country}}", json.infos.country.value);
 			}
-			if(json.movie.infos.starring){
+			if(json.infos.starring){
 				// traiter le starring ?
-				film = replaceAll(film, "{{starring}}", json.movie.infos.starring.value);
+				film = replaceAll(film, "{{starring}}", json.infos.starring.value);
 			}
 		}
 		var $film = $(film);
@@ -162,9 +165,8 @@ $(function(){
 		var $result = $(result);
 		// Pour chaque film
 		for (var i = 0; i < json.results.films.length; i++) {
-			$result.find(".result-right").append(createFilm(json.results.films[i]));
+			$result.find(".result-right").append(createFilm(json.results.films[i].movie));
 			$result.find(".ranking").append(createRanking(json.results.films[i], i+1))
-
 		};
 		return $result;
 	};
@@ -176,20 +178,34 @@ $(function(){
 		};
 	};
 
+	var loadListFilm = function(json){
+		for (var i = 0; i < json.length; i++) {
+			// Pour chaque resultats
+			Elements.$filmList.append(createFilm(json[i]));
+		};
+	};
+
+	// Machine à Etats, Ayyye !
 	var States = {
+		ajaxReturned: 0,
+		NB_AJAX: 2,
 		init: function(){
 			console.log("States.init");
 			Elements.$search.removeClass("small");
 			Elements.$loader.addClass("hide");
 			Elements.$results.addClass("hide");
+			Elements.$filmList.addClass("hide");
 			Elements.$graph.addClass("hide");
 			Elements.$searchOptions.collapse("show");
+			Elements.$searchSubmit.removeAttr("disabled");
 		},
 		loading: function(){
 			console.log("States.loading");
+			States.ajaxReturned = 0;
 			Elements.$search.addClass("small");
 			Elements.$loader.removeClass("hide");
 			Elements.$results.addClass("hide").empty();
+			Elements.$filmList.addClass("hide").empty();
 			Elements.$graph.addClass("hide").empty();
 			Elements.$searchOptions.collapse("hide");
 			Elements.$searchSubmit.attr("disabled","disabled");
@@ -197,18 +213,32 @@ $(function(){
 			Elements.$search.off("focusout");
 			newLoading();
 		},
-		displayResults: function(json){
+		displayResults: function(jsonResult){
 			console.log("States.displayResults");
-			// to remove when ajax is ready
-			// clearTimeout(loadingTimeout)
-			loadResults(json);
-			drawGraph(json);
-			Elements.$searchSubmit.removeAttr("disabled");
-			//Elements.$search.addClass("small");
-			Elements.$loader.addClass("hide");
+			States.ajaxReturned++;
+			loadResults(jsonResult);
+			drawGraph(jsonResult);
 			Elements.$results.removeClass("hide");
 			Elements.$graph.removeClass("hide");
 			Elements.$searchOptions.collapse("hide");
+			if(States.ajaxReturned == States.NB_AJAX){
+				States.requestFinished();
+			}
+		},
+		displayFilmList : function(jsonFilmList){
+			console.log("States.displayFilmList");
+			States.ajaxReturned++;
+			loadListFilm(jsonFilmList);
+			Elements.$filmList.removeClass("hide");
+			Elements.$searchOptions.collapse("hide");
+			if(States.ajaxReturned == States.NB_AJAX){
+				States.requestFinished();
+			}
+		},
+		requestFinished : function(){
+			console.log("States.requestFinished");
+			Elements.$loader.addClass("hide");
+			Elements.$searchSubmit.removeAttr("disabled");
 			Elements.$searchText.on("focus",function(){
 				Elements.$search.removeClass("small");
 			});
@@ -218,30 +248,30 @@ $(function(){
 		}
 	};
 
-
 	$("#search").submit(function(e){
 		e.preventDefault();
 		$this = $(this);
 
 		var path = "./cgi-bin/server.py";
-		var params = {};
-
-		params.mots_clefs = Elements.$searchText.val();
-		params.max_number_of_results =  $("#maxNumberOfResults").val();
+		var params1 = {}, params2 = {};
+		params1.mots_clefs = Elements.$searchText.val();
+		params2.mots_clefs = Elements.$searchText.val();
+		params1.max_number_of_results =  $("#maxNumberOfResults").val();
 		// 1 -> google
 		// 2 -> bing
 		// 3 -> google & bing
-		params.search_type =  $("input[name='searchType']:checked").val();
+		params1.search_type =  $("input[name='searchType']:checked").val();
 		// Confiance  petit -> plus de result
-		params.spotlight_confidence = $("#spotlightConfidence").val();
+		params1.spotlight_confidence = $("#spotlightConfidence").val();
 		// laisser a true pour le web
-		params.from_web = "true";
-		params.spotlight_support = 20;
-		params.append_keyword = $("input[name='appendKeyword']:checked").length?"true":"false";
+		params1.from_web = "true";
+		params1.spotlight_support = 20;
+		params1.append_keyword = $("input[name='appendKeyword']:checked").length?"true":"false";
 
 		States.loading();
 		if(LOCAL){
-			setTimeout(function(){States.displayResults(jsonsample)},5*100);
+			setTimeout(function(){States.displayResults(jsonsample)},5*1000);
+			setTimeout(function(){States.displayFilmList(jsonlistsample)},2*1000);
 		}
 		else{
 			$.ajax({
@@ -249,21 +279,28 @@ $(function(){
 				url: path,
 				data: $.param(params),
 				success : function(json, statut){
-					console.log("SUCCESS-JSON : "+json);
 					States.displayResults(json);
 				},
 				error: function (resultat, statut, erreur) {
-					console.log("error");
-					alert("Erreur lors de l'appel à "+path);
+					alert("Erreur lors de l'appel à "+path+$.param(params1));
 					console.log(resultat, statut, erreur);
 					States.init();
+				}
+			});
+			$.ajax({
+				method: "GET",
+				url: path,
+				data: $.param(params2),
+				success : function(json, statut){
+					States.displayResults(json);
 				},
-				complete: function(response){
-					console.log("COMPLETE - RESPONSE : "+response);
+				error: function (resultat, statut, erreur) {
+					alert("Erreur lors de l'appel à "+path+$.param(params2));
+					console.log(resultat, statut, erreur);
+					States.init();
 				}
 			});
 		}
-
 		return false;
 	});
 
