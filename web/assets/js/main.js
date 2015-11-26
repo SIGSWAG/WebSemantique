@@ -1,4 +1,4 @@
-var LOCAL = true;
+var LOCAL = false;
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
          json = JSON.stringify(json, undefined, 4);
@@ -57,7 +57,7 @@ function drawGraph(json) {
 		}
 	}
 	
-	$("#results").append('<pre class="json">'+syntaxHighlight(graph)+'</pre>');
+	// $("#results").append('<pre class="json">'+syntaxHighlight(graph)+'</pre>');
 	$("#graph").graph({
 		json: JSON.stringify(graph)
 	});
@@ -119,8 +119,10 @@ $(function(){
 	var createRanking = function(json, num){
 		var rank = $("#rankPrototype").prop('innerHTML');
 		rank = replaceAll(rank, "{{rank}}", num);
-		rank = replaceAll(rank, "{{linkFilm}}", json.movie.link);
-		rank = replaceAll(rank, "{{filmName}}", json.movie.infos.name.value);
+		if(json.movie.link)
+			rank = replaceAll(rank, "{{linkFilm}}", json.movie.link);
+		if(json.movie.infos && json.movie.infos.name && json.movie.infos.name.value)
+			rank = replaceAll(rank, "{{filmName}}", json.movie.infos.name.value);
 		rank = replaceAll(rank, "{{coef}}", (json.coeff*100)+"%");
 		var $rank = $("<li>"+rank+"</li>");
 		return $rank;
@@ -128,20 +130,25 @@ $(function(){
 
 	var createFilm = function(json){
 		var film = $("#filmPrototype .film").prop('outerHTML');
-		film = replaceAll(film, "{{linkFilm}}", json.movie.link);
-		film = replaceAll(film, "{{filmName}}", json.movie.infos.name.value);
-		if(json.movie.infos.director){
-			film = replaceAll(film, "{{directorLink}}", json.movie.infos.director.value);
-		}
-		if(json.movie.infos.dirName){
-			film = replaceAll(film, "{{directorName}}", json.movie.infos.dirName.value);
-		}
-		if(json.movie.infos.country){
-			film = replaceAll(film, "{{country}}", json.movie.infos.country.value);
-		}
-		if(json.movie.infos.starring){
-			// traiter le starring ?
-			film = replaceAll(film, "{{starring}}", json.movie.infos.starring.value);
+		if(json.movie.link)
+			film = replaceAll(film, "{{linkFilm}}", json.movie.link);
+		if(json.movie.infos){
+			if(json.movie.infos.name){
+				film = replaceAll(film, "{{filmName}}", json.movie.infos.name.value);
+			}
+			if(json.movie.infos.director){
+				film = replaceAll(film, "{{directorLink}}", json.movie.infos.director.value);
+			}
+			if(json.movie.infos.dirName){
+				film = replaceAll(film, "{{directorName}}", json.movie.infos.dirName.value);
+			}
+			if(json.movie.infos.country){
+				film = replaceAll(film, "{{country}}", json.movie.infos.country.value);
+			}
+			if(json.movie.infos.starring){
+				// traiter le starring ?
+				film = replaceAll(film, "{{starring}}", json.movie.infos.starring.value);
+			}
 		}
 		var $film = $(film);
 		return $(film);
@@ -193,7 +200,7 @@ $(function(){
 		displayResults: function(json){
 			console.log("States.displayResults");
 			// to remove when ajax is ready
-			clearTimeout(loadingTimeout)
+			// clearTimeout(loadingTimeout)
 			loadResults(json);
 			drawGraph(json);
 			Elements.$searchSubmit.removeAttr("disabled");

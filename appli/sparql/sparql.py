@@ -34,10 +34,10 @@ def requeteInfoMovie(uri):
 
 				OPTIONAL{
 
-				<http://dbpedia.org/resource/Inception>  <http://dbpedia.org/ontology/director> ?director.
+				<"""+uri+""">  <http://dbpedia.org/ontology/director> ?director.
 				?director <http://xmlns.com/foaf/0.1/name> ?dirName.
-				<http://dbpedia.org/resource/Inception>  <http://dbpedia.org/property/country> ?country.
-				<http://dbpedia.org/resource/Inception> <http://dbpedia.org/property/starring> ?starring.
+				<"""+uri+"""> <http://dbpedia.org/property/country> ?country.
+				<"""+uri+"""> <http://dbpedia.org/property/starring> ?starring.
 				}
 			}
 			LIMIT 1
