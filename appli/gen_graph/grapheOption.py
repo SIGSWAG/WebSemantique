@@ -36,7 +36,10 @@ def main(jsonString):
 			sumUrl = sum(dictionnary[url["link"]].values())
 			sumMovie = sum(dictionnary[movie["link"]].values())
 			totalDiv = sumUrl*sumMovie
-			coeff = totalMovie / totalDiv
+			try:
+				coeff = totalMovie / totalDiv
+			except:
+				coeff = 0
 			# print(str(totalMovie) +" total movie "+str(totalDiv))	
 			listeFilms[movie["link"]] = coeff;
 			listeDescFilms[movie["link"]]=movie
