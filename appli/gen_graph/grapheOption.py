@@ -37,7 +37,7 @@ def main(jsonString):
 			sumMovie = sum(dictionnary[movie["link"]].values())
 			totalDiv = sumUrl*sumMovie
 			coeff = totalMovie / totalDiv
-			print(str(totalMovie) +" total movie "+str(totalDiv))	
+			# print(str(totalMovie) +" total movie "+str(totalDiv))	
 			listeFilms[movie["link"]] = coeff;
 			listeDescFilms[movie["link"]]=movie
 			del movie["graphe"]
@@ -52,7 +52,7 @@ def main(jsonString):
 		while (i<3 and i<len(arraySorted)) :
 			films.append({"movie":listeDescFilms[arraySorted[i][0]], "coeff":arraySorted[i][1]})
 			i=i+1
-		nodes.append({ "link" : url["link"], "results":{"films":films}})
+		nodes.append({ "link" : url["link"], "title": url["title"], "results":{"films":films}})
 		
 	return json.dumps(nodes)
 		                         
