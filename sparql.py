@@ -330,7 +330,4 @@ if	__name__ =='__main__':
 	else:
 		nombreFilmsMotsClefs = '10'
 
-list = []
-list.append("Gun")
-list.append("war")
-cherche_mots_clefs(list)
+main()
