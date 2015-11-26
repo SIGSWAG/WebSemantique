@@ -468,6 +468,8 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
 
 
 def getDBPediaRessources(xmlRawContent):
+    if not xmlRawContent:
+        return []
     xmlRoot = xml.etree.ElementTree.fromstring(xmlRawContent)
     if not xmlRoot:
         return []
