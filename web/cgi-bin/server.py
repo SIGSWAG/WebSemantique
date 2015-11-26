@@ -24,5 +24,10 @@ if 'max_number_of_results' in arguments and	'mots_clefs' in arguments and 'searc
 						,'-a', arguments.getvalue('append_keyword')
 						])
 	print(response)
+elif 'mots_clefs':
+	response = main.sparql_request([
+						 '-m', arguments.getvalue('mots_clefs')
+						])
+	print(response)
 else:
 	print('7 parametres necessaires : "max_number_of_results", "mots_clefs", "search_type", "spotlight_confidence", "from_web", "spotlight_support", "append_keyword"')
