@@ -31,7 +31,7 @@ function drawGraph(json) {
 	graph = {"nodes":[], "links":[]};
 	for(var i=0 ; i<json.length ; i++){
 		graph.nodes.push({
-			"name": json[i].link
+			"name": decodeURIComponent(json[i].link)
 		});
 		for(var j=0 ; j<json[i].results.films.length ; j++){
 			var trouve = false;
@@ -47,7 +47,7 @@ function drawGraph(json) {
 			}
 			if(!trouve){
 				graph.nodes.push({
-					"name": json[i].results.films[j].movie.link
+					"name": decodeURIComponent(json[i].results.films[j].movie.link)
 				});
 
 				graph.links.push({
@@ -139,22 +139,52 @@ $(function(){
 			if(json.infos.name){
 				film = replaceAll(film, "{{filmName}}", json.infos.name.value);
 			}
+
 			if(json.infos.director){
 				film = replaceAll(film, "{{directorLink}}", json.infos.director.value);
 			}
+			else{
+				film = replaceAll(film, '<a href="{{directorLink}}">{{directorName}}</a>', '{{directorName}}');
+			}
+
 			if(json.infos.dirName){
 				film = replaceAll(film, "{{directorName}}", json.infos.dirName.value);
 			}
+			else{
+				film = replaceAll(film, '{{directorName}}', '<span class="directorName">Unknown</span>');
+			}
+
 			if(json.infos.country){
 				film = replaceAll(film, "{{country}}", json.infos.country.value);
 			}
+			else{
+				film = replaceAll(film, '{{country}}', '<span class="country">Unknown</span>');
+			}
+
 			if(json.infos.starring){
-				// traiter le starring ?
-				film = replaceAll(film, "{{starring}}", json.infos.starring.value);
+				if(json.infos.starring.type == "literal"){
+					var starring = json.infos.starring.value;
+					starring = replaceAll(starring, "\\*", "-");
+					film = replaceAll(film, "{{starring}}", starring);
+				}
+				else if(json.infos.starring.type == "uri"){
+					var uri = json.infos.starring.value;
+					var starring = uri.split("/");
+					starring = starring[starring.length-1];
+					starring = replaceAll(starring,"_", " ");
+					var linkStarring = '<a href="'+uri+'">'+starring+'</a>';
+					film = replaceAll(film, "{{starring}}", linkStarring);
+				}
+				else{
+					film = replaceAll(film, "{{starring}}", json.infos.starring);
+				}
+			}
+			else{
+				film = replaceAll(film, "{{starring}}", '<span class="starring">Unknown</span>');
 			}
 		}
 		var $film = $(film);
-		return $(film);
+		return $film;
 	};
 
 	var createResult = function(json){
@@ -183,6 +213,7 @@ $(function(){
 			// Pour chaque resultats
 			Elements.$filmList.append(createFilm(json[i]));
 		};
+
 	};
 
 	// Machine à Etats, Ayyye !
@@ -277,7 +308,7 @@ $(function(){
 			$.ajax({
 				method: "GET",
 				url: path,
-				data: $.param(params),
+				data: $.param(params1),
 				success : function(json, statut){
 					States.displayResults(json);
 				},
