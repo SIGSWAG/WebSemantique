@@ -12,6 +12,7 @@ alchemyAPIKey = "9d4bfa22ad347204f33e0451834cef0fe6f5b9e3"
 alchemyAPIKeyRescue = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 alchemyGetConceptsURL = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedConcepts"
 alchemyGetConceptsTextURL = "http://gateway-a.watsonplatform.net/calls/text/TextGetRankedConcepts"
+alchemyGetEntitiesURL = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedNamedEntities"
 alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 alchemyAPIKeyRescueBis = "1c29f8e0024bf320f7974af9cbe6612ec1dd8d73"
 
@@ -360,6 +361,39 @@ def getConceptsFromAlchemyByText(text):
             uris.append(uri['dbpedia'])
 
     return uris
+
+def getEntitiesFromAlchemyByUrls(urls):
+    uris = {}
+    for url in urls:
+        uris[url] = getEntitiesFromAlchemyByUrl(url)
+
+    return uris
+
+
+def getEntitiesFromAlchemyByUrl(url):
+    payload = {
+        "url": url,
+        "apikey": alchemyAPIKey,
+        "outputMode": "json",
+        "linkedData": "1"
+    }
+
+    response = requests.get(alchemyGetEntitiesURL, params=payload)
+
+    jsonContent = response.text
+
+    jsonObject = json.loads(jsonContent)
+
+    uris = []
+    for uri in jsonObject['entities']:
+        if 'disambiguated' in uri:
+            entity = uri['disambiguated']
+            if 'dbpedia' in entity:
+                uris.append(uri['dbpedia'])
+
+    return uris
+
+
 '''
 ============================================================================
 PART 3 : For each Alchemy text output, use Spotlight to find related URI
@@ -428,7 +462,8 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
         if text and not text.isspace():
             uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
             urisFromAlchemyConcepts = getConceptsFromAlchemy(url)
-            uris = uris + urisFromAlchemyConcepts
+            urisFromAlchemyEntities = getEntitiesFromAlchemyByUrls(url)
+            uris = uris + urisFromAlchemyConcepts + urisFromAlchemyEntities
             annotatedTexts[url] = uris
 
     return annotatedTexts
