@@ -1,9 +1,9 @@
 
 import xml.etree.ElementTree, requests, sys, json
 
-inputResumes = "resume.txt"
+
 dbpediaSpotlightURL = "http://spotlight.dbpedia.org/rest/annotate"
-spotlightExampleFile = "spotlightResponseExample.xml"
+
 
 
 def writeContentToFile(fileName, content):
@@ -119,14 +119,24 @@ if	__name__ =='__main__':
 		uriFilm = str(sys.argv[1])
 	else:
 		uriFilm = 'http://dbpedia.org/resource/Into_the_Wild_(film)'
-  
+
 	if(2 < len(sys.argv)):
-		spotlightConfidence = sys.argv[2]
+		inputResumes = sys.argv[2]
+	else:
+		inputResumes = "resume.txt"
+		
+	if(3 < len(sys.argv)):
+		spotlightExampleFile = sys.argv[3]
+	else:
+		spotlightExampleFile = "spotlightResponseExample.xml"
+		
+	if(4 < len(sys.argv)):
+		spotlightConfidence = sys.argv[4]
 	else:
 		spotlightConfidence = 0.2
 
-	if(3 < len(sys.argv)):
-		spotlightSupport = sys.argv[3]
+	if(5 < len(sys.argv)):
+		spotlightSupport = sys.argv[5]
 	else:
 		spotlightSupport = 20
 
