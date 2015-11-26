@@ -1,5 +1,32 @@
 var LOCAL = true;
 
+function callIMDB($film){
+	params = {};
+	params.t = "inception";
+	params.plot = "full";
+	params.r = "json";
+	params.type = "movie";
+	params.tomatoes = "true";
+	$.ajax({
+		method: "GET",
+		url: "http://www.omdbapi.com/",
+		data: $.param(params),
+		success : function(json, statut){
+			$film.find('directorName').replaceWith(json.Director);
+			$film.find('country').replaceWith(json.Country);
+			$film.find('starring').replaceWith(json.Actors);
+			$film.find('dl-horizontal').append("<dt>Released :</dt>");
+			$film.find('dl-horizontal').append("<dd>"+ json.Released +"</dd>");
+			$film.find('dl-horizontal').append("<dt>Genre</dt>");
+			$film.find('dl-horizontal').append("<dd>"+ json.Genre +"</dd>");
+			$film.find('dl-horizontal').append("<dt>Awards</dt>");
+			$film.find('dl-horizontal').append("<dd>"+ json.Awards +"</dd>");
+		},
+		error: function (resultat, statut, erreur) {
+			console.log("erreur : "+erreur);
+		}
+	});
+}
 
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
@@ -154,7 +181,8 @@ $(function(){
 			}
 		}
 		var $film = $(film);
-		return $(film);
+		callIMDB($film);
+		return $film;
 	};
 
 	var createResult = function(json){
