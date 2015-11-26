@@ -1,8 +1,8 @@
-var LOCAL = true;
+var LOCAL = false;
 
-function callIMDB($film){
+function callIMDB($film, titre){
 	params = {};
-	params.t = "inception";
+	params.t = titre;
 	params.plot = "full";
 	params.r = "json";
 	params.type = "movie";
@@ -12,15 +12,21 @@ function callIMDB($film){
 		url: "http://www.omdbapi.com/",
 		data: $.param(params),
 		success : function(json, statut){
-			$film.find('directorName').replaceWith(json.Director);
-			$film.find('country').replaceWith(json.Country);
-			$film.find('starring').replaceWith(json.Actors);
-			$film.find('dl-horizontal').append("<dt>Released :</dt>");
-			$film.find('dl-horizontal').append("<dd>"+ json.Released +"</dd>");
-			$film.find('dl-horizontal').append("<dt>Genre</dt>");
-			$film.find('dl-horizontal').append("<dd>"+ json.Genre +"</dd>");
-			$film.find('dl-horizontal').append("<dt>Awards</dt>");
-			$film.find('dl-horizontal').append("<dd>"+ json.Awards +"</dd>");
+			$film.find('.directorName').replaceWith(json.Director);
+			$film.find('.country').replaceWith(json.Country);
+			$film.find('.starring').replaceWith(json.Actors);
+			if(json.Released != 'N/A'){
+				$film.find('.dl-horizontal').append("<dt>Released :</dt>");
+				$film.find('.dl-horizontal').append("<dd>"+ json.Released +"</dd>");
+			}
+			if(json.Genre != 'N/A'){
+				$film.find('.dl-horizontal').append("<dt>Genre</dt>");
+				$film.find('.dl-horizontal').append("<dd>"+ json.Genre +"</dd>");
+			}
+			if(json.Awards != "N/A"){
+				$film.find('.dl-horizontal').append("<dt>Awards</dt>");
+				$film.find('.dl-horizontal').append("<dd>"+ json.Awards +"</dd>");
+			}
 		},
 		error: function (resultat, statut, erreur) {
 			console.log("erreur : "+erreur);
@@ -58,7 +64,7 @@ function drawGraph(json) {
 	graph = {"nodes":[], "links":[]};
 	for(var i=0 ; i<json.length ; i++){
 		graph.nodes.push({
-			"name": json[i].link
+			"name": decodeURIComponent(json[i].link)
 		});
 		for(var j=0 ; j<json[i].results.films.length ; j++){
 			var trouve = false;
@@ -74,7 +80,7 @@ function drawGraph(json) {
 			}
 			if(!trouve){
 				graph.nodes.push({
-					"name": json[i].results.films[j].movie.link
+					"name": decodeURIComponent(json[i].results.films[j].movie.link)
 				});
 
 				graph.links.push({
@@ -166,22 +172,53 @@ $(function(){
 			if(json.infos.name){
 				film = replaceAll(film, "{{filmName}}", json.infos.name.value);
 			}
+
 			if(json.infos.director){
 				film = replaceAll(film, "{{directorLink}}", json.infos.director.value);
 			}
+			else{
+				film = replaceAll(film, '<a href="{{directorLink}}">{{directorName}}</a>', '{{directorName}}');
+			}
+
 			if(json.infos.dirName){
 				film = replaceAll(film, "{{directorName}}", json.infos.dirName.value);
 			}
+			else{
+				film = replaceAll(film, '{{directorName}}', '<span class="directorName">Unknown</span>');
+			}
+
 			if(json.infos.country){
 				film = replaceAll(film, "{{country}}", json.infos.country.value);
 			}
+			else{
+				film = replaceAll(film, '{{country}}', '<span class="country">Unknown</span>');
+			}
+
 			if(json.infos.starring){
-				// traiter le starring ?
-				film = replaceAll(film, "{{starring}}", json.infos.starring.value);
+				if(json.infos.starring.type == "literal"){
+					var starring = json.infos.starring.value;
+					starring = replaceAll(starring, "\\*", ",");
+					starring = starring.replace(',', ' ');
+					film = replaceAll(film, "{{starring}}", starring);
+				}
+				else if(json.infos.starring.type == "uri"){
+					var uri = json.infos.starring.value;
+					var starring = uri.split("/");
+					starring = starring[starring.length-1];
+					starring = replaceAll(starring,"_", " ");
+					var linkStarring = '<a href="'+uri+'">'+starring+'</a>';
+					film = replaceAll(film, "{{starring}}", linkStarring);
+				}
+				else{
+					film = replaceAll(film, "{{starring}}", json.infos.starring);
+				}
+			}
+			else{
+				film = replaceAll(film, "{{starring}}", '<span class="starring">Unknown</span>');
 			}
 		}
 		var $film = $(film);
-		callIMDB($film);
+		callIMDB($film, json.infos.name.value);
 		return $film;
 	};
 
@@ -211,6 +248,7 @@ $(function(){
 			// Pour chaque resultats
 			Elements.$filmList.append(createFilm(json[i]));
 		};
+
 	};
 
 	// Machine à Etats, Ayyye !
@@ -305,7 +343,7 @@ $(function(){
 			$.ajax({
 				method: "GET",
 				url: path,
-				data: $.param(params),
+				data: $.param(params1),
 				success : function(json, statut){
 					States.displayResults(json);
 				},
