@@ -1,7 +1,7 @@
 import json
 import sys
 import operator 
-
+import collections
 
 def main(jsonString):                         
         
@@ -17,25 +17,30 @@ def main(jsonString):
 	for url in data :
 		listeFilms= dict()
 		listeDescFilms = dict()
-		dictionnary[url["link"]]=set()
+		dictionnary[url["link"]]= collections.Counter()
 		for uri in url["results"]["graphePage"] :
-			
-			dictionnary[url["link"]].add(uri["s"]["value"])
+			dictionnary[url["link"]][uri["s"]["value"]]=dictionnary[url["link"]][uri["s"]["value"]]+1
 			if uri["o"]["type"] == "uri" :
-				dictionnary[url["link"]].add(uri["o"]["value"])
+				dictionnary[url["link"]][uri["o"]["value"]]=dictionnary[url["link"]][uri["o"]["value"]]+1
 		
 		for movie in url["results"]["films"]:
 			
-			dictionnary[movie["link"]]=set()
+			dictionnary[movie["link"]]=collections.Counter()
 			for uri in movie["graphe"] :
-				dictionnary[movie["link"]].add(uri["s"]["value"])
+				dictionnary[movie["link"]][uri["s"]["value"]]=dictionnary[movie["link"]][uri["s"]["value"]]+1
 				if uri["o"]["type"] == "uri" :
-					dictionnary[movie["link"]].add(uri["o"]["value"])
+					dictionnary[movie["link"]][uri["o"]["value"]]=dictionnary[movie["link"]][uri["o"]["value"]]+1
 		#calculate here jaccard for the movie
+			totalMovie = 0
+			for uri in dictionnary[url["link"]]: 
+					totalMovie  = totalMovie + dictionnary[movie["link"]][uri]*dictionnary[url["link"]][uri]
 			
-			inters = dictionnary[movie["link"]].intersection(dictionnary[url["link"]])
-			union = dictionnary[movie["link"]].union(dictionnary[url["link"]])
-			coeff = len(inters)/len(union)
+					
+			sumUrl = sum(dictionnary[url["link"]].values())
+			sumMovie = sum(dictionnary[movie["link"]].values())
+			totalDiv = sumUrl*sumMovie
+			coeff = totalMovie / totalDiv
+			print(str(totalMovie) +" total movie "+str(totalDiv))	
 			listeFilms[movie["link"]] = coeff;
 			listeDescFilms[movie["link"]]=movie
 			del movie["graphe"]
