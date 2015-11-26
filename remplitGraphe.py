@@ -121,14 +121,14 @@ if	__name__ =='__main__':
 		uriFilm = 'http://dbpedia.org/resource/Into_the_Wild_(film)'
 
 	if(2 < len(sys.argv)):
-		inputResumes = sys.argv[2]
+		inputResumes = "resume" + sys.argv[2] + ".txt"
 	else:
-		inputResumes = "resume.txt"
+		inputResumes = "resume1.txt"
 		
 	if(3 < len(sys.argv)):
-		spotlightExampleFile = sys.argv[3]
+		spotlightExampleFile = "reponse" + sys.argv[3] + ".xml"
 	else:
-		spotlightExampleFile = "spotlightResponseExample.xml"
+		spotlightExampleFile = "reponse1.xml"
 		
 	if(4 < len(sys.argv)):
 		spotlightConfidence = sys.argv[4]
