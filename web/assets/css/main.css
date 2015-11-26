@@ -22,8 +22,6 @@ body{
 	position: relative;
 	left: 50%;
 	transform: translateX(-50%);
-	-webkit-transition: all 1s linear;
-	-o-transition: all 1s linear;
 	transition: all 1s linear;
 }
 
@@ -37,11 +35,10 @@ body{
 
 
 #searchText{
+	color : #bdbdbd;
 	font-weight: 300;
 	font-size: 60px;
 	height : 100px;
-	-webkit-transition: all 1s linear;
-	-o-transition: all 1s linear;
 	transition: all 1s linear;
 }
 
@@ -68,6 +65,49 @@ body{
 	margin-right : 5px;
 }
 
+/******** Loader *********/
+#loader{
+	margin-top : 20px;
+}
+
+#bobine{
+	margin : auto;
+	margin-top: 20px;
+	width : 300px;
+	height: 300px;
+	border-radius: 80%;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotating {
+  animation: rotating 2s linear infinite;
+}
+
+#progressBar, #progressMsg{
+	width : 80%;
+	margin : auto;
+}
+
+#progressMsg{
+	color : #bdbdbd;
+}
+
+.progress-bar{
+	width : 0%;
+	transition: all 1s linear;
+}
+
+.progress-bar.load{
+	width : 100%;
+}
 
 /******** Coloration JSON **********/
 
@@ -85,4 +125,16 @@ body{
 
 .json .number{
 	color : green;
+}
+
+/******** Results ********/
+
+#results, #resultPrototype{
+	margin-top: 30px;
+	height : 500px;
+	background-color: rgba(255,255,255,0.7);
+	border-radius: 2px;
+}
+#movieCardPrototype{
+	
 }

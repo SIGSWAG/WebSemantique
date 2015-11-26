@@ -14,19 +14,25 @@
 
 <body>
 	<div id="container" class="container-fluid">
-		<form id="search" class="small">
-			<input id="searchText" name="searchText" class="form-control text-center" placeholder="Find the movie you're looking for !" type="text">
+		<form id="search" class="">
+			<input id="searchText" name="searchText" class="form-control text-center" placeholder="Surf and see !" type="text" required="" autocomplete="off">
 	  		<!--<button id="send" class="btn btn-primary btn-flat"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Ok</button>-->
 	  		<!--<div class="form-group label-floating">
 			  <label class="control-label" for="focusedInput1">Find the movie you're looking for !</label>
 			  <input class="form-control" id="focusedInput1" type="text">
 			</div>
 		-->
-			<a class="btn btn-primary" role="button" data-toggle="collapse" href="#searchOptions" aria-expanded="true" aria-controls="searchOptions">
+		<!--
+			<button id="searchSubmit" type="button" type="submit" class="btn btn-fab btn-raised btn-material-red">
+				<i class="mdi-navigation-arrow-forward"></i>
+				<div class="ripple-wrapper"></div>
+			</button>
+		-->
+			<a class="btn btn-primary" role="button" data-toggle="collapse" href="#searchOptions" aria-expanded="false" aria-controls="searchOptions">
 			  Search Options
 			</a>
-			<input class="btn btn-success" role="button" type="submit" value="Find it now !">
-	  		<div class="collapse in"  id="searchOptions">
+			<input id="searchSubmit" class="btn btn-success" role="button" type="submit" value="Find it now !">
+	  		<div class="collapse"  id="searchOptions">
 	  			<div>
 		  			<div class="radio radio-primary">
 						<label>
@@ -42,7 +48,7 @@
 					</div>
 					<div class="radio radio-primary">
 						<label>
-						<input name="searchType" id="searchType3" value="3" checked="" type="radio">
+						<input name="searchType" id="searchType3" value="3" type="radio">
 						Both
 						</label>
 					</div>
@@ -57,13 +63,60 @@
 					<input class="form-control" id="spotlightConfidence" type="number" value="0" min="0.1" max="1" step="0.1" required="">
 					<span class="material-input"></span>
 	              </div>
+				<div class="checkbox">
+					<label>
+					<input name="appendKeyword" id="appendKeyword" value="true" checked="" type="checkbox">
+					Affinate search on movies
+					</label>
+				</div>
 		  	</div>
 	  	</form>
-	  	<div id="results">
-	  	</div>
-		<div id="graph">
+	  	<section id="loader" class="hide">
+	  		<div id="progressBar" class="progress progress-striped active">
+	              	
+	          </div>
+	          <h1 id="progressMsg">Calculating exponential matrix</h1>
+	  		<img id="bobine" class="img-responsive rotating" src="assets/img/bobine.png">
+	  	</section>
+	  	<section id="results" class="container hide">
+	  	</section>
+		<section id="graph" class="hide">
+		
+		</section>
 
-		</div>
+
+
+	  	<section id="resultPrototype" class="hide">
+			<div class="result row">
+				<div class="result-left col-xs-6">
+					<h2 class="result-title"><a href="{{link}}">{{title}}</a></h2>
+					<h5 class="result-subtitle"><a href="{{link}}">{{link}}</a></h5>
+					<hr>
+					<ul class="ranking">
+					</ul>
+				</div>
+				<div class="result-right col-xs-6">
+				</div>
+			</div>
+	  	</section>
+	  	<section id="rankPrototype" class="hide">
+			{{rank}}. <a href="{{linkFilm}}">{{filmName}}</a> ({{coef}})
+	  	</section>
+	  	<section id="filmPrototype" class="hide">
+	  		<div class="film">
+				<h3 class="film-title"><a href="{{linkFilm}}">{{filmName}}</a></h3>
+				<dl class="dl-horizontal">
+				  <dt>Director</dt>
+				  <dd><a href="{{directorLink}}">{{directorName}}</a></dd>
+				  <dt>Country</dt>
+				  <dd>{{country}}</a></dd>
+				  <dt>Starring</dt>
+				  <dd>{{starring}}</dd>
+				</dl>
+			</div>
+	  	</section>
+
+
 	</div>
 
 	<script src="assets/js/jquery-2.1.4.min.js"></script>
@@ -80,7 +133,7 @@
 	$(document).ready(function() {
           // This command is used to initialize some elements and make them work properly
           $.material.init();
-          $("#searchText").val("");
+          $("#searchText").val("").focus();
           $("#maxNumberOfResults").val(10);
           $("#spotlightConfidence").val(0.1);
           /*
@@ -90,6 +143,7 @@
 		*/
      });
 	</script>
+	<script type="text/javascript" src="assets/js/jsonsample.js" ></script>
 	<script type="text/javascript" src="assets/js/main.js" ></script>
 
 </body>

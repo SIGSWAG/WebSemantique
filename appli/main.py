@@ -62,7 +62,7 @@ def get_params(argv):
 			elif arg == "false":
 				from_web = False
 		if opt in ('-s', '--spotlight_support'):
-			spotlight_support = arg
+			spotlight_support = float(arg)
 		if opt in ('-a', '--append_keyword'):
 			if arg == "true":
 				append_keyword = True
