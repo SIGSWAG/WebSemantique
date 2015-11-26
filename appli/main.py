@@ -6,6 +6,7 @@ import hashlib
 from gen_uri import genUri
 from sparql import sparql
 from gen_graph import genGraph
+from gen_graph import grapheOption
 
 
 class Params(object):
@@ -118,7 +119,8 @@ def main(argv):
 		## récupération des RDFs
 		json_rdfs = sparql.main(json_uris)
 		## récupèration du graphe
-		output = genGraph.main(json_rdfs)
+		# output = genGraph.main(json_rdfs)
+		output = grapheOption.main(json_rdfs)
 		## on enregistre la requête
 		with open(cached_file_path, 'w') as cached_file:
 			cached_file.write(output)

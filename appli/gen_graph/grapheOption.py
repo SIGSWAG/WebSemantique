@@ -9,8 +9,6 @@ def main(jsonString):
      
 	dictionnary = dict()
 	
-	
-		
 	urls = list();
 	nodes = list()
 
@@ -24,7 +22,6 @@ def main(jsonString):
 				dictionnary[url["link"]][uri["o"]["value"]]=dictionnary[url["link"]][uri["o"]["value"]]+1
 		
 		for movie in url["results"]["films"]:
-			
 			dictionnary[movie["link"]]=collections.Counter()
 			for uri in movie["graphe"] :
 				dictionnary[movie["link"]][uri["s"]["value"]]=dictionnary[movie["link"]][uri["s"]["value"]]+1
@@ -33,7 +30,7 @@ def main(jsonString):
 		#calculate here jaccard for the movie
 			totalMovie = 0
 			for uri in dictionnary[url["link"]]: 
-					totalMovie  = totalMovie + dictionnary[movie["link"]][uri]*dictionnary[url["link"]][uri]
+				totalMovie  = totalMovie + dictionnary[movie["link"]][uri]*dictionnary[url["link"]][uri]
 			
 					
 			sumUrl = sum(dictionnary[url["link"]].values())
@@ -53,42 +50,19 @@ def main(jsonString):
 		
 		
 		while (i<3 and i<len(arraySorted)) :
-			
 			films.append({"movie":listeDescFilms[arraySorted[i][0]], "coeff":arraySorted[i][1]})
 			i=i+1
 		nodes.append({ "link" : url["link"], "results":{"films":films}})
-			
 		
-
-		
-	return nodes		
+	return json.dumps(nodes)
 		                         
                             
 
 if __name__ == "__main__":
-
-
 	with open ("exampleRDF.json", "r") as myfile:
     		data=myfile.read().replace('\n', '')
 	
     		print(json.dumps(main(data)))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
