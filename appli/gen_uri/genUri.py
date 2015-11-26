@@ -12,6 +12,7 @@ alchemyGetNews = "/data/GetNews"
 alchemyAPIKey = "9d4bfa22ad347204f33e0451834cef0fe6f5b9e3"
 alchemyAPIKeyRescue = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 alchemyGetConceptsURL = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedConcepts"
+alchemyGetConceptsTextURL = "http://gateway-a.watsonplatform.net/calls/text/TextGetRankedConcepts"
 alchemyAPIKey = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 alchemyAPIKeyRescueBis = "1c29f8e0024bf320f7974af9cbe6612ec1dd8d73"
 
@@ -284,6 +285,7 @@ def makeAlchemyRequest(urls, alchemyEndpoint = alchemyTextSearchURL):
         param['url'] = url
         param['apikey'] = alchemyAPIKey
         param['outputMode'] = 'json'
+        param["linkedData"] = "1"
         params_list.append(param)
 
     p = RequestPool(alchemyRootURL + alchemyEndpoint, params_list)
@@ -328,7 +330,34 @@ def getConceptsFromAlchemyBIS(urls):
         concepts.append({'url':url,'concepts':dbpediaConcepts})
     return concepts
 
+def getConceptsFromAlchemyByTexts(texts):
+    uris = {}
+    for url, text in texts.items:
+        uris[url] = getConceptsFromAlchemyByText(text)
 
+    return uris
+
+
+def getConceptsFromAlchemyByText(text):
+    payload = {
+        "text": url,
+        "apikey": alchemyAPIKey,
+        "outputMode": "json",
+        "linkedData": "1"
+    }
+
+    response = requests.get(alchemyGetConceptsURL, params=payload)
+    
+    jsonContent = response.text
+
+    jsonObject = json.loads(jsonContent)
+
+    uris = []
+    for uri in jsonObject['concepts']:
+        if 'dbpedia' in uri:
+            uris.append(uri['dbpedia'])
+
+    return uris
 '''
 ============================================================================
 PART 3 : For each Alchemy text output, use Spotlight to find related URI
@@ -441,7 +470,11 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
 
 def getDBPediaRessources(xmlRawContent):
     xmlRoot = xml.etree.ElementTree.fromstring(xmlRawContent)
+    if xmlRoot is None:
+        return []
     xmlRoot = xmlRoot.find("Resources")
+    if xmlRoot is None:
+        return []
     # If there is no Resource tag, return empty araay
     if (xmlRoot.find('Resource') is None):
         return []
