@@ -389,7 +389,7 @@ def getEntitiesFromAlchemyByUrl(url):
         if 'disambiguated' in uri:
             entity = uri['disambiguated']
             if 'dbpedia' in entity:
-                uris.append(uri['dbpedia'])
+                uris.append(entity['dbpedia'])
 
     return uris
 
@@ -462,7 +462,7 @@ def getURIsFromTexts(texts, spotlightConfidence, spotlightSupport):
         if text and not text.isspace():
             uris = getURIsFromText(text, spotlightConfidence, spotlightSupport)
             urisFromAlchemyConcepts = getConceptsFromAlchemy(url)
-            urisFromAlchemyEntities = getEntitiesFromAlchemyByUrls(url)
+            urisFromAlchemyEntities = getEntitiesFromAlchemyByUrl(url)
             uris = uris + urisFromAlchemyConcepts + urisFromAlchemyEntities
             annotatedTexts[url] = uris
 
