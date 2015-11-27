@@ -1,13 +1,19 @@
 body{
 	padding : 20px;
-	background: url(../img/salle_cinema.jpg) no-repeat center center fixed; 
+	background: url(../img/salle_cinema.jpg) no-repeat center center fixed;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
 }
 
+a{
+	color:#8e152f;
+}
 
+a:hover{
+	color : #4F0918;
+}
 /********* Search, Form **********/
 
 #container{
@@ -22,8 +28,6 @@ body{
 	position: relative;
 	left: 50%;
 	transform: translateX(-50%);
-	-webkit-transition: all 1s linear;
-	-o-transition: all 1s linear;
 	transition: all 1s linear;
 }
 
@@ -37,11 +41,10 @@ body{
 
 
 #searchText{
+	color : #bdbdbd;
 	font-weight: 300;
 	font-size: 60px;
 	height : 100px;
-	-webkit-transition: all 1s linear;
-	-o-transition: all 1s linear;
 	transition: all 1s linear;
 }
 
@@ -68,6 +71,50 @@ body{
 	margin-right : 5px;
 }
 
+/******** Loader *********/
+#loader{
+	margin-top : 20px;
+	margin-bottom: 50px;
+}
+
+#bobine{
+	margin : auto;
+	margin-top: 20px;
+	width : 300px;
+	height: 300px;
+	border-radius: 80%;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotating {
+  animation: rotating 2s linear infinite;
+}
+
+#progressBar, #progressMsg{
+	width : 80%;
+	margin : auto;
+}
+
+#progressMsg{
+	color : #bdbdbd;
+}
+
+.progress-bar{
+	width : 0%;
+	transition: all 1s linear;
+}
+
+.progress-bar.load{
+	width : 100%;
+}
 
 /******** Coloration JSON **********/
 
@@ -85,4 +132,50 @@ body{
 
 .json .number{
 	color : green;
+}
+
+/******** Results ********/
+
+#results, #filmList{
+	margin-top: 30px;
+	min-height : 500px;
+	background-color: rgba(255,255,255,0.7);
+	border-radius: 2px;
+}
+#movieCardPrototype{
+
+}
+
+.film{
+	display: inline-block;
+	vertical-align: top;
+}
+.ranking{
+	margin-top : 30px;
+}
+
+#results .film{
+	width : 33%;
+	padding : 10px;
+}
+/******** FilmList ****/
+#filmList .film{
+	width : 50%;
+	padding : 20px;
+}
+#filmList .film img{
+	height : 200px;
+	width : auto;
+}
+
+.poster{
+	margin-bottom: 15px;
+	text-align: center;
+	box-shadow: 0px 8px 17px 0px rgba(0, 0, 0, 0.2), 0px 6px 20px 0px rgba(0, 0, 0, 0.19);
+}
+
+/******* Graph *****/
+
+#graph{
+	margin-top : 30px;
 }

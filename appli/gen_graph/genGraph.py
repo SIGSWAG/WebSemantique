@@ -7,10 +7,6 @@ def main(jsonString):
 	data=json.loads(jsonString)
 
 	dictionnary = dict()
-	dictionnary["total"]=set()
-
-
-	urls = list()
 	nodes = list()
 
 	for url in data :
@@ -47,13 +43,13 @@ def main(jsonString):
 		while (i<3 and i<len(arraySorted)) :
 			films.append({"movie":listeDescFilms[arraySorted[i][0]], "coeff":arraySorted[i][1]})
 			i=i+1
-		nodes.append({ "link" : url["link"], "results":{"films":films}})
+		nodes.append({ "link" : url["link"], "title": url["title"], "results":{"films":films}})
 		
 	return json.dumps(nodes)
 
 
 if __name__ == "__main__":
-	with open (os.path.join("sample_output","exampleRDF.json"), "r") as myfile:
-		data=myfile.read().replace('\n', '')
-		print(json.dumps(main(data)))
-
+	with open("exampleRDF.json", "r") as myfile:
+    		data=myfile.read().replace('\n', '')
+	
+    		print(json.dumps(main(data)))

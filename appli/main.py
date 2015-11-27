@@ -6,6 +6,7 @@ import hashlib
 from gen_uri import genUri
 from sparql import sparql
 from gen_graph import genGraph
+from gen_graph import grapheOption
 
 
 class Params(object):
@@ -62,7 +63,7 @@ def get_params(argv):
 			elif arg == "false":
 				from_web = False
 		if opt in ('-s', '--spotlight_support'):
-			spotlight_support = arg
+			spotlight_support = float(arg)
 		if opt in ('-a', '--append_keyword'):
 			if arg == "true":
 				append_keyword = True
@@ -115,13 +116,35 @@ def main(argv):
 								,parametres_main.spotlight_support
 								,parametres_main.from_web
 								,parametres_main.append_keyword)
+		with open('sortie_jonathan', 'w+') as f:
+			f.write(json_uris)
 		## récupération des RDFs
 		json_rdfs = sparql.main(json_uris)
 		## récupèration du graphe
-		output = genGraph.main(json_rdfs)
+		# output = genGraph.main(json_rdfs)
+		output = grapheOption.main(json_rdfs)
 		## on enregistre la requête
 		with open(cached_file_path, 'w') as cached_file:
 			cached_file.write(output)
+	return output
+
+
+def sparql_request(argv):
+	mots_clefs = ''
+	try:
+		opts, args = getopt.getopt(argv,"m:",["mots_clefs="])
+	except getopt.GetoptError:
+		print('$ main.py -m "mots clefs"')
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt in ('-m', '--mots_clefs'):
+			mots_clefs = arg
+	if not mots_clefs:
+		print("Vous devez au minimum renseigner un mot clef.")
+		print('$ main.py -m "mots clefs" ')
+		sys.exit(3)
+	mots_clefs_list = mots_clefs.split(' ')
+	output = sparql.cherche_mots_clefs(mots_clefs_list)
 	return output
 
 
