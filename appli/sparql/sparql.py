@@ -183,13 +183,13 @@ def chercheFilmsAlternatif(uri):
 
 	filmsURI = []
 
-	try:	
+	try:
 		for s in qres:
 			filmsURI.append(construitGrapheFilm(s[0]))
 		
 	except:
 		return []
-		
+	
 	return filmsURI	
 		
 		
