@@ -1,6 +1,6 @@
 body{
 	padding : 20px;
-	background: url(../img/salle_cinema.jpg) no-repeat center center fixed; 
+	background: url(../img/salle_cinema.jpg) no-repeat center center fixed;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -74,6 +74,7 @@ a:hover{
 /******** Loader *********/
 #loader{
 	margin-top : 20px;
+	margin-bottom: 50px;
 }
 
 #bobine{
@@ -142,7 +143,7 @@ a:hover{
 	border-radius: 2px;
 }
 #movieCardPrototype{
-	
+
 }
 
 .film{
