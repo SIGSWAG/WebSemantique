@@ -67,7 +67,8 @@ function drawGraph(json) {
 	graph = {"nodes":[], "links":[]};
 	for(var i=0 ; i<json.length ; i++){
 		graph.nodes.push({
-			"name": decodeURIComponent(json[i].link)
+			"name": decodeURIComponent(json[i].link),
+			"type": "link"
 		});
 		for(var j=0 ; j<json[i].results.films.length ; j++){
 			var trouve = false;
@@ -77,24 +78,25 @@ function drawGraph(json) {
 					graph.links.push({
 						"source": i,
 						"target": k,
-						"value": json[i].results.films[j].coeff
+						"val": json[i].results.films[j].coeff
 					})
 				}
 			}
 			if(!trouve){
 				graph.nodes.push({
-					"name": decodeURIComponent(json[i].results.films[j].movie.link)
+					"name": decodeURIComponent(json[i].results.films[j].movie.link),
+					"type": "movie"
 				});
 
 				graph.links.push({
 					"source": i,
 					"target": graph.nodes.length-1,
-					"value": json[i].results.films[j].coeff
+					"val": json[i].results.films[j].coeff
 				});
 			}
 		}
 	}
-	
+
 	// $("#results").append('<pre class="json">'+syntaxHighlight(graph)+'</pre>');
 	$("#graph").graph({
 		json: JSON.stringify(graph),
@@ -177,7 +179,7 @@ $(function(){
 			rank = replaceAll(rank, "{{linkFilm}}", json.movie.link);
 		if(json.movie.infos && json.movie.infos.name && json.movie.infos.name.value)
 			rank = replaceAll(rank, "{{filmName}}", json.movie.infos.name.value);
-		rank = replaceAll(rank, "{{coef}}", (Math.floor(json.coeff*100*1000)/1000)+"%");
+		rank = replaceAll(rank, "{{coef}}", (Math.floor(json.coeff*100*1000)/1000));
 		var $rank = $("<li>"+rank+"</li>");
 		return $rank;
 	};

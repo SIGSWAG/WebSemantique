@@ -6,7 +6,7 @@
 			width: "300",
 			height: "400",
 			json: "",
-			linksLabelsColor: "#ccc",
+			linksLabelsColor: "#999",
 			labelsColor: "#ccc"
 		};
 		var settings = $.extend(defaultSettings, parameters);
@@ -20,8 +20,8 @@
 			height = settings.height;
 
 		var force = d3.layout.force()
-			.charge(-120)
-			.linkDistance(150)
+			.charge(-1500)
+			.linkDistance(250)
 			.size([width, height]);
 
 		var graph = JSON.parse(settings.json);
@@ -33,8 +33,6 @@
 				.attr("width", width)
 				.attr("height", height);
 
-
-
 			force
 				.nodes(graph.nodes)
 				.links(graph.links)
@@ -45,14 +43,13 @@
 
 			var links = svg.selectAll(".link").data(graph.links).enter()
 				.append("line")
-					.attr("class", "link")
-					.style("stroke-width", function(d) { return Math.sqrt(d.val); });
+					.attr("class", "link");
 
 			var linksLabels = svg.selectAll("text").data(graph.links).enter()
 				.append("text")
 					.attr("fill", settings.linksLabelsColor)
 					.attr("text-anchor", "middle")
-					.text(function(d) { return d.val; });
+					.text(function(d) { return (Math.floor(d.val*100*1000)/1000); }); // arrondi à trois chiffres
 
 
 			// Création des noeuds
@@ -64,7 +61,12 @@
 					.call(force.drag);
 
 			nodes.append("circle")
-				.attr("r", 8);
+				.attr("r", 8)
+				.attr("fill", function(d) {
+					if(d.type == "movie") return "#4caf50";
+					if(d.type == "link") return "#f44336";
+					return "black";
+				});
 
 			nodes.append("a")
 				.attr("xlink:href", function(d) { return d.name })
