@@ -236,7 +236,9 @@ $(function(){
 			}
 		}
 		var $film = $(film);
-		callIMDB($film, json.infos.name.value);
+		if(json.infos && json.infos.name){
+			callIMDB($film, json.infos.name.value);
+		}
 		return $film;
 	};
 
@@ -247,9 +249,14 @@ $(function(){
 		// here replace title
 		var $result = $(result);
 		// Pour chaque film
+		var incr = 1;
 		for (var i = 0; i < json.results.films.length; i++) {
-			$result.find(".result-right").append(createFilm(json.results.films[i].movie));
-			$result.find(".ranking").append(createRanking(json.results.films[i], i+1))
+
+			if(json.results.films[i].movie.infos && json.results.films[i].movie.infos.name){
+				incr ++;
+				$result.find(".result-right").append(createFilm(json.results.films[i].movie));
+				$result.find(".ranking").append(createRanking(json.results.films[i], incr))
+			}
 		};
 		return $result;
 	};
@@ -258,7 +265,7 @@ $(function(){
 		Elements.$results.append($('<h1 class="center" id="results-title">Results, and related films</h1>'));
 		for (var i = 0; i < json.length; i++) {
 			// Pour chaque resultats
-			Elements.$results.append(createResult(json[i]));
+				Elements.$results.append(createResult(json[i]));
 		};
 	};
 
@@ -370,23 +377,23 @@ $(function(){
 				success : function(json, statut){
 					console.log(json);
 					States.displayFilmList(json);
+					$.ajax({
+						method: "GET",
+						url: path,
+						data: $.param(params1),
+						success : function(json, statut){
+							console.log(json);
+							States.displayResults(json);
+						},
+						error: function (resultat, statut, erreur) {
+							alert("Erreur lors de l'appel à "+path+$.param(params1));
+							console.log(resultat, statut, erreur);
+							States.init();
+						}
+					});
 				},
 				error: function (resultat, statut, erreur) {
 					alert("Erreur lors de l'appel à "+path+$.param(params2));
-					console.log(resultat, statut, erreur);
-					States.init();
-				}
-			});
-			$.ajax({
-				method: "GET",
-				url: path,
-				data: $.param(params1),
-				success : function(json, statut){
-					console.log(json);
-					States.displayResults(json);
-				},
-				error: function (resultat, statut, erreur) {
-					alert("Erreur lors de l'appel à "+path+$.param(params1));
 					console.log(resultat, statut, erreur);
 					States.init();
 				}

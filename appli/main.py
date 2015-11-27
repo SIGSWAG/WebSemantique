@@ -116,6 +116,8 @@ def main(argv):
 								,parametres_main.spotlight_support
 								,parametres_main.from_web
 								,parametres_main.append_keyword)
+		with open('sortie_jonathan', 'w+') as f:
+			f.write(json_uris)
 		## récupération des RDFs
 		json_rdfs = sparql.main(json_uris)
 		## récupèration du graphe

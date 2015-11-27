@@ -505,6 +505,8 @@ def getAnnotatedTextFromSpotlight(text, spotlightConfidence, spotlightSupport, w
 def getDBPediaRessources(xmlRawContent):
     if not xmlRawContent:
         return []
+    with open('test', 'w+') as f:
+        f.write(xmlRawContent)
     xmlRoot = xml.etree.ElementTree.fromstring(xmlRawContent)
     if not xmlRoot:
         return []

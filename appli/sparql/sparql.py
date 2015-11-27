@@ -10,7 +10,7 @@ nombreLiensParURI = '50'
 nombreFilmsDBPedia = '5'
 nombreFilmsAlternatif = '10'
 nombreLiensFilmsDBPedia = '100'
-nombreLiensFilmsAlternatif = '250'
+nombreLiensFilmsAlternatif = '50'
 nombreFilmsMotsClefs = '10'
 
 
@@ -163,7 +163,9 @@ def chercheFilms(uri):
 
 		try:
 			for film in responseJson['results']['bindings']:
-				filmsURI.append(construitGrapheFilm(film["s"]["value"]))
+				node = construitGrapheFilm(film["s"]["value"])
+				if node["infos"] is not []:
+					filmsURI.append(node)
 		except:
 			return []
 			
