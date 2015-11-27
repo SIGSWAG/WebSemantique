@@ -94,7 +94,22 @@ function drawGraph(json) {
 	
 	// $("#results").append('<pre class="json">'+syntaxHighlight(graph)+'</pre>');
 	$("#graph").graph({
-		json: JSON.stringify(graph)
+		json: JSON.stringify(graph),
+		width : $("#graph").width()
+	});
+	$(window).resize(function() {
+	    	if(this.resizeTO) clearTimeout(this.resizeTO);
+	    	this.resizeTO = setTimeout(function() {
+	        	$(this).trigger('resizeEnd');
+	    	}, 500);
+	});
+
+	$(window).bind('resizeEnd', function() {
+		console.log('resizeEnd');
+	    	$("#graph").empty().graph({
+			json: JSON.stringify(graph),
+			width : $("#graph").width()
+		});
 	});
 }
 
@@ -177,7 +192,7 @@ $(function(){
 				film = replaceAll(film, "{{directorLink}}", json.infos.director.value);
 			}
 			else{
-				film = replaceAll(film, '<a href="{{directorLink}}">{{directorName}}</a>', '{{directorName}}');
+				film = replaceAll(film, '<a target="_blank" href="{{directorLink}}">{{directorName}}</a>', '{{directorName}}');
 			}
 
 			if(json.infos.dirName){
@@ -206,7 +221,7 @@ $(function(){
 					var starring = uri.split("/");
 					starring = starring[starring.length-1];
 					starring = replaceAll(starring,"_", " ");
-					var linkStarring = '<a href="'+uri+'">'+starring+'</a>';
+					var linkStarring = '<a target="_blank" href="'+uri+'">'+starring+'</a>';
 					film = replaceAll(film, "{{starring}}", linkStarring);
 				}
 				else{

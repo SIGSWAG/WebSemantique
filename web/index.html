@@ -74,7 +74,7 @@
 	  	<section id="results" class="container hide">
 	  	</section>
 <!-- GRAPH -->
-		<section id="graph" class="hide">
+		<section id="graph" class="container hide">
 		</section>
 
 
@@ -82,8 +82,8 @@
 	  	<section id="resultPrototype" class="hide">
 			<div class="result row">
 				<div class="result-left col-xs-6">
-					<h2 class="result-title"><a href="{{link}}">{{title}}</a></h2>
-					<h5 class="result-subtitle"><a href="{{link}}">{{link}}</a></h5>
+					<h2 class="result-title"><a target="_blank" href="{{link}}">{{title}}</a></h2>
+					<h5 class="result-subtitle"><a target="_blank" href="{{link}}">{{link}}</a></h5>
 					<hr>
 					<ul class="ranking">
 					</ul>
@@ -93,14 +93,14 @@
 			</div>
 	  	</section>
 	  	<section id="rankPrototype" class="hide">
-			{{rank}}. <a href="{{linkFilm}}">{{filmName}}</a> ({{coef}})
+			{{rank}}. <a target="_blank" href="{{linkFilm}}">{{filmName}}</a> ({{coef}})
 	  	</section>
 	  	<section id="filmPrototype" class="hide">
 	  		<div class="film">
-				<h3 class="film-title"><a href="{{linkFilm}}">{{filmName}}</a></h3>
+				<h3 class="film-title"><a target="_blank" href="{{linkFilm}}">{{filmName}}</a></h3>
 				<dl class="dl-horizontal">
 				  <dt>Director</dt>
-				  <dd><a href="{{directorLink}}">{{directorName}}</a></dd>
+				  <dd><a target="_blank" href="{{directorLink}}">{{directorName}}</a></dd>
 				  <dt>Country</dt>
 				  <dd>{{country}}</a></dd>
 				  <dt>Starring</dt>
