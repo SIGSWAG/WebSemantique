@@ -356,8 +356,8 @@ $(function(){
 
 		States.loading();
 		if(LOCAL){
-			setTimeout(function(){States.displayResults(jsonsample)},5*1000);
-			setTimeout(function(){States.displayFilmList(jsonlistsample)},2*1000);
+			setTimeout(function(){States.displayResults(jsonsample)},2*1000);
+			setTimeout(function(){States.displayFilmList(jsonlistsample)},1*1000);
 		}
 		else{
 			$.ajax({
