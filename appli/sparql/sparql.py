@@ -29,7 +29,7 @@ def cherche_mots_clefs(mots):
 
 	filter = ""
 	for mot in mots:
-		filter += "regex(?a, \".*" + mot + ".*\")&&"
+		filter += "contains(lcase(?a), \""+mot+"\")&&"
 		
 	payload = {
 		"query": """SELECT DISTINCT ?s
@@ -39,7 +39,7 @@ def cherche_mots_clefs(mots):
 						?s <http://dbpedia.org/ontology/abstract> ?a.
 						FILTER(""" + filter[0:-2] + """).
 						
-					} LIMIT """+nombreFilmsMotsClefs
+					} ORDER BY DESC(fn:string-length(?a)) LIMIT """+nombreFilmsMotsClefs
 					,
 		"format": "json",
 		"timeout": "30000"
