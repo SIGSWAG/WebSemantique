@@ -1,4 +1,4 @@
-var LOCAL = true;
+var LOCAL = false;
 
 function callIMDB($film, titre) {
 	params = {};
@@ -275,9 +275,31 @@ $(function() {
 		var incr = 1;
 		for (var i = 0; i < json.results.films.length; i++) {
 			if(json.results.films[i].movie.infos && json.results.films[i].movie.infos.name){
-				incr ++;
 				$result.find(".result-right").append(createFilm(json.results.films[i].movie));
-				$result.find(".ranking").append(createRanking(json.results.films[i], incr))
+				$result.find(".ranking").append(createRanking(json.results.films[i], incr));
+				incr ++;
+			}
+			else{
+				console.log("undefined : ");
+				console.log(json.results.films[i].movie);
+				var uri = decodeURIComponent(json.results.films[i].movie.link);
+				var name = uri.split("/");
+				name = name[name.length - 1];
+				name = replaceAll(name, "_", " ");
+				if(!json.results.films[i].movie.infos){
+					json.results.films[i].movie.infos = {};
+				}
+				json.results.films[i].movie.infos.name = {};
+				json.results.films[i].movie.infos.name.value = name;
+
+				console.log("Name : "+name);
+				console.log(json.results.films[i].movie.infos.name);
+				console.log("-----------------------------");
+
+
+				$result.find(".result-right").append(createFilm(json.results.films[i].movie));
+				$result.find(".ranking").append(createRanking(json.results.films[i], incr));
+				incr ++;
 			}
 		};
 		return $result;

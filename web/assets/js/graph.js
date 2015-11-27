@@ -4,7 +4,7 @@
 
 		var defaultSettings = {
 			width: "300",
-			height: "400",
+			height: "800",
 			json: "",
 			linksLabelsColor: "#999",
 			labelsColor: "#ccc"
@@ -20,7 +20,7 @@
 			height = settings.height;
 
 		var force = d3.layout.force()
-			.charge(-1500)
+			.charge(-1000)
 			.linkDistance(250)
 			.size([width, height]);
 
