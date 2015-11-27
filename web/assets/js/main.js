@@ -343,12 +343,13 @@ $(function(){
 			$.ajax({
 				method: "GET",
 				url: path,
-				data: $.param(params1),
+				data: $.param(params2),
 				success : function(json, statut){
-					States.displayResults(json);
+					console.log(json);
+					States.displayFilmList(json);
 				},
 				error: function (resultat, statut, erreur) {
-					alert("Erreur lors de l'appel à "+path+$.param(params1));
+					alert("Erreur lors de l'appel à "+path+$.param(params2));
 					console.log(resultat, statut, erreur);
 					States.init();
 				}
@@ -356,12 +357,13 @@ $(function(){
 			$.ajax({
 				method: "GET",
 				url: path,
-				data: $.param(params2),
+				data: $.param(params1),
 				success : function(json, statut){
+					console.log(json);
 					States.displayResults(json);
 				},
 				error: function (resultat, statut, erreur) {
-					alert("Erreur lors de l'appel à "+path+$.param(params2));
+					alert("Erreur lors de l'appel à "+path+$.param(params1));
 					console.log(resultat, statut, erreur);
 					States.init();
 				}

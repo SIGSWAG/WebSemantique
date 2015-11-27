@@ -141,7 +141,7 @@ def sparql_request(argv):
 		print("Vous devez au minimum renseigner un mot clef.")
 		print('$ main.py -m "mots clefs" ')
 		sys.exit(3)
-	mots_clefs_list = mots_clefs.strip(' ')
+	mots_clefs_list = mots_clefs.split(' ')
 	output = sparql.cherche_mots_clefs(mots_clefs_list)
 	return output
 
