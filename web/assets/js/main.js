@@ -1,5 +1,38 @@
-var LOCAL = true;
+var LOCAL = false;
 
+function callIMDB($film, titre){
+	params = {};
+	params.t = titre;
+	params.plot = "full";
+	params.r = "json";
+	params.type = "movie";
+	params.tomatoes = "true";
+	$.ajax({
+		method: "GET",
+		url: "http://www.omdbapi.com/",
+		data: $.param(params),
+		success : function(json, statut){
+			$film.find('.directorName').replaceWith(json.Director);
+			$film.find('.country').replaceWith(json.Country);
+			$film.find('.starring').replaceWith(json.Actors);
+			if(json.Released != 'N/A'){
+				$film.find('.dl-horizontal').append("<dt>Released :</dt>");
+				$film.find('.dl-horizontal').append("<dd>"+ json.Released +"</dd>");
+			}
+			if(json.Genre != 'N/A'){
+				$film.find('.dl-horizontal').append("<dt>Genre</dt>");
+				$film.find('.dl-horizontal').append("<dd>"+ json.Genre +"</dd>");
+			}
+			if(json.Awards != "N/A"){
+				$film.find('.dl-horizontal').append("<dt>Awards</dt>");
+				$film.find('.dl-horizontal').append("<dd>"+ json.Awards +"</dd>");
+			}
+		},
+		error: function (resultat, statut, erreur) {
+			console.log("erreur : "+erreur);
+		}
+	});
+}
 
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
@@ -179,7 +212,8 @@ $(function(){
 			if(json.infos.starring){
 				if(json.infos.starring.type == "literal"){
 					var starring = json.infos.starring.value;
-					starring = replaceAll(starring, "\\*", "-");
+					starring = replaceAll(starring, "\\*", ",");
+					starring = starring.replace(',', ' ');
 					film = replaceAll(film, "{{starring}}", starring);
 				}
 				else if(json.infos.starring.type == "uri"){
@@ -199,6 +233,7 @@ $(function(){
 			}
 		}
 		var $film = $(film);
+		callIMDB($film, json.infos.name.value);
 		return $film;
 	};
 

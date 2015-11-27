@@ -8,9 +8,10 @@ grapheAlternatif = rdflib.Graph()
 grapheAlternatif.parse(os.path.join("sparql", "baseAlternativeFat.rdf"), format="nt")
 nombreLiensParURI = '50'
 nombreFilmsDBPedia = '5'
-nombreFilmsAlternatif = '5'
+nombreFilmsAlternatif = '10'
 nombreLiensFilmsDBPedia = '100'
-nombreLiensFilmsAlternatif = '100'
+nombreLiensFilmsAlternatif = '250'
+nombreFilmsMotsClefs = '10'
 
 
 def construitGrapheFilm(uri):
@@ -22,6 +23,53 @@ def construitGrapheFilm(uri):
 	jacky["infos"]=requeteInfoMovie(uri)
 	return jacky
 
+
+def cherche_mots_clefs(mots):
+# Requête SPARQL	
+
+	filter = ""
+	for mot in mots:
+		filter += "regex(?a, \".*" + mot + ".*\")&&"
+		
+	payload = {
+		"query": """SELECT DISTINCT ?s
+					WHERE {
+						
+						?s a <http://dbpedia.org/ontology/Film>.
+						?s <http://dbpedia.org/ontology/abstract> ?a.
+						FILTER(""" + filter[0:-2] + """).
+						
+					} LIMIT """+nombreFilmsMotsClefs
+					,
+		"format": "json",
+		"timeout": "30000"
+	}
+	
+	# print(payload["query"])
+
+	response = requests.get(dbpediaEndpoint, params = payload)
+	
+	if(response.status_code==200):
+		responseJson = response.json()
+		#print(responseJson)
+		
+		filmsURI = []
+		
+		for film in responseJson['results']['bindings']:
+			try:
+				jacky = {}
+				jacky['link']= film["s"]["value"]
+				jacky["infos"]=requeteInfoMovie(film["s"]["value"])
+				filmsURI.append(jacky)
+			except:
+				jacky = {}
+			
+		return json.dumps(filmsURI)
+	
+	
+	else:
+		return {}
+	
 	
 def requeteInfoMovie(uri):
 # Requête SPARQL
@@ -114,8 +162,8 @@ def chercheFilms(uri):
 		
 
 		try:
-			for film in responseJson['results']['bindings'][0]['s']['value']:
-				filmsURI.append(construitGrapheFilm(film))
+			for film in responseJson['results']['bindings']:
+				filmsURI.append(construitGrapheFilm(film["s"]["value"]))
 		except:
 			return []
 			
@@ -260,17 +308,21 @@ if	__name__ =='__main__':
 	if(3 < len(sys.argv)):
 		nombreFilmsAlternatif = sys.argv[3]
 	else:
-		nombreFilmsAlternatif = '5'
+		nombreFilmsAlternatif = '10'
 		
 	if(4 < len(sys.argv)):
-		nombreLiensFilmsDBPedia = sys.argv[3]
+		nombreLiensFilmsDBPedia = sys.argv[4]
 	else:
 		nombreLiensFilmsDBPedia = '100'
 		
 	if(5 < len(sys.argv)):
-		nombreLiensFilmsAlternatif = sys.argv[3]
+		nombreLiensFilmsAlternatif = sys.argv[5]
 	else:
 		nombreLiensFilmsAlternatif = '100'
+	if(6 < len(sys.argv)):
+		nombreLiensFilmsAlternatif = sys.argv[6]
+	else:
+		nombreFilmsMotsClefs = '10'
 
 	with open(outputFileName, "r") as myfile:
 		json = myfile.read()

@@ -127,6 +127,25 @@ def main(argv):
 	return output
 
 
+def sparql_request(argv):
+	mots_clefs = ''
+	try:
+		opts, args = getopt.getopt(argv,"m:",["mots_clefs="])
+	except getopt.GetoptError:
+		print('$ main.py -m "mots clefs"')
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt in ('-m', '--mots_clefs'):
+			mots_clefs = arg
+	if not mots_clefs:
+		print("Vous devez au minimum renseigner un mot clef.")
+		print('$ main.py -m "mots clefs" ')
+		sys.exit(3)
+	mots_clefs_list = mots_clefs.strip(' ')
+	output = sparql.cherche_mots_clefs(mots_clefs_list)
+	return output
+
+
 if __name__ == "__main__":
 	response = main(sys.argv[1:])
 	print(response)
