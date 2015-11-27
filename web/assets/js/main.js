@@ -1,4 +1,4 @@
-var LOCAL = true;
+var LOCAL = false;
 
 function callIMDB($film, titre) {
 	params = {};
@@ -118,7 +118,8 @@ function drawGraph(json) {
 		console.log('resizeEnd');
 		$("#graph").empty().graph({
 			json: JSON.stringify(graph),
-			width: $("#graph").width()
+			width: $("#graph").width(),
+			height: "700px"
 		});
 	});
 }
