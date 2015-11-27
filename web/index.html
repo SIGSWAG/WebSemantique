@@ -97,8 +97,13 @@
 	  	</section>
 	  	<section id="filmPrototype" class="hide">
 	  		<div class="film">
-				<h3 class="film-title"><a target="_blank" href="{{linkFilm}}">{{filmName}}</a></h3>
-				<dl class="dl-horizontal">
+				<div class="row">
+					<div class="col-xs-4">
+						<img src="assets/img/image-default.jpg" alt="{{filmName}}" class="poster img-responsive">
+					</div>
+					<h3 class="film-title col-xs-8"><a target="_blank" href="{{linkFilm}}">{{filmName}}</a></h3>
+				</div>
+				<dl class="dl-horizontal description">
 				  <dt>Director</dt>
 				  <dd><a target="_blank" href="{{directorLink}}">{{directorName}}</a></dd>
 				  <dt>Country</dt>

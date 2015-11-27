@@ -1,4 +1,4 @@
-var LOCAL = false;
+var LOCAL = true;
 
 function callIMDB($film, titre){
 	params = {};
@@ -26,6 +26,9 @@ function callIMDB($film, titre){
 			if(json.Awards != "N/A"){
 				$film.find('.dl-horizontal').append("<dt>Awards</dt>");
 				$film.find('.dl-horizontal').append("<dd>"+ json.Awards +"</dd>");
+			}
+			if(json.Poster != "N/A"){
+				$film.find('.poster').attr("src",json.Poster);
 			}
 		},
 		error: function (resultat, statut, erreur) {
@@ -252,6 +255,7 @@ $(function(){
 	};
 
 	var loadResults = function(json){
+		Elements.$results.append($('<h1 class="center" id="results-title">Results, and related films</h1>'));
 		for (var i = 0; i < json.length; i++) {
 			// Pour chaque resultats
 			Elements.$results.append(createResult(json[i]));
@@ -259,6 +263,7 @@ $(function(){
 	};
 
 	var loadListFilm = function(json){
+		Elements.$filmList.append($('<h1 class="center" id="list-title">Movies related to your search</h1>'));
 		for (var i = 0; i < json.length; i++) {
 			// Pour chaque resultats
 			Elements.$filmList.append(createFilm(json[i]));
