@@ -293,7 +293,7 @@ $(function(){
 			Elements.$results.addClass("hide").empty();
 			Elements.$filmList.addClass("hide").empty();
 			Elements.$graph.addClass("hide").empty();
-			Elements.$searchOptions.collapse("hide");
+			//Elements.$searchOptions.collapse("hide");
 			Elements.$searchSubmit.attr("disabled","disabled");
 			Elements.$searchText.off("focus").focusout();
 			Elements.$search.off("focusout");
@@ -306,7 +306,7 @@ $(function(){
 			drawGraph(jsonResult);
 			Elements.$results.removeClass("hide");
 			Elements.$graph.removeClass("hide");
-			Elements.$searchOptions.collapse("hide");
+			//Elements.$searchOptions.collapse("hide");
 			if(States.ajaxReturned == States.NB_AJAX){
 				States.requestFinished();
 			}
@@ -316,7 +316,7 @@ $(function(){
 			States.ajaxReturned++;
 			loadListFilm(jsonFilmList);
 			Elements.$filmList.removeClass("hide");
-			Elements.$searchOptions.collapse("hide");
+			//Elements.$searchOptions.collapse("hide");
 			if(States.ajaxReturned == States.NB_AJAX){
 				States.requestFinished();
 			}
@@ -330,6 +330,9 @@ $(function(){
 			});
 			Elements.$search.on("focusout",function(){
 				Elements.$search.addClass("small");
+			});
+			Elements.$search.on("click",function(){
+				Elements.$search.removeClass("small");
 			});
 		}
 	};
