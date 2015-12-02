@@ -276,11 +276,17 @@ def main(jsonContent):
 			struct["results"]["films"]+=cherche_films(uri)
 			struct["results"]["films"]+=cherche_filmsAlternatif(uri)
 			
-
 		sortie.append(struct)
+	output = json.dumps(sortie)
+
+	output_dir = os.path.join("sparql", "sample_output")
+	if not os.path.isdir(output_dir):
+		os.mkdir(output_dir)
+	with open(os.path.join(output_dir, 'sparql.json'), 'w') as f:
+		f.write(output)
 
 	# Requête SPARQL
-	return json.dumps(sortie)
+	return output
 
 '''
 =========================================================================================

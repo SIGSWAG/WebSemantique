@@ -33,7 +33,7 @@ google_search_example_file = os.path.join(directory, os.path.join("sample_output
 google_searches_example_file = os.path.join(directory, os.path.join("sample_output", "exampleResponses.json"))
 bing_search_example_file = os.path.join(directory, os.path.join("sample_output", "bingResponse.json"))
 spotlight_example_file = os.path.join(directory, os.path.join("sample_output", "spotlightResponseExample.xml"))
-sample_output = os.path.join(directory, os.path.join("sample_output", "genUri.txt"))
+sample_output = os.path.join(directory, os.path.join("sample_output", "gen_uri.json"))
 
 # paramètres globaux de requetes
 google_nb_results_per_request = 10
@@ -228,14 +228,14 @@ def quote(query):
     
     return query
 
-def write_content_to_file(fileName, content, replace=False):
+def write_content_to_file(file_name, content, replace=False):
     if replace:
         flag = "w"
     else:
         flag = "a+"
 
-    with open(fileName, flag) as jsonFile:
-        jsonFile.write(content)
+    with open(file_name, flag) as json_file:
+        json_file.write(content)
 
 
 '''

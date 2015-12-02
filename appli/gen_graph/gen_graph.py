@@ -2,6 +2,7 @@ import json
 import sys
 import operator 
 import collections
+import os
 
 def main(jsonString): 
 
@@ -54,7 +55,15 @@ def main(jsonString):
 			i = i + 1
 		nodes.append({ "link" : url["link"], "title": url["title"], "results":{"films":films}})
 		
-	return json.dumps(nodes)
+	output = json.dumps(nodes)
+
+	output_dir = os.path.join("gen_graph", "sample_output")
+	if not os.path.isdir(output_dir):
+		os.mkdir(output_dir)
+	with open(os.path.join(output_dir, 'gen_graph.json'), 'w') as f:
+		f.write(output)
+
+	return output
 
 
 if __name__ == "__main__":
