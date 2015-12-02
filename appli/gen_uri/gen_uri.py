@@ -551,7 +551,7 @@ def main(query, max_number_of_results, search_type, spotlight_confidence, spotli
 =========================================================================================================
 Usage 
 python genURI.py Inception 20 all 0.4 34 True
-python genURI.py query searchEngine number_of_results spotlight_confidence spotlight_support append_keyword
+python genURI.py query number_of_results searchEngine spotlight_confidence spotlight_support append_keyword
 =========================================================================================================
 '''
 if __name__ == '__main__':
