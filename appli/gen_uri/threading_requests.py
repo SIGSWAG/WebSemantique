@@ -4,15 +4,13 @@ import urllib.request
 import urllib.parse
 import requests
 
-exitFlag = 0
-
-
+exit_flag = 0
 
 #Define a single thread making a request on a server
 class ParallelRequest(threading.Thread):
-	def __init__(self, threadId, url, args,lock,results):
+	def __init__(self, thread_id, url, args, lock, results):
 		threading.Thread.__init__(self)
-		self.threadId = threadId
+		self.thread_id = thread_id
 		self.args = args
 		self.lock = lock
 		self.results = results
@@ -28,7 +26,8 @@ class ParallelRequest(threading.Thread):
 			except:
 				ret = {'status': 'ERROR', 'statusInfo': 'network-error'}
 			finally:
-				self.results[self.threadId] = ret
+				self.results[self.thread_id] = ret
+
 
 #Define a group of request to submit to a server
 class RequestPool:
@@ -38,19 +37,20 @@ class RequestPool:
 
 	def launch(self):
 		threads = []
-		threadId = 1
+		thread_id = 1
 		self.results = [None] * (len(self.args_list)+1)
 		lock = threading.Lock()
 		#each request is defined by its args list
 		for args in self.args_list :
 			threads = []
-			thread = ParallelRequest(threadId,self.url,args,lock,self.results)
+			thread = ParallelRequest(thread_id, self.url, args, lock, self.results)
 			thread.start()
 			threads.append(thread)
-			threadId += 1
+			thread_id += 1
 
 		for t in threads:
 			t.join()
 
-	def getResults(self):
+	# return the result of a thread, when finished
+	def get_results(self):
 		return self.results

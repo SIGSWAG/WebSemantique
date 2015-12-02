@@ -1,26 +1,26 @@
 import requests, sys, json, codecs, rdflib, os
 
 
-dbpediaEndpoint = "http://live.dbpedia.org/sparql"
-inputURIs = os.path.join("sparql", os.path.join("sample_output", "sample.json"))
-outputFileName = os.path.join("sparql", os.path.join("sample_output", "sparql.txt"))
-grapheAlternatif = rdflib.Graph()
-grapheAlternatif.parse(os.path.join("sparql", "baseAlternativeFat.rdf"), format="nt")
-nombreLiensParURI = '50'
-nombreFilmsDBPedia = '5'
-nombreFilmsAlternatif = '10'
-nombreLiensFilmsDBPedia = '100'
-nombreLiensFilmsAlternatif = '50'
-nombreFilmsMotsClefs = '10'
+dbpedia_endpoint = "http://live.dbpedia.org/sparql"
+input_URIs = os.path.join("sparql", os.path.join("sample_output", "sample.json"))
+output_file_name = os.path.join("sparql", os.path.join("sample_output", "sparql.txt"))
+graphe_alternatif = rdflib.Graph()
+graphe_alternatif.parse(os.path.join("sparql", "baseAlternativeFat.rdf"), format="nt")
+nombre_liens_par_URI = '50'
+nombre_films_DBPedia = '5'
+nombre_films_alternatif = '10'
+nombre_liens_films_DBPedia = '100'
+nombre_liens_films_alternatif = '50'
+nombre_films_mots_clefs = '10'
 
 
-def construitGrapheFilm(uri):
+def construit_graphe_film(uri):
 	jacky = {}
 	jacky['link']= uri
 	jacky['graphe'] = []
-	jacky["graphe"]+=requeteFilm(uri)
-	jacky["graphe"]+=requeteFilmAlternative(uri)
-	jacky["infos"]=requeteInfoMovie(uri)
+	jacky["graphe"]+=requete_film(uri)
+	jacky["graphe"]+=requete_film_alternative(uri)
+	jacky["infos"]=requete_info_movie(uri)
 	return jacky
 
 
@@ -39,39 +39,36 @@ def cherche_mots_clefs(mots):
 						?s <http://dbpedia.org/ontology/abstract> ?a.
 						FILTER(""" + filter[0:-2] + """).
 						
-					} ORDER BY DESC(fn:string-length(?a)) LIMIT """+nombreFilmsMotsClefs
+					} ORDER BY DESC(fn:string-length(?a)) LIMIT """+nombre_films_mots_clefs
 					,
 		"format": "json",
 		"timeout": "30000"
 	}
-	
-	# print(payload["query"])
 
-	response = requests.get(dbpediaEndpoint, params = payload)
+	response = requests.get(dbpedia_endpoint, params = payload)
 	
 	if(response.status_code==200):
-		responseJson = response.json()
-		#print(responseJson)
+		response_json = response.json()
 		
-		filmsURI = []
+		films_URI = []
 		
-		for film in responseJson['results']['bindings']:
+		for film in response_json['results']['bindings']:
 			try:
 				jacky = {}
 				jacky['link']= film["s"]["value"]
-				jacky["infos"]=requeteInfoMovie(film["s"]["value"])
-				filmsURI.append(jacky)
+				jacky["infos"]=requete_info_movie(film["s"]["value"])
+				films_URI.append(jacky)
 			except:
 				jacky = {}
 			
-		return json.dumps(filmsURI)
+		return json.dumps(films_URI)
 	
 	
 	else:
 		return {}
 	
 	
-def requeteInfoMovie(uri):
+def requete_info_movie(uri):
 # Requête SPARQL
 	
 	payload = {
@@ -95,20 +92,20 @@ def requeteInfoMovie(uri):
 	}
 
 
-	response = requests.get(dbpediaEndpoint, params = payload)
+	response = requests.get(dbpedia_endpoint, params = payload)
 
 	
 	if(response.status_code==200):
-		responseJson = response.json()
+		response_json = response.json()
 		
-		graphe = responseJson['results']['bindings'][0]
+		graphe = response_json['results']['bindings'][0]
 		
 		return graphe
 	else:
 		return []
 	
 		
-def requetePage(uri):
+def requete_page(uri):
 # Requête SPARQL
 	payload = {
 		"query": """SELECT DISTINCT (<"""+uri+"""> as ?s) ?p ?o
@@ -116,20 +113,20 @@ def requetePage(uri):
 						
 						<"""+uri+"""> ?p ?o.
 						
-					} LIMIT """+nombreLiensParURI
+					} LIMIT """+nombre_liens_par_URI
 					,
 		"format": "json",
 		"timeout": "30000"
 	}
 
 
-	response = requests.get(dbpediaEndpoint, params = payload)
+	response = requests.get(dbpedia_endpoint, params = payload)
 
 	
 	if(response.status_code==200):
-		responseJson = response.json()
+		response_json = response.json()
 		
-		graphe = responseJson['results']['bindings']
+		graphe = response_json['results']['bindings']
 		
 		return graphe
 	else:
@@ -137,7 +134,7 @@ def requetePage(uri):
 		
 		
 
-def chercheFilms(uri):
+def cherche_films(uri):
 # Requête SPARQL	
 
 	payload = {
@@ -147,56 +144,56 @@ def chercheFilms(uri):
 						?s a <http://dbpedia.org/ontology/Film>.
 						?s ?p <"""+ uri +""">.
 						
-					} LIMIT """+nombreFilmsDBPedia
+					} LIMIT """+nombre_films_DBPedia
 					,
 		"format": "json",
 		"timeout": "30000"
 	}
 
-	response = requests.get(dbpediaEndpoint, params=payload)
+	response = requests.get(dbpedia_endpoint, params=payload)
 	
 	if(response.status_code == 200):
-		responseJson = response.json()
+		response_json = response.json()
 		
-		filmsURI = []
+		films_URI = []
 		
 
 		try:
-			for film in responseJson['results']['bindings']:
-				node = construitGrapheFilm(film["s"]["value"])
+			for film in response_json['results']['bindings']:
+				node = construit_graphe_film(film["s"]["value"])
 				if node["infos"] is not []:
-					filmsURI.append(node)
+					films_URI.append(node)
 		except:
 			return []
 			
 			
-		return filmsURI
+		return films_URI
 	else:
 		return {}
 		
 		
-def chercheFilmsAlternatif(uri):
+def cherche_filmsAlternatif(uri):
 
-	qres = grapheAlternatif.query(
+	qres = graphe_alternatif.query(
 		"""SELECT DISTINCT ?s
 		   WHERE {
 		   ?s ?p <"""+ uri +""">.
-		   }LIMIT """ + nombreFilmsAlternatif)
+		   }LIMIT """ + nombre_films_alternatif)
 
-	filmsURI = []
+	films_URI = []
 
 	try:
 		for s in qres:
-			filmsURI.append(construitGrapheFilm(s[0]))
+			films_URI.append(construit_graphe_film(s[0]))
 		
 	except:
 		return []
 	
-	return filmsURI	
+	return films_URI	
 		
 		
 
-def requeteFilm(uriFilm):
+def requete_film(uriFilm):
 # Requête SPARQL	
 
 
@@ -207,31 +204,31 @@ def requeteFilm(uriFilm):
 						
 						<"""+uriFilm+"""> ?p ?o.
 						
-					} LIMIT	"""+nombreLiensFilmsDBPedia
+					} LIMIT	"""+nombre_liens_films_DBPedia
 					,
 		"format": "json",
 		"timeout": "30000"
 	}
 	
 
-	response = requests.get(dbpediaEndpoint, params = payload)
+	response = requests.get(dbpedia_endpoint, params = payload)
 	
 	if(response.status_code==200):
-		responseJson = response.json()
+		response_json = response.json()
 		
-		return responseJson['results']['bindings']
+		return response_json['results']['bindings']
 	else:
 		return {}
 		
 		
-def requeteFilmAlternative(uriFilm):
+def requete_film_alternative(uriFilm):
 # Requête SPARQL	
 
-	qres = grapheAlternatif.query(
+	qres = graphe_alternatif.query(
 		"""SELECT DISTINCT (<"""+uriFilm+"""> as ?s) ?p ?o
 		   WHERE {
 		   <"""+uriFilm+"""> ?p ?o.
-		   }LIMIT 10""" + nombreLiensFilmsAlternatif)
+		   }LIMIT 10""" + nombre_liens_films_alternatif)
 
 	graphe = []
 
@@ -259,10 +256,10 @@ def requeteFilmAlternative(uriFilm):
 def main(jsonContent):
 	# Lecture des URIs
 	sortie = []
-	jsonObject = json.loads(jsonContent)
+	json_object = json.loads(jsonContent)
 
 
-	for page in jsonObject["pages"]:
+	for page in json_object["pages"]:
 		listURI = "("
 		
 		struct = {}
@@ -276,16 +273,13 @@ def main(jsonContent):
 		#Pour chaque URI, on enrichit le graphe de la page, et on cherche 5 films max dans dbpedia,
 		#et dans le graphe alternatif, qui sont liés à l'uri
 		for uri in page["uri"]:
-			struct['results']['graphePage']+=requetePage(uri)
-			struct["results"]["films"]+=chercheFilms(uri)
-			struct["results"]["films"]+=chercheFilmsAlternatif(uri)
+			struct['results']['graphePage']+=requete_page(uri)
+			struct["results"]["films"]+=cherche_films(uri)
+			struct["results"]["films"]+=cherche_filmsAlternatif(uri)
 			
 
 		sortie.append(struct)
 
-
-	with open(outputFileName, "w+") as myfile:
-		myfile.write(json.dumps(sortie))
 	# Requête SPARQL
 	return json.dumps(sortie)
 
@@ -299,33 +293,33 @@ python sparql.py
 if	__name__ =='__main__':
 
 	if(1 < len(sys.argv)):
-		nombreLiensParURI = sys.argv[1]
+		nombre_liens_par_URI = sys.argv[1]
 	else:
-		nombreLiensParURI = '50'
+		nombre_liens_par_URI = '50'
 	if(2 < len(sys.argv)):
-		nombreFilmsDBPedia = sys.argv[2]
+		nombre_films_DBPedia = sys.argv[2]
 	else:
-		nombreFilmsDBPedia = '5'
+		nombre_films_DBPedia = '5'
 
 	if(3 < len(sys.argv)):
-		nombreFilmsAlternatif = sys.argv[3]
+		nombre_films_alternatif = sys.argv[3]
 	else:
-		nombreFilmsAlternatif = '10'
+		nombre_films_alternatif = '10'
 		
 	if(4 < len(sys.argv)):
-		nombreLiensFilmsDBPedia = sys.argv[4]
+		nombre_liens_films_DBPedia = sys.argv[4]
 	else:
-		nombreLiensFilmsDBPedia = '100'
+		nombre_liens_films_DBPedia = '100'
 		
 	if(5 < len(sys.argv)):
-		nombreLiensFilmsAlternatif = sys.argv[5]
+		nombre_liens_films_alternatif = sys.argv[5]
 	else:
-		nombreLiensFilmsAlternatif = '100'
+		nombre_liens_films_alternatif = '100'
 	if(6 < len(sys.argv)):
-		nombreLiensFilmsAlternatif = sys.argv[6]
+		nombre_liens_films_alternatif = sys.argv[6]
 	else:
-		nombreFilmsMotsClefs = '10'
+		nombre_films_mots_clefs = '10'
 
-	with open(outputFileName, "r") as myfile:
+	with open(output_file_name, "r") as myfile:
 		json = myfile.read()
 		main(json)
