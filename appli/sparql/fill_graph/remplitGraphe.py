@@ -24,7 +24,7 @@ def getURIsFromText(text, spotlightConfidence, spotlightSupport):
 	
 	
 def getAnnotatedTextFromFile():
-	with open(spotlightExampleFile, "r") as myfile:
+	with open(outputFile, "r") as myfile:
 		content = myfile.read()
 
 	return content
@@ -88,7 +88,7 @@ MAIN
 
 def main(spotlightConfidence, spotlightSupport):
 
-  # Retrieve, for each URL, an associated text
+
 	with open(inputResumes, "r") as myfile:
 		text = myfile.read()
 		
@@ -99,7 +99,7 @@ def main(spotlightConfidence, spotlightSupport):
 	  # Retrieve, for each text, the list of corresponding URIs
 		nts+= getURIsFromText(paragraphe, spotlightConfidence, spotlightSupport)
 		
-	writeContentToFile(spotlightExampleFile, nts)
+	writeContentToFile(outputFile, nts)
 
 	return 0
 	
@@ -108,8 +108,9 @@ def main(spotlightConfidence, spotlightSupport):
 '''
 =========================================================================================
 Usage 
-python remplitGraphe.py '<http://dbpedia.org/resource/Inception>' 0.1 20
-python remplitGraphe.py uriFilm spotlightConfidence spotlightSupport
+python remplitGraphe.py '<http://dbpedia.org/resource/Inception>' 1 1 
+python remplitGraphe.py uriFilm inputResumes outputFile spotlightConfidence spotlightSupport
+#Le fichier nécessite des fichiers resumeX.txt oi l'on insère le texte à analyser, et responseX.xml ou il écrit le resultat
 =========================================================================================
 '''
 if	__name__ =='__main__':
@@ -126,9 +127,9 @@ if	__name__ =='__main__':
 		inputResumes = "resume1.txt"
 		
 	if(3 < len(sys.argv)):
-		spotlightExampleFile = "reponse" + sys.argv[3] + ".xml"
+		outputFile = "reponse" + sys.argv[3] + ".xml"
 	else:
-		spotlightExampleFile = "reponse1.xml"
+		outputFile = "reponse1.xml"
 		
 	if(4 < len(sys.argv)):
 		spotlightConfidence = sys.argv[4]
