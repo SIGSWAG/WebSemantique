@@ -4,43 +4,42 @@ from gen_uri.threading_requests import *
 from enum import Enum
 import xml.etree.ElementTree, sys, re, requests, json, os, getopt
 
-directory = 'gen_uri'
+# URLs des APIs
 alchemy_root_URL = "http://access.alchemyapi.com/calls"
 alchemy_text_search_URL = "/url/URLGetText"
 alchemy_concept_search_URL = "/url/URLGetRankedConcepts"
 alchemy_get_news = "/data/GetNews"
-alchemy_API_key = "9d4bfa22ad347204f33e0451834cef0fe6f5b9e3"
-alchemy_API_key_rescue = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 alchemy_get_concepts_URL = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedConcepts"
 alchemy_get_concepts_text_URL = "http://gateway-a.watsonplatform.net/calls/text/TextGetRankedConcepts"
 alchemy_get_entities_URL = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedNamedEntities"
+google_search_URL = "https://www.googleapis.com/customsearch/v1"
+bing_search_URL = "https://api.datamarket.azure.com/Bing/Search/Web"
+dbpedia_spotlight_URL = "http://spotlight.dbpedia.org/rest/annotate"
+
+# API keys
+alchemy_API_key = "9d4bfa22ad347204f33e0451834cef0fe6f5b9e3"
+alchemy_API_key_rescue = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 alchemy_API_key = "cf9f0b681c01368d7329c9c4277c9b7ea91e8732"
 alchemy_API_key_rescue_bis = "1c29f8e0024bf320f7974af9cbe6612ec1dd8d73"
-
 google_API_key = "AIzaSyB23UnDXR2PyYdSygH1ClmUvIHvrdwacDo"
 google_API_key_rescue = "AIzaSyA1CXFhP9LGmIFZokfkOjnU78Y32dRYWk0"
 search_engine_key = "016723847753961302155:y6-cneh1knc"
 search_engine_key_rescue = "001392524783232473057:uwxuk9qp0-a"
-google_search_URL = "https://www.googleapis.com/customsearch/v1"
+bing_search_API_key = "Qf4hLruRDq3/DICqgrhXPVQRlfrebkPCwI0Hd66EgmU"
 
+# fichiers cache utiles durant les tests, pour éviter de spammer les serveurs
+directory = 'gen_uri'
 google_search_example_file = os.path.join(directory, os.path.join("sample_output", "exampleResponse.json"))
 google_searches_example_file = os.path.join(directory, os.path.join("sample_output", "exampleResponses.json"))
-
-google_nb_results_per_request = 10
-
-bing_search_API_key = "Qf4hLruRDq3/DICqgrhXPVQRlfrebkPCwI0Hd66EgmU"
-bing_search_URL = "https://api.datamarket.azure.com/Bing/Search/Web"
 bing_search_example_file = os.path.join(directory, os.path.join("sample_output", "bingResponse.json"))
-bing_nb_results_per_request = 50
-
-dbpedia_spotlight_URL = "http://spotlight.dbpedia.org/rest/annotate"
 spotlight_example_file = os.path.join(directory, os.path.join("sample_output", "spotlightResponseExample.xml"))
-
 sample_output = os.path.join(directory, os.path.join("sample_output", "genUri.txt"))
 
+# paramètres globaux de requetes
+google_nb_results_per_request = 10
+bing_nb_results_per_request = 50
 append_keyword_movie = "movie"
 enable_writting = False
-
 regex_whitespaces = re.compile(r'\s+')
 
 
@@ -48,7 +47,6 @@ class SearchType(Enum):
     GOOGLE_ONLY = 1
     BING_ONLY = 2
     GOOGLE_AND_BING = 3
-
 
 
 '''

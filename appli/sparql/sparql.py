@@ -2,8 +2,7 @@ import requests, sys, json, codecs, rdflib, os
 
 
 dbpedia_endpoint = "http://live.dbpedia.org/sparql"
-input_URIs = os.path.join("sparql", os.path.join("sample_output", "sample.json"))
-output_file_name = os.path.join("sparql", os.path.join("sample_output", "sparql.txt"))
+output_file_name = "sample_entry.txt"
 graphe_alternatif = rdflib.Graph()
 graphe_alternatif.parse(os.path.join("sparql", "baseAlternativeFat.rdf"), format="nt")
 nombre_liens_par_URI = '50'
@@ -320,6 +319,8 @@ if	__name__ =='__main__':
 	else:
 		nombre_films_mots_clefs = '10'
 
+	if not os.path.isdir("sample_output"):
+		os.mkdir(cache_dir)
 	with open(output_file_name, "r") as myfile:
 		json = myfile.read()
-		main(json)
+		print(main(json))
