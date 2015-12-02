@@ -8,7 +8,6 @@ def main(jsonStringMovies, jsonStringGeneral):
 	dataMovies=json.loads(jsonStringMovies)
 	dataGeneral=json.loads(jsonStringGeneral)
      
-	dictionnary = dict()
 	setGeneral =set()
 	setMovies =set()
 		
@@ -29,12 +28,7 @@ def main(jsonStringMovies, jsonStringGeneral):
 
 if __name__ == "__main__":
 	with open ("vocabFilms.json", "r") as myfile:
-    		vocabFilms=myfile.read().replace('\n', '')
+		vocabFilms=myfile.read().replace('\n', '')
 	with open ("vocab.json", "r") as myfile:
-    		vocabGeneral=myfile.read().replace('\n', '')
-	
-    		print(json.dumps(main(vocabFilms,vocabGeneral)))
-
-
-
-
+		vocabGeneral=myfile.read().replace('\n', '')
+		print(json.dumps(main(vocabFilms,vocabGeneral)))
