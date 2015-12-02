@@ -22,7 +22,7 @@ def construit_graphe_film(uri):
 	jacky["infos"]=requete_info_movie(uri)
 	return jacky
 
-
+#Requête qui recherche les mots clés de l'utilisateur dans les dbo:abstract
 def cherche_mots_clefs(mots):
 # Requête SPARQL	
 
@@ -67,6 +67,7 @@ def cherche_mots_clefs(mots):
 		return {}
 	
 	
+#Requête qui cherche les informations de la détection automatique de vocabulaire pour les films
 def requete_info_movie(uri):
 # Requête SPARQL
 	
@@ -104,6 +105,7 @@ def requete_info_movie(uri):
 		return []
 	
 		
+#Requête qui alimente le graphe d'une page, pour chaque URI qu'elle contient
 def requete_page(uri):
 # Requête SPARQL
 	payload = {
@@ -132,7 +134,7 @@ def requete_page(uri):
 		return []
 		
 		
-
+#Recherche des films en relation avec l'URI dans DBPedia
 def cherche_films(uri):
 # Requête SPARQL	
 
@@ -171,6 +173,7 @@ def cherche_films(uri):
 		return {}
 		
 		
+#Recherche des films en relation avec l'URI dans notre graphe
 def cherche_filmsAlternatif(uri):
 
 	qres = graphe_alternatif.query(
@@ -191,7 +194,7 @@ def cherche_filmsAlternatif(uri):
 	return films_URI	
 		
 		
-
+#Recherche des informations dans DBPedia à propos de uriFilm
 def requete_film(uriFilm):
 # Requête SPARQL	
 
@@ -220,6 +223,7 @@ def requete_film(uriFilm):
 		return {}
 		
 		
+#Recherche des informations dans notre graphe à propos de uriFilm
 def requete_film_alternative(uriFilm):
 # Requête SPARQL	
 
