@@ -123,11 +123,11 @@ a:hover{
 }
 
 .json .key{
-	color: gold;
+	color: green;
 }
 
 .json .string{
-	color: red;
+	color: #082b8c;
 }
 
 .json .number{
