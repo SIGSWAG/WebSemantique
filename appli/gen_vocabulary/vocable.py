@@ -10,12 +10,11 @@ def main(jsonStringMovies, jsonStringGeneral):
      
 	setGeneral =set()
 	setMovies =set()
-		
 	result = list()
 
 	for uri in dataGeneral["results"]["bindings"] :
 		setGeneral.add(uri["p"]["value"])
-	
+
 	for uri in dataMovies["results"]["bindings"] :
 		setMovies.add(uri["p"]["value"])	
 		
@@ -23,8 +22,7 @@ def main(jsonStringMovies, jsonStringGeneral):
 	
 	for uri in resultSet :
 		result.append({"predicat": uri})
-
-                            
+                    
 
 if __name__ == "__main__":
 	with open ("vocabFilms.json", "r") as myfile:
