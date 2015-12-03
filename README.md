@@ -4,7 +4,7 @@
 
 	Python3
 
-### Librairies Python3 requises
+## Librairies Python3 requises
 
 Le projet nécessite rdflib et rdflib-jsonld pour fonctionner. Pour installer ces libs via pip3 (pip pour Python3) :
 
