@@ -1,29 +1,33 @@
 # WebSemantique
 
-## Fonctionnement actuel
+## Intallations requises
 
-### Role de chaque module
-Chaque module récupère via l'entrée standard la sortie du précédent module (sous forme de JSON).
-Un exemple pour chaque module est fourni.
-Vous **devez renvoyer votre réponse sous forme de JSON dans la sortie standard**
+	Python3
 
-#### Dossiers sample_output
-Dans le dossier sample_output, vous **devez mettre un exemple de JSON** que vous avez généré (grace à votre programme ou à la main). Ainsi toutes les parties sont indépendantes et il n'y a pas besoin de se retaper toute la chaine à chaque fois qu'on veut lancer notre partie.
+### Librairies Python3 requises
 
-### Lancement du serveur
-		cd web
+Le projet nécessite rdflib et rdflib-jsonld pour fonctionner. Pour installer ces libs via pip3 (pip pour Python3) :
 
-		python3 -m http.server --cgi
+```bash
+pip3 install rdflib==4.2.1
+pip3 install rdflib-jsonld==0.3
+```
+
+## Lancement du serveur
+```bash
+cd web
+python3 -m http.server --cgi
+```
+
+Ouvrir un navigateur à l'adresse : [localhost:8000](http://localhost:8000)
 
 Attention le fichier web/cgi-bin/server.py doit avoir les droits d'execution.
 
-### JSON
-Pour récupérer le JSON en web (et donc appeler le chef d'orchestre):
+## Execution de l'application en ligne de commande
 
-	http://localhost:8000/cgi-bin/server.py?seuil_jordan=0.1&mots_clefs=test
+Lancer l'application avec le mot clef \"robot\" en utilisant Bing (search_type=2) avec 5 résultats au maximum.
+Tous les autres paramètres sont obligatoires.
 
-Pour récupérer le JSON en ligne de commande :
-
-	cd appli
-
-	python3 main.py -m 'test' -s 0.3
+```bash
+python3 main.py --mots_clefs="robot" --max_number_of_results=5 --search_type=2 --spotlight_confidence=0.1 --from_web=true --spotlight_support=20 --append_keyword=false
+```
